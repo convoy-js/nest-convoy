@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "noFallthroughCasesInSwitch": true,
+    "declaration": false,
+    "importHelpers": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "moduleResolution": "node",
+    "downlevelIteration": true,
+    "lib": ["esnext"],
+    "baseUrl": ".",
+    "paths": {
+      "@nest-saga/*": ["packages/*"],
+      "nest_saga/*": ["dist/bin/*"]
+    },
+    "types": []
+  },
+  "include": ["**/*.ts"],
+  "bazelOptions": {
+    "devmodeTargetOverride": "es2017",
+    "suppressTsconfigOverrideWarnings": true,
+    "tsickle": false
+  }
+}
