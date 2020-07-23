@@ -1,0 +1,12 @@
+{
+  "name": "@nest-convoy/saga",
+  "version": "0.0.0-PLACEHOLDER",
+  "dependencies": {
+    "@nest-convoy/core": "0.0.0-PLACEHOLDER"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "7.3.2",
+    "rxjs": "6.6.0",
+    "tslib": "2.0.0"
+  }
+}

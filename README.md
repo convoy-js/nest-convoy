@@ -1,3 +1,11 @@
+Orchestration sagas with messaging
+
+Framework names:
+- nest-convoy
+- nest-transit
+- nest-fleet
+- nest-carrier
+
 References
 - https://github.com/eclipse/microprofile-lra/blob/master/spec/src/main/asciidoc/microprofile-lra-spec.adoc
 - https://microservices.io/patterns/data/saga.html

@@ -12,8 +12,8 @@
     "lib": ["esnext"],
     "baseUrl": ".",
     "paths": {
-      "@nest-saga/*": ["packages/*"],
-      "nest_saga/*": ["dist/bin/*"]
+      "@nest-convoy/*": ["packages/*"],
+      "nest_convoy/*": ["dist/bin/*"]
     },
     "types": []
   },
