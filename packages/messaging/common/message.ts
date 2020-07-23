@@ -1,4 +1,4 @@
-import { RuntimeException } from '@nest-convoy/core';
+import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
 
 export type MessageHeaders = Map<string, string>;
 

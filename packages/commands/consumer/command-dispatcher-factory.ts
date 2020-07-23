@@ -11,7 +11,7 @@ export class CommandDispatcherFactory
   implements DispatcherFactory<CommandDispatcher, CommandHandlers> {
   constructor(
     private readonly messageConsumer: InternalMessageConsumer,
-    private readonly messageProducer: MessageProducer,
+    private readonly messageProducer: InternalMessageProducer,
   ) {}
 
   create(

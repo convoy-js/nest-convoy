@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { Message, MessageHeaders } from '../common';
+import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 
 export class MessageBuilder {
   private readonly headers: MessageHeaders = new Map();

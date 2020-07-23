@@ -4,12 +4,11 @@ import {
   MessageBuilder,
   InternalMessageProducer,
 } from '@nest-convoy/messaging/producer';
-
 import {
   DomainEvent,
   DomainEventNameMapping,
   EventMessageHeaders,
-} from '../common';
+} from '@nest-convoy/events/common';
 
 @Injectable()
 export class DomainEventPublisher {

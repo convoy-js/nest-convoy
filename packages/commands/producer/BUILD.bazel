@@ -1,0 +1,16 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "producer",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    module_name = "@nest-convoy/commands/producer",
+    deps = [
+        "//packages/commands/common",
+        "//packages/core",
+        "//packages/messaging/common",
+        "//packages/messaging/producer",
+    ],
+)

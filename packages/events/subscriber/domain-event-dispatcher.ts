@@ -1,12 +1,12 @@
 import { Logger } from '@nestjs/common';
 import { InternalMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message } from '@nest-convoy/messaging/common';
-
 import {
   DomainEvent,
   DomainEventNameMapping,
   EventMessageHeaders,
-} from '../common';
+} from '@nest-convoy/events/common';
+
 import { DomainEventHandlers } from './domain-event-handlers';
 import { DomainEventEnvelope } from './domain-event-envelope';
 
@@ -19,16 +19,14 @@ export class DomainEventDispatcher {
     private readonly messageConsumer: InternalMessageConsumer,
     private readonly domainEventNameMapping: DomainEventNameMapping,
   ) {
-    this.logger.log('Initializing domain event dispatcher');
     messageConsumer.subscribe(
       eventDispatcherId,
       domainEventHandlers.getAggregateTypesAndEvents(),
-      this.messageHandler.bind(this),
+      this.handleMessage.bind(this),
     );
-    this.logger.log('Initialized domain event dispatcher');
   }
 
-  private messageHandler(message: Message): void {
+  handleMessage(message: Message): void {
     const aggregateType = message.getRequiredHeader(
       EventMessageHeaders.AGGREGATE_TYPE,
     );

@@ -6,9 +6,9 @@ export class CommandMessageHeaders {
   static COMMAND_TYPE = CommandMessageHeaders.COMMAND_HEADER_PREFIX + 'type';
   static RESOURCE = CommandMessageHeaders.COMMAND_HEADER_PREFIX + 'resource';
   static DESTINATION =
-    CommandMessageHeaders.COMMAND_HEADER_PREFIX + '_destination';
+    CommandMessageHeaders.COMMAND_HEADER_PREFIX + 'destination';
 
-  static COMMAND_REPLY_PREFIX = 'commandreply_';
+  static COMMAND_REPLY_PREFIX = 'command_reply_';
   static REPLY_TO = CommandMessageHeaders.COMMAND_HEADER_PREFIX + 'reply_to';
 
   static headerStartsWithCommandPrefix(header: string): boolean {
@@ -18,7 +18,7 @@ export class CommandMessageHeaders {
   static inReply(header: string): string {
     if (!this.headerStartsWithCommandPrefix(header)) {
       throw new RuntimeException(
-        `Header: ${header} must start with: ${CommandMessageHeaders.COMMAND_HEADER_PREFIX}`,
+        `Header ${header} must start with: ${CommandMessageHeaders.COMMAND_HEADER_PREFIX}`,
       );
     }
 

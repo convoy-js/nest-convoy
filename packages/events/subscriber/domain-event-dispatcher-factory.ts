@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DispatcherFactory } from '@nest-convoy/core';
 import { InternalMessageConsumer } from '@nest-convoy/messaging/consumer';
+import { DomainEventNameMapping } from '@nest-convoy/events/common';
 
-import { DomainEventNameMapping } from '../common';
 import { DomainEventHandlers } from './domain-event-handlers';
 import { DomainEventDispatcher } from './domain-event-dispatcher';
 

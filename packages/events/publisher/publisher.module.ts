@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MessagingProducerModule } from '@nest-convoy/messaging/producer';
 
-import { EventsCommonModule } from '../common';
+import { EventsCommonModule } from '@nest-convoy/events/common';
 import { DomainEventPublisher } from './domain-event-publisher';
 
 @Module({

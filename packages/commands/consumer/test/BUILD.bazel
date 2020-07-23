@@ -1,0 +1,14 @@
+load("//tools:defaults.bzl", "nest_test")
+
+nest_test(
+    name = "test",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages/commands/common",
+        "//packages/commands/consumer",
+        "//packages/commands/producer",
+        "//packages/messaging/common",
+        "//packages/messaging/consumer",
+        "@npm//rxjs",
+    ],
+)

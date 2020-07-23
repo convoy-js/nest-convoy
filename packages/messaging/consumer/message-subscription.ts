@@ -1,3 +1,3 @@
-import { Subscriber } from 'rxjs';
+import { Subscription } from 'rxjs';
 
-export type MessageSubscription<T = any> = Subscriber<T>;
+export type MessageSubscription = Subscription;

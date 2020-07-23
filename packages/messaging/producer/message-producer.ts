@@ -1,12 +1,11 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { RuntimeException } from '@nest-convoy/core';
-
 import {
   ChannelMapping,
   Message,
   MessageInterceptor,
   NEST_CONVOY_MESSAGE_INTERCEPTORS,
-} from '../common';
+} from '@nest-convoy/messaging/common';
 
 let MESSAGE_ID = 1;
 
@@ -20,10 +19,12 @@ export class InternalMessageProducer {
   private readonly logger = new Logger(this.constructor.name, true);
 
   constructor(
-    private readonly target: MessageProducer,
     private readonly channelMapping: ChannelMapping,
+    @Optional()
     @Inject(NEST_CONVOY_MESSAGE_INTERCEPTORS)
     private readonly messageInterceptors: MessageInterceptor[],
+    @Optional()
+    private readonly target: MessageProducer,
   ) {}
 
   private async preSend(message: Message): Promise<void> {
@@ -36,7 +37,7 @@ export class InternalMessageProducer {
     message: Message,
     error?: RuntimeException,
   ): Promise<void> {
-    for (const interceptor of this.messageInterceptors) {
+    for (const interceptor of this.messageInterceptors || []) {
       await interceptor.postSend?.(message, error);
     }
   }

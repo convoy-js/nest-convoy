@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Message } from '@nest-convoy/messaging/common';
 import { MessageBuilder } from '@nest-convoy/messaging/producer';
-
 import {
   ReplyMessageHeaders,
   CommandReplyOutcome,
   Failure,
   Outcome,
   Success,
-} from '../common';
+} from '@nest-convoy/commands/common';
 
 @Injectable()
 export class CommandHandlerReplyBuilder {

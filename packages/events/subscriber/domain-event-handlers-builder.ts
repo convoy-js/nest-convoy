@@ -1,4 +1,4 @@
-import { DomainEvent } from '../common';
+import { DomainEvent } from '@nest-convoy/events/common';
 
 import { DomainEventHandlers } from './domain-event-handlers';
 import {
@@ -12,16 +12,15 @@ export class DomainEventHandlersBuilder {
   constructor(private aggregateType: string) {}
 
   onEvent<E extends DomainEvent>(
-    eventClass: object,
+    event: E,
     handler: DomainEventHandlerInvoke<E>,
   ): this {
-    this.handlers.push(
-      new DomainEventHandler(
-        this.aggregateType,
-        eventClass as DomainEvent,
-        handler,
-      ),
+    const eventHandler = new DomainEventHandler(
+      this.aggregateType,
+      event,
+      handler,
     );
+    this.handlers.push(eventHandler);
     return this;
   }
 

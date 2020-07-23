@@ -15,9 +15,8 @@
       "@nest-convoy/*": ["packages/*"],
       "nest_convoy/*": ["dist/bin/*"]
     },
-    "types": []
+    "types": ["@types/jest"]
   },
-  "include": ["**/*.ts"],
   "bazelOptions": {
     "devmodeTargetOverride": "es2017",
     "suppressTsconfigOverrideWarnings": true,

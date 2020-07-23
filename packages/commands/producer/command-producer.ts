@@ -1,13 +1,16 @@
+import { Injectable } from '@nestjs/common';
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 import {
   MessageBuilder,
   InternalMessageProducer,
 } from '@nest-convoy/messaging/producer';
+import { Command, CommandMessageHeaders } from '@nest-convoy/commands/common';
 
-import { Command, CommandMessageHeaders } from '../common';
+@Injectable()
+export abstract class CommandProducer {
+  constructor(protected readonly messageProducer: InternalMessageProducer) {}
 
-export interface BaseCommandProducer {
-  send(
+  abstract send(
     channel: string,
     command: Command,
     replyTo: string,
@@ -22,9 +25,8 @@ export interface BaseCommandProducer {
   // ): string;
 }
 
-export class CommandProducer implements BaseCommandProducer {
-  constructor(private readonly messageProducer: InternalMessageProducer) {}
-
+@Injectable()
+export class InternalCommandProducer extends CommandProducer {
   async send(
     channel: string,
     command: Command,
@@ -36,13 +38,13 @@ export class CommandProducer implements BaseCommandProducer {
     return message.id;
   }
 
-  private createMessage(
+  createMessage(
     channel: string,
     command: Command,
     replyTo: string,
     headers: MessageHeaders,
   ): Message {
-    const builder = MessageBuilder.withPayload(command.toString())
+    const builder = MessageBuilder.withPayload(JSON.stringify(command))
       .withExtraHeaders('', headers)
       .withHeader(CommandMessageHeaders.DESTINATION, channel)
       .withHeader(CommandMessageHeaders.COMMAND_TYPE, command.constructor.name)

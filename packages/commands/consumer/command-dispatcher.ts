@@ -6,8 +6,12 @@ import {
   MessageBuilder,
   InternalMessageProducer,
 } from '@nest-convoy/messaging/producer';
+import {
+  CommandMessageHeaders,
+  Failure,
+  ReplyMessageHeaders,
+} from '@nest-convoy/commands/common';
 
-import { CommandMessageHeaders, Failure, ReplyMessageHeaders } from '../common';
 import { CommandHandlers } from './command-handlers';
 import { CommandMessage } from './command-message';
 import { CommandHandler } from './command-handler';
@@ -24,14 +28,14 @@ export class CommandDispatcher {
     messageConsumer.subscribe(
       commandDispatcherId,
       commandHandlers.getChannels(),
-      this.messageHandler.bind(this),
+      this.handleMessage.bind(this),
     );
   }
 
-  private async messageHandler(message: Message): Promise<void> {
+  async handleMessage(message: Message): Promise<void> {
     const possibleMethod = this.commandHandlers.findTargetMethod(message);
     if (!possibleMethod) {
-      throw new RuntimeException(`No method for ${message}`);
+      throw new RuntimeException(`No method for ${message.id}`);
     }
 
     const correlationHeaders = this.filterCorrelationHeaders(
@@ -54,7 +58,7 @@ export class CommandDispatcher {
       );
       replies = possibleMethod.invoke(commandMessage);
       this.logger.debug(
-        `Generated replies ${this.commandDispatcherId} ${message} ${replies}`,
+        `Generated replies ${this.commandDispatcherId} ${message.constructor.name} ${replies}`,
       );
     } catch (e) {
       this.logger.error(

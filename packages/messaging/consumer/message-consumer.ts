@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
+import { ChannelMapping, MessageHandler } from '@nest-convoy/messaging/common';
 
-import { ChannelMapping, MessageHandler } from '../common';
 import { MessageSubscription } from './message-subscription';
 
 @Injectable()
@@ -18,7 +18,7 @@ export abstract class MessageConsumer {
 // export class KafkaMessageConsumer implements MessageConsumer {}
 
 @Injectable()
-export class InternalMessageConsumer extends MessageConsumer {
+export class InternalMessageConsumer /* extends MessageConsumer*/ {
   private readonly logger = new Logger(this.constructor.name);
 
   get id(): string {
@@ -27,9 +27,10 @@ export class InternalMessageConsumer extends MessageConsumer {
 
   constructor(
     private readonly channelMapping: ChannelMapping,
+    @Optional()
     private readonly target: MessageConsumer,
   ) {
-    super();
+    // super();
   }
 
   subscribe(

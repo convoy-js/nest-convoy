@@ -1,6 +1,6 @@
 import { Message } from '@nest-convoy/messaging/common';
 
-import { DomainEvent } from '../common';
+import { DomainEvent } from '@nest-convoy/events/common';
 
 export class DomainEventEnvelope<E extends DomainEvent = DomainEvent> {
   constructor(

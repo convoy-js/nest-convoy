@@ -1,0 +1,10 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "common",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    module_name = "@nest-convoy/events/common",
+)

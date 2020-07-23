@@ -1,6 +1,6 @@
 import { Message } from '@nest-convoy/messaging/common';
 
-export class Handle<H extends Handler> {
+export class Handle<H extends Handler<Function>> {
   constructor(protected readonly handlers: H[]) {}
 
   getHandlers(): H[] {
@@ -12,6 +12,7 @@ export class Handle<H extends Handler> {
   }
 }
 
-export interface Handler {
+export interface Handler<I extends Function> {
   handles(message: Message): boolean;
+  invoke: I;
 }

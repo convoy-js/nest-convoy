@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { MessagingCommonModule } from '../common';
+import { MessagingCommonModule } from '@nest-convoy/messaging/common';
 
 import { InternalMessageProducer } from './message-producer';
 
