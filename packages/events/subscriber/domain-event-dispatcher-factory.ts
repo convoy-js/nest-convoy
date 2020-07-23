@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { MessageConsumer } from '@nest-convoy/messaging/consumer';
+import { DispatcherFactory } from '@nest-convoy/core';
+import { InternalMessageConsumer } from '@nest-convoy/messaging/consumer';
 
 import { DomainEventNameMapping } from '../common';
 import { DomainEventHandlers } from './domain-event-handlers';
 import { DomainEventDispatcher } from './domain-event-dispatcher';
 
 @Injectable()
-export class DomainEventDispatcherFactory {
+export class DomainEventDispatcherFactory
+  implements DispatcherFactory<DomainEventDispatcher, DomainEventHandlers> {
   constructor(
-    private readonly messageConsumer: MessageConsumer,
+    private readonly messageConsumer: InternalMessageConsumer,
     private readonly domainEventNameMapping: DomainEventNameMapping,
   ) {}
 

@@ -1,14 +1,18 @@
-import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
+import { RuntimeException } from '@nest-convoy/core';
 
 export type MessageHeaders = Map<string, string>;
 
-export type MessageHandler = (message: Message) => void;
+export type MessageHandler = (message: Message) => Promise<void> | void;
 
 export class Message {
   static ID = 'id';
   static PARTITION_ID = 'PARTITION_ID';
   static DESTINATION = 'DESTINATION';
   static DATE = 'DATE';
+
+  get id(): string {
+    return this.getRequiredHeader(Message.ID);
+  }
 
   constructor(private payload: string, private headers: MessageHeaders) {}
 

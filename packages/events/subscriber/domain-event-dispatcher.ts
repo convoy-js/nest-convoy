@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { MessageConsumer } from '@nest-convoy/messaging/consumer';
+import { InternalMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message } from '@nest-convoy/messaging/common';
 
 import {
@@ -16,7 +16,7 @@ export class DomainEventDispatcher {
   constructor(
     private readonly eventDispatcherId: string,
     private readonly domainEventHandlers: DomainEventHandlers,
-    private readonly messageConsumer: MessageConsumer,
+    private readonly messageConsumer: InternalMessageConsumer,
     private readonly domainEventNameMapping: DomainEventNameMapping,
   ) {
     this.logger.log('Initializing domain event dispatcher');

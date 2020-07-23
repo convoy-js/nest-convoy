@@ -1,4 +1,5 @@
 import { Message } from '@nest-convoy/messaging/common';
+import { Handler } from '@nest-convoy/core';
 
 import { DomainEvent, EventMessageHeaders } from '../common';
 import { DomainEventEnvelope } from './domain-event-envelope';
@@ -7,7 +8,7 @@ export type DomainEventHandlerInvoke<E = DomainEvent> = (
   dee: DomainEventEnvelope<DomainEvent>,
 ) => void;
 
-export class DomainEventHandler {
+export class DomainEventHandler implements Handler {
   constructor(
     readonly aggregateType: string,
     readonly event: DomainEvent,

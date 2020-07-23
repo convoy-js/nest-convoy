@@ -1,0 +1,116 @@
+import { Logger } from '@nestjs/common';
+import { InternalMessageConsumer } from '@nest-convoy/messaging/consumer';
+import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
+import { RuntimeException } from '@nest-convoy/core';
+import {
+  MessageBuilder,
+  InternalMessageProducer,
+} from '@nest-convoy/messaging/producer';
+
+import { CommandMessageHeaders, Failure, ReplyMessageHeaders } from '../common';
+import { CommandHandlers } from './command-handlers';
+import { CommandMessage } from './command-message';
+import { CommandHandler } from './command-handler';
+
+export class CommandDispatcher {
+  private readonly logger = new Logger(this.constructor.name);
+
+  constructor(
+    private readonly commandDispatcherId: string,
+    private readonly commandHandlers: CommandHandlers,
+    private readonly messageConsumer: InternalMessageConsumer,
+    private readonly messageProducer: InternalMessageProducer,
+  ) {
+    messageConsumer.subscribe(
+      commandDispatcherId,
+      commandHandlers.getChannels(),
+      this.messageHandler.bind(this),
+    );
+  }
+
+  private async messageHandler(message: Message): Promise<void> {
+    const possibleMethod = this.commandHandlers.findTargetMethod(message);
+    if (!possibleMethod) {
+      throw new RuntimeException(`No method for ${message}`);
+    }
+
+    const correlationHeaders = this.filterCorrelationHeaders(
+      message.getHeaders(),
+    );
+
+    const defaultReplyChannel = message.getHeader(
+      CommandMessageHeaders.REPLY_TO,
+    );
+
+    const payload = this.convertPayload(possibleMethod, message.getPayload());
+
+    let replies: Message[];
+    try {
+      const commandMessage = new CommandMessage(
+        message.id,
+        payload,
+        correlationHeaders,
+        message,
+      );
+      replies = possibleMethod.invoke(commandMessage);
+      this.logger.debug(
+        `Generated replies ${this.commandDispatcherId} ${message} ${replies}`,
+      );
+    } catch (e) {
+      this.logger.error(
+        `Generated error ${this.commandDispatcherId} ${message} ${e.constructor.name}`,
+      );
+      await this.handleException(message, defaultReplyChannel);
+      return;
+    }
+    if (Array.isArray(replies)) {
+      await this.sendReplies(correlationHeaders, replies, defaultReplyChannel);
+    } else {
+      this.logger.debug('Null replies - not publishing');
+    }
+  }
+
+  private async handleException(
+    message: Message,
+    // commandHandler: CommandHandler,
+    defaultReplyChannel?: string,
+  ): Promise<void> {
+    const reply = MessageBuilder.withPayload(new Failure().toString()).build();
+    const correlationHeaders = this.filterCorrelationHeaders(
+      message.getHeaders(),
+    );
+    await this.sendReplies(correlationHeaders, [reply], defaultReplyChannel);
+  }
+
+  private convertPayload(ch: CommandHandler, payload: string): any {
+    return JSON.parse(payload);
+  }
+
+  private async sendReplies(
+    correlationHeaders: MessageHeaders,
+    replies: Message[],
+    defaultReplyChannel?: string,
+  ): Promise<void> {
+    for (const reply of replies) {
+      const message = MessageBuilder.withMessage(reply)
+        .withExtraHeaders('', correlationHeaders)
+        .build();
+      await this.messageProducer.send(defaultReplyChannel, message);
+    }
+  }
+
+  private filterCorrelationHeaders(headers: MessageHeaders): MessageHeaders {
+    const correlationHeaders = new Map(
+      [...headers.entries()]
+        .filter(([key]) =>
+          CommandMessageHeaders.headerStartsWithCommandPrefix(key),
+        )
+        .map(([key, value]) => [CommandMessageHeaders.inReply(key), value]),
+    );
+    correlationHeaders.set(
+      ReplyMessageHeaders.IN_REPLY_TO,
+      headers.get(Message.ID),
+    );
+    return correlationHeaders;
+  }
+}

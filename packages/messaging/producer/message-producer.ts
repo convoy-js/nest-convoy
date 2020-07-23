@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
+import { RuntimeException } from '@nest-convoy/core';
 
 import {
   ChannelMapping,
@@ -11,33 +11,41 @@ import {
 let MESSAGE_ID = 1;
 
 @Injectable()
-export class MessageProducer {
+export abstract class MessageProducer {
+  abstract send(message: Message): Promise<void>;
+}
+
+@Injectable()
+export class InternalMessageProducer {
   private readonly logger = new Logger(this.constructor.name, true);
 
   constructor(
+    private readonly target: MessageProducer,
     private readonly channelMapping: ChannelMapping,
     @Inject(NEST_CONVOY_MESSAGE_INTERCEPTORS)
     private readonly messageInterceptors: MessageInterceptor[],
   ) {}
 
-  private preSend(message: Message): Promise<void[]> {
-    return Promise.all(this.messageInterceptors.map(x => x.preSend?.(message)));
+  private async preSend(message: Message): Promise<void> {
+    for (const interceptor of this.messageInterceptors) {
+      await interceptor.preSend?.(message);
+    }
   }
 
-  private postSend(
+  private async postSend(
     message: Message,
     error?: RuntimeException,
-  ): Promise<void[]> {
-    return Promise.all(
-      this.messageInterceptors.map(x => x.postSend?.(message, error)),
-    );
+  ): Promise<void> {
+    for (const interceptor of this.messageInterceptors) {
+      await interceptor.postSend?.(message, error);
+    }
   }
 
   private prepareMessageHeaders(destination: string, message: Message): void {
     // const id = this.generateMessageId();
     const id = String(++MESSAGE_ID);
     if (!id && !message.hasHeader(Message.ID)) {
-      throw new Error('Message needs an ID');
+      throw new RuntimeException('Message needs an ID');
     } else {
       message.setHeader(Message.ID, id);
     }
@@ -54,7 +62,7 @@ export class MessageProducer {
 
     await this.preSend(message);
     try {
-      // await this.send();
+      await this.target.send(message);
       await this.postSend(message);
     } catch (err) {
       this.logger.error(err.message);
