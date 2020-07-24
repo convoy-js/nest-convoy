@@ -6,7 +6,7 @@ import { DomainEventEnvelope } from './domain-event-envelope';
 
 export type DomainEventHandlerInvoke<E extends DomainEvent = DomainEvent> = (
   dee: DomainEventEnvelope<E>,
-) => void;
+) => Promise<void> | void;
 
 export class DomainEventHandler implements Handler<DomainEventHandlerInvoke> {
   constructor(

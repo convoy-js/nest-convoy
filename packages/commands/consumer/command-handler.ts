@@ -8,11 +8,12 @@ import { Type } from '@nestjs/common';
 export type CommandHandlerInvoke<T = any> = (
   cmd: CommandMessage<T>,
   pvs?: Map<string, string>,
-) => Message[];
+) => Promise<Message[]> | Message[];
 
 export class CommandHandler implements Handler<CommandHandlerInvoke> {
   constructor(
     readonly channel: string,
+    readonly resource: string | undefined,
     readonly command: Type<Command>,
     readonly invoke: CommandHandlerInvoke,
   ) {}

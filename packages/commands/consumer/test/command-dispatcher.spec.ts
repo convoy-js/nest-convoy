@@ -1,6 +1,4 @@
 import { Test } from '@nestjs/testing';
-import { of } from 'rxjs';
-import { InternalMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message } from '@nest-convoy/messaging/common';
 import { Command } from '@nest-convoy/commands/common';
 import {
@@ -22,12 +20,7 @@ describe('CommandDispatcher', () => {
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [CommandsConsumerModule, CommandsProducerModule],
-    })
-      .overrideProvider(InternalMessageConsumer)
-      .useValue({
-        subscribe: jest.fn().mockImplementation(() => of().subscribe()),
-      })
-      .compile();
+    }).compile();
 
     commandDispatcherFactory = moduleRef.get(CommandDispatcherFactory);
     commandProducer = moduleRef.get(InternalCommandProducer);
@@ -43,7 +36,12 @@ describe('CommandDispatcher', () => {
       constructor(readonly hello: string) {}
     }
 
-    const commandHandler = new CommandHandler(channel, TestCommand, handler);
+    const commandHandler = new CommandHandler(
+      channel,
+      undefined,
+      TestCommand,
+      handler,
+    );
     const commandHandlers = new CommandHandlers([commandHandler]);
     const commandDispatcher = commandDispatcherFactory.create(
       commandDispatcherId,

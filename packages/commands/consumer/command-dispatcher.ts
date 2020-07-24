@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { InternalMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
-import { RuntimeException } from '@nest-convoy/core';
+import { Dispatcher, RuntimeException } from '@nest-convoy/core';
 import {
   MessageBuilder,
   InternalMessageProducer,
@@ -16,25 +16,29 @@ import { CommandHandlers } from './command-handlers';
 import { CommandMessage } from './command-message';
 import { CommandHandler } from './command-handler';
 
-export class CommandDispatcher {
+export class CommandDispatcher implements Dispatcher {
   private readonly logger = new Logger(this.constructor.name);
 
   constructor(
-    private readonly commandDispatcherId: string,
-    private readonly commandHandlers: CommandHandlers,
-    private readonly messageConsumer: InternalMessageConsumer,
-    private readonly messageProducer: InternalMessageProducer,
-  ) {
-    messageConsumer.subscribe(
-      commandDispatcherId,
-      commandHandlers.getChannels(),
+    protected readonly commandDispatcherId: string,
+    protected readonly commandHandlers: CommandHandlers,
+    protected readonly messageConsumer: InternalMessageConsumer,
+    protected readonly messageProducer: InternalMessageProducer,
+  ) {}
+
+  init(): void {
+    this.messageConsumer.subscribe(
+      this.commandDispatcherId,
+      this.commandHandlers.getChannels(),
       this.handleMessage.bind(this),
     );
   }
 
   async handleMessage(message: Message): Promise<void> {
-    const possibleMethod = this.commandHandlers.findTargetMethod(message);
-    if (!possibleMethod) {
+    const possibleCommandHandler = this.commandHandlers.findTargetMethod(
+      message,
+    );
+    if (!possibleCommandHandler) {
       throw new RuntimeException(`No method for ${message.id}`);
     }
 
@@ -46,7 +50,10 @@ export class CommandDispatcher {
       CommandMessageHeaders.REPLY_TO,
     );
 
-    const payload = this.convertPayload(possibleMethod, message.getPayload());
+    const payload = this.convertPayload(
+      possibleCommandHandler,
+      message.getPayload(),
+    );
 
     let replies: Message[];
     try {
@@ -56,7 +63,7 @@ export class CommandDispatcher {
         correlationHeaders,
         message,
       );
-      replies = possibleMethod.invoke(commandMessage);
+      replies = await possibleCommandHandler.invoke(commandMessage);
       this.logger.debug(
         `Generated replies ${this.commandDispatcherId} ${message.constructor.name} ${replies}`,
       );

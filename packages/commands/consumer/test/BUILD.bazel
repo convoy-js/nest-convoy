@@ -8,7 +8,5 @@ nest_test(
         "//packages/commands/consumer",
         "//packages/commands/producer",
         "//packages/messaging/common",
-        "//packages/messaging/consumer",
-        "@npm//rxjs",
     ],
 )

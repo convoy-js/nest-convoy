@@ -18,7 +18,7 @@ export abstract class MessageConsumer {
 // export class KafkaMessageConsumer implements MessageConsumer {}
 
 @Injectable()
-export class InternalMessageConsumer /* extends MessageConsumer*/ {
+export class InternalMessageConsumer implements MessageConsumer {
   private readonly logger = new Logger(this.constructor.name);
 
   get id(): string {

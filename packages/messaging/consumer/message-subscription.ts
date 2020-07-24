@@ -1,3 +1,1 @@
-import { Subscription } from 'rxjs';
-
-export type MessageSubscription = Subscription;
+export type MessageSubscription = () => void;

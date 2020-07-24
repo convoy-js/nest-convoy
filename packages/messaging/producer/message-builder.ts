@@ -1,8 +1,8 @@
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 
 export class MessageBuilder {
-  private readonly headers: MessageHeaders = new Map();
-  private readonly body: string;
+  protected readonly headers: MessageHeaders = new Map();
+  protected body: string;
 
   constructor(messageOrPayload: string | Message) {
     if (messageOrPayload instanceof Message) {
