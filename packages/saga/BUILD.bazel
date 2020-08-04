@@ -1,0 +1,13 @@
+load("//tools:defaults.bzl", "nest_module")
+
+nest_module(
+    name = "saga",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    module_name = "@nest-convoy/saga",
+    deps = [
+        "//packages/saga/orchestration/dsl",
+    ],
+)

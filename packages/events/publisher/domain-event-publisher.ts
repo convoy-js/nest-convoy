@@ -24,7 +24,7 @@ export class DomainEventPublisher {
     event: DomainEvent,
     eventType: string,
   ): Message {
-    return MessageBuilder.withPayload(event.toString())
+    return MessageBuilder.withPayload(JSON.stringify(event))
       .withExtraHeaders('', headers)
       .withHeader(Message.PARTITION_ID, aggregateId)
       .withHeader(EventMessageHeaders.AGGREGATE_ID, aggregateId)
@@ -37,7 +37,7 @@ export class DomainEventPublisher {
     aggregateType: string,
     aggregateId: string,
     domainEvents: DomainEvent[],
-    headers: Map<string, string>,
+    headers: Map<string, string> = new Map(),
   ): Promise<void> {
     for (const event of domainEvents) {
       const eventType = this.domainEventNameMapping.eventToExternalEventType(

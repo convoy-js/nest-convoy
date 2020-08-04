@@ -12,9 +12,11 @@
     "@nestjs/testing": "^7.3.2",
     "@types/jest": "^26.0.6",
     "@types/node": "14.0.24",
+    "@types/uuid": "^8.0.0",
     "jest-cli": "^26.1.0",
     "patch-package": "6.2.2",
-    "prettier": "2.0.5"
+    "prettier": "2.0.5",
+    "uuid": "^8.3.0"
   },
   "dependencies": {
     "@kafkajs/confluent-schema-registry": "1.0.6",

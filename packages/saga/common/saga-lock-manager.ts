@@ -1,12 +1,11 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Message } from '@nest-convoy/messaging/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RuntimeException } from '@nest-convoy/core';
 
-import { SagaLock } from './saga-lock.entity';
-import { SagaStash } from './saga-stash.entity';
-import { MessageBuilder } from '@nest-convoy/messaging/producer';
+import { SagaStashEntity, SagaLockEntity } from './entities';
+import { NEST_SAGA_CONNECTION } from './tokens';
 
 @Injectable()
 export abstract class SagaLockManager {
@@ -30,10 +29,10 @@ export class SagaInMemoryLockManager extends SagaLockManager {}
 @Injectable()
 export class SagaDatabaseLockManager extends SagaLockManager {
   constructor(
-    @InjectRepository(SagaLock)
-    private readonly sagaLockRepository: Repository<SagaLock>,
-    @InjectRepository(SagaStash)
-    private readonly sagaStashRepository: Repository<SagaStash>,
+    @InjectRepository(SagaLockEntity, NEST_SAGA_CONNECTION)
+    private readonly sagaLockRepository: Repository<SagaLockEntity>,
+    @InjectRepository(SagaStashEntity, NEST_SAGA_CONNECTION)
+    private readonly sagaStashRepository: Repository<SagaStashEntity>,
   ) {
     super();
   }

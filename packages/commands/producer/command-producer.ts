@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
+import { Command, CommandMessageHeaders } from '@nest-convoy/commands/common';
 import {
   MessageBuilder,
   InternalMessageProducer,
+  MessageProducer,
 } from '@nest-convoy/messaging/producer';
-import { Command, CommandMessageHeaders } from '@nest-convoy/commands/common';
 
 @Injectable()
 export abstract class CommandProducer {
-  constructor(protected readonly messageProducer: InternalMessageProducer) {}
+  constructor(protected readonly messageProducer: MessageProducer) {}
 
   abstract send(
     channel: string,
+    resource: string,
     command: Command,
     replyTo: string,
     headers: MessageHeaders,
@@ -27,8 +29,12 @@ export abstract class CommandProducer {
 
 @Injectable()
 export class InternalCommandProducer extends CommandProducer {
+  // @ts-ignore
+  protected readonly messageProducer: InternalMessageProducer;
+
   async send(
     channel: string,
+    resource: string,
     command: Command,
     replyTo: string,
     headers: MessageHeaders,

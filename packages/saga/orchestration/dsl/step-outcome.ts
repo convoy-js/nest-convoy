@@ -1,11 +1,45 @@
-export abstract class StepOutcome {
-  abstract visit(localConsumer: any, commandsConsumer: any): void;
+import { CommandWithDestination } from '@nest-convoy/commands/consumer';
+import { RuntimeException } from '@nest-convoy/core';
+
+import { SagaActionsBuilder } from '../saga-actions';
+
+export interface StepOutcome {
+  visit<Data>(
+    localConsumer: (
+      localException?: RuntimeException,
+    ) => SagaActionsBuilder<Data>,
+    commandsConsumer: (
+      commands: CommandWithDestination[],
+    ) => SagaActionsBuilder<Data>,
+  ): void;
 }
 
-export class LocalStepOutcome extends StepOutcome {
-  visit(localConsumer: any, commandsConsumer: any): void {}
+export class LocalStepOutcome implements StepOutcome {
+  constructor(private readonly localOutcome?: RuntimeException) {}
+
+  visit<Data>(
+    localConsumer: (
+      localException?: RuntimeException,
+    ) => SagaActionsBuilder<Data>,
+    commandsConsumer: (
+      commands: CommandWithDestination[],
+    ) => SagaActionsBuilder<Data>,
+  ): void {
+    localConsumer(this.localOutcome);
+  }
 }
 
-export class RemoteStepOutcome extends StepOutcome {
-  visit(localConsumer: any, commandsConsumer: any): void {}
+export class RemoteStepOutcome implements StepOutcome {
+  constructor(private readonly commandsToSend: CommandWithDestination[]) {}
+
+  visit<Data>(
+    localConsumer: (
+      localException?: RuntimeException,
+    ) => SagaActionsBuilder<Data>,
+    commandsConsumer: (
+      commands: CommandWithDestination[],
+    ) => SagaActionsBuilder<Data>,
+  ): void {
+    commandsConsumer(this.commandsToSend);
+  }
 }

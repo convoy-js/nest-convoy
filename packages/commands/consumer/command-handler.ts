@@ -1,9 +1,11 @@
 import { Handler } from '@nest-convoy/core';
 import { Message } from '@nest-convoy/messaging/common';
-import { Command, CommandMessageHeaders } from '@nest-convoy/commands/common';
+import {
+  CommandMessageHeaders,
+  CommandType,
+} from '@nest-convoy/commands/common';
 
 import { CommandMessage } from './command-message';
-import { Type } from '@nestjs/common';
 
 export type CommandHandlerInvoke<T = any> = (
   cmd: CommandMessage<T>,
@@ -14,7 +16,7 @@ export class CommandHandler implements Handler<CommandHandlerInvoke> {
   constructor(
     readonly channel: string,
     readonly resource: string | undefined,
-    readonly command: Type<Command>,
+    readonly command: CommandType,
     readonly invoke: CommandHandlerInvoke,
   ) {}
 

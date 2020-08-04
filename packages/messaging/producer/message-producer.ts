@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { RuntimeException } from '@nest-convoy/core';
+import { v4 as uuidv4 } from 'uuid';
 import {
   ChannelMapping,
   Message,
@@ -43,8 +44,7 @@ export class InternalMessageProducer {
   }
 
   private prepareMessageHeaders(destination: string, message: Message): void {
-    // const id = this.generateMessageId();
-    const id = String(++MESSAGE_ID);
+    const id = uuidv4();
     if (!id && !message.hasHeader(Message.ID)) {
       throw new RuntimeException('Message needs an ID');
     } else {

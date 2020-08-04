@@ -21,7 +21,7 @@ export class DomainEventDispatcher implements Dispatcher {
     private readonly domainEventNameMapping: DomainEventNameMapping,
   ) {}
 
-  init(): void {
+  subscribe(): void {
     this.messageConsumer.subscribe(
       this.eventDispatcherId,
       this.domainEventHandlers.getAggregateTypesAndEvents(),
@@ -44,7 +44,7 @@ export class DomainEventDispatcher implements Dispatcher {
     const handler = this.domainEventHandlers.findTargetMethod(message);
     if (!handler) return;
 
-    const param = new (class DomainEventClass {} as DomainEvent)();
+    const param = {} as DomainEvent;
     const aggregateId = message.getRequiredHeader(
       EventMessageHeaders.AGGREGATE_ID,
     );

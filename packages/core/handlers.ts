@@ -1,6 +1,6 @@
 import { Message } from '@nest-convoy/messaging/common';
 
-import { Handler } from './interfaces';
+import { Handler } from './types';
 
 export class Handlers<H extends Handler<Function>> {
   constructor(protected readonly handlers: H[]) {}

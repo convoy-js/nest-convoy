@@ -26,7 +26,7 @@ export class CommandDispatcher implements Dispatcher {
     protected readonly messageProducer: InternalMessageProducer,
   ) {}
 
-  init(): void {
+  subscribe(): void {
     this.messageConsumer.subscribe(
       this.commandDispatcherId,
       this.commandHandlers.getChannels(),
