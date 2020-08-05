@@ -11,8 +11,8 @@ export interface Builder<T> {
 }
 
 export interface Dispatcher {
-  subscribe(): void;
-  handleMessage(message: Message): Promise<void> | void;
+  subscribe(): Promise<void>;
+  handleMessage(message: Message): Promise<void>;
 }
 
 export interface Handler<I extends Function> {

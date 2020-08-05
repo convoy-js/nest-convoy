@@ -1,8 +1,9 @@
 import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
+import { Consumer } from '@nest-convoy/core';
 
 export type MessageHeaders = Map<string, string>;
 
-export type MessageHandler = (message: Message) => Promise<void> | void;
+export type MessageHandler = Consumer<Message, void>;
 
 export class Message {
   static ID = 'id';

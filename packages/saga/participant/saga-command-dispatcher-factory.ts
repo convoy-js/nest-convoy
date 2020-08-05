@@ -1,8 +1,8 @@
 import { DispatcherFactory } from '@nest-convoy/core';
 import { CommandHandlers } from '@nest-convoy/commands/consumer';
 import { Injectable } from '@nestjs/common';
-import { InternalMessageConsumer } from '@nest-convoy/messaging/consumer';
-import { InternalMessageProducer } from '@nest-convoy/messaging/producer';
+import { NestConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
+import { NestConvoyMessageProducer } from '@nest-convoy/messaging/producer';
 import { SagaLockManager } from '@nest-convoy/saga/common';
 
 import { SagaCommandDispatcher } from './saga-command-dispatcher';
@@ -11,8 +11,8 @@ import { SagaCommandDispatcher } from './saga-command-dispatcher';
 export class SagaCommandDispatcherFactory
   implements DispatcherFactory<SagaCommandDispatcher, CommandHandlers> {
   constructor(
-    private readonly messageConsumer: InternalMessageConsumer,
-    private readonly messageProducer: InternalMessageProducer,
+    private readonly messageConsumer: NestConvoyMessageConsumer,
+    private readonly messageProducer: NestConvoyMessageProducer,
     private readonly sagaLockManager: SagaLockManager,
   ) {}
 

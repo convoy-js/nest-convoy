@@ -1,10 +1,10 @@
 import { Logger } from '@nestjs/common';
-import { InternalMessageConsumer } from '@nest-convoy/messaging/consumer';
+import { NestConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 import { Dispatcher, RuntimeException } from '@nest-convoy/core';
 import {
   MessageBuilder,
-  InternalMessageProducer,
+  NestConvoyMessageProducer,
 } from '@nest-convoy/messaging/producer';
 import {
   CommandMessageHeaders,
@@ -22,12 +22,12 @@ export class CommandDispatcher implements Dispatcher {
   constructor(
     protected readonly commandDispatcherId: string,
     protected readonly commandHandlers: CommandHandlers,
-    protected readonly messageConsumer: InternalMessageConsumer,
-    protected readonly messageProducer: InternalMessageProducer,
+    protected readonly messageConsumer: NestConvoyMessageConsumer,
+    protected readonly messageProducer: NestConvoyMessageProducer,
   ) {}
 
-  subscribe(): void {
-    this.messageConsumer.subscribe(
+  async subscribe(): Promise<void> {
+    await this.messageConsumer.subscribe(
       this.commandDispatcherId,
       this.commandHandlers.getChannels(),
       this.handleMessage.bind(this),

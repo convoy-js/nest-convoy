@@ -1,14 +1,15 @@
 import { Handler } from '@nest-convoy/core';
 import { Message } from '@nest-convoy/messaging/common';
 import {
+  Command,
   CommandMessageHeaders,
   CommandType,
 } from '@nest-convoy/commands/common';
 
 import { CommandMessage } from './command-message';
 
-export type CommandHandlerInvoke<T = any> = (
-  cmd: CommandMessage<T>,
+export type CommandHandlerInvoke<C extends Command = object> = (
+  cmd: CommandMessage<C>,
   pvs?: Map<string, string>,
 ) => Promise<Message[]> | Message[];
 

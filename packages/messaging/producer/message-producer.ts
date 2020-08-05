@@ -8,24 +8,24 @@ import {
   NEST_CONVOY_MESSAGE_INTERCEPTORS,
 } from '@nest-convoy/messaging/common';
 
-let MESSAGE_ID = 1;
-
 @Injectable()
 export abstract class MessageProducer {
   abstract send(message: Message): Promise<void>;
+  generateMessageId(): string {
+    return uuidv4();
+  }
 }
 
 @Injectable()
-export class InternalMessageProducer {
+export class NestConvoyMessageProducer {
   private readonly logger = new Logger(this.constructor.name, true);
 
   constructor(
     private readonly channelMapping: ChannelMapping,
+    private readonly target: MessageProducer,
     @Optional()
     @Inject(NEST_CONVOY_MESSAGE_INTERCEPTORS)
     private readonly messageInterceptors: MessageInterceptor[],
-    @Optional()
-    private readonly target: MessageProducer,
   ) {}
 
   private async preSend(message: Message): Promise<void> {
@@ -44,7 +44,7 @@ export class InternalMessageProducer {
   }
 
   private prepareMessageHeaders(destination: string, message: Message): void {
-    const id = uuidv4();
+    const id = this.target.generateMessageId();
     if (!id && !message.hasHeader(Message.ID)) {
       throw new RuntimeException('Message needs an ID');
     } else {

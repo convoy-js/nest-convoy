@@ -3,20 +3,18 @@ import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 import { Command, CommandMessageHeaders } from '@nest-convoy/commands/common';
 import {
   MessageBuilder,
-  InternalMessageProducer,
+  NestConvoyMessageProducer,
   MessageProducer,
 } from '@nest-convoy/messaging/producer';
 
 @Injectable()
 export abstract class CommandProducer {
-  constructor(protected readonly messageProducer: MessageProducer) {}
-
   abstract send(
     channel: string,
-    resource: string,
     command: Command,
     replyTo: string,
     headers: MessageHeaders,
+    resource?: string,
   ): Promise<string> | string;
   // send(
   //   channel: string,
@@ -28,21 +26,8 @@ export abstract class CommandProducer {
 }
 
 @Injectable()
-export class InternalCommandProducer extends CommandProducer {
-  // @ts-ignore
-  protected readonly messageProducer: InternalMessageProducer;
-
-  async send(
-    channel: string,
-    resource: string,
-    command: Command,
-    replyTo: string,
-    headers: MessageHeaders,
-  ): Promise<string> {
-    const message = this.createMessage(channel, command, replyTo, headers);
-    await this.messageProducer.send(channel, message);
-    return message.id;
-  }
+export class NestConvoyCommandProducer implements CommandProducer {
+  constructor(private readonly messageProducer: NestConvoyMessageProducer) {}
 
   createMessage(
     channel: string,
@@ -57,5 +42,17 @@ export class InternalCommandProducer extends CommandProducer {
       .withHeader(CommandMessageHeaders.REPLY_TO, replyTo);
 
     return builder.build();
+  }
+
+  async send(
+    channel: string,
+    command: Command,
+    replyTo: string,
+    headers: MessageHeaders = new Map(),
+    resource?: string,
+  ): Promise<string> {
+    const message = this.createMessage(channel, command, replyTo, headers);
+    await this.messageProducer.send(channel, message);
+    return message.id;
   }
 }

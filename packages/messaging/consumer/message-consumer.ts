@@ -1,5 +1,10 @@
 import { Injectable, Logger, Optional } from '@nestjs/common';
-import { ChannelMapping, MessageHandler } from '@nest-convoy/messaging/common';
+import { Consumer } from '@nest-convoy/core';
+import {
+  ChannelMapping,
+  Message,
+  MessageHandler,
+} from '@nest-convoy/messaging/common';
 
 import { MessageSubscription } from './message-subscription';
 
@@ -9,16 +14,16 @@ export abstract class MessageConsumer {
   abstract subscribe(
     subscriberId: string,
     channels: string[],
-    handler: MessageHandler,
+    handler: Consumer<Partial<Message>>,
   ): MessageSubscription;
-  abstract close(): void;
+  async close(): Promise<void> {}
 }
 
 // @Injectable()
 // export class KafkaMessageConsumer implements MessageConsumer {}
 
 @Injectable()
-export class InternalMessageConsumer implements MessageConsumer {
+export class NestConvoyMessageConsumer implements MessageConsumer {
   private readonly logger = new Logger(this.constructor.name);
 
   get id(): string {
@@ -27,7 +32,6 @@ export class InternalMessageConsumer implements MessageConsumer {
 
   constructor(
     private readonly channelMapping: ChannelMapping,
-    @Optional()
     private readonly target: MessageConsumer,
   ) {
     // super();
@@ -48,7 +52,7 @@ export class InternalMessageConsumer implements MessageConsumer {
     return this.target.subscribe(subscriberId, transformedChannels, handler);
   }
 
-  close(): void {
-    this.target.close();
+  async close(): Promise<void> {
+    await this.target.close();
   }
 }

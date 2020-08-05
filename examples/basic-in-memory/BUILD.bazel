@@ -1,0 +1,19 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "basic-in-memory",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//packages/commands/common",
+        "//packages/commands/consumer",
+        "//packages/commands/producer",
+        "//packages/in-memory",
+        "//packages/messaging/common",
+        "//packages/messaging/consumer",
+        "//packages/messaging/producer",
+        "@npm//@nestjs/core",
+    ],
+)

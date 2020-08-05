@@ -1,2 +1,2 @@
 export * from './command-producer';
-export * from './producer.module';
+export * from './commands-producer.module';

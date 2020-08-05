@@ -1,7 +1,7 @@
-import { InternalMessageConsumer } from '@nest-convoy/messaging/consumer';
+import { NestConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message } from '@nest-convoy/messaging/common';
 import { RuntimeException } from '@nest-convoy/core';
-import { InternalMessageProducer } from '@nest-convoy/messaging/producer';
+import { NestConvoyMessageProducer } from '@nest-convoy/messaging/producer';
 import {
   SagaLockManager,
   StashMessageRequiredException,
@@ -27,8 +27,8 @@ export class SagaCommandDispatcher extends CommandDispatcher {
   constructor(
     commandDispatcherId: string,
     commandHandlers: CommandHandlers,
-    messageConsumer: InternalMessageConsumer,
-    messageProducer: InternalMessageProducer,
+    messageConsumer: NestConvoyMessageConsumer,
+    messageProducer: NestConvoyMessageProducer,
     private readonly sagaLockManager: SagaLockManager,
   ) {
     super(

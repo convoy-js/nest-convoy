@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Message } from '@nest-convoy/messaging/common';
 import {
   MessageBuilder,
-  InternalMessageProducer,
+  NestConvoyMessageProducer,
 } from '@nest-convoy/messaging/producer';
 import {
   DomainEvent,
@@ -13,7 +13,7 @@ import {
 @Injectable()
 export class DomainEventPublisher {
   constructor(
-    private readonly messageProducer: InternalMessageProducer,
+    private readonly messageProducer: NestConvoyMessageProducer,
     private readonly domainEventNameMapping: DomainEventNameMapping,
   ) {}
 

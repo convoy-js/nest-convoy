@@ -1,1 +1,1 @@
-export type MessageSubscription = () => void;
+export type MessageSubscription = Promise<() => Promise<void> | void>;
