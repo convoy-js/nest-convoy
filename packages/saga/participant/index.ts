@@ -5,3 +5,4 @@ export * from './saga-command-dispatcher';
 export * from './saga-command-handler';
 export * from './saga-reply-message';
 export * from './saga-reply-message-builder';
+export * from './saga-participant.module';

@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ICommandBus } from '@nestjs/cqrs';
-import { Command, ConvoyCommandProducer } from '@nest-convoy/commands';
 import { ConvoyMessageConsumer, Message } from '@nest-convoy/messaging';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  Command,
+  CommandReplyOutcome,
+  ConvoyCommandProducer,
+  ReplyMessageHeaders,
+} from '@nest-convoy/commands';
 
 @Injectable()
 export class CommandBus implements ICommandBus {
@@ -13,19 +18,28 @@ export class CommandBus implements ICommandBus {
 
   execute<T extends Command>(
     command: T,
-    commandChannel = uuidv4(),
+    commandChannel = null,
     replyChannel = uuidv4(),
     subscriberId = uuidv4(),
   ): Promise<Message> {
-    return new Promise(async resolve => {
+    return new Promise(async (resolve, reject) => {
       await this.messageConsumer.subscribe(
         subscriberId,
         [replyChannel],
-        resolve,
+        (message: Message) => {
+          switch (message.getHeader(ReplyMessageHeaders.REPLY_OUTCOME)) {
+            case CommandReplyOutcome.FAILURE:
+              return reject(message);
+
+            case CommandReplyOutcome.SUCCESS:
+            default:
+              return resolve(message);
+          }
+        },
       );
 
       const commandId = await this.commandProducer.send(
-        command.constructor.name,
+        commandChannel ?? command.constructor.name,
         command,
         replyChannel,
       );

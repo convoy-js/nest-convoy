@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { NEST_SAGA_CONNECTION } from '@nest-convoy/saga/common';
-import { RuntimeException } from '@nest-convoy/core';
 
 import { SagaInstance } from './saga-instance';
 import { SagaInstanceEntity, SagaInstanceParticipantsEntity } from './entities';
@@ -34,9 +33,7 @@ export class SagaMemoryInstanceRepository extends SagaInstanceRepository {
 export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
   constructor(
     @InjectRepository(SagaInstanceEntity, NEST_SAGA_CONNECTION)
-    private readonly sagaInstanceRepository: Repository<
-      SagaInstanceEntity<any>
-    >,
+    private readonly sagaInstanceRepository: Repository<SagaInstanceEntity>,
     @InjectRepository(SagaInstanceParticipantsEntity, NEST_SAGA_CONNECTION)
     private readonly sagaInstanceParticipantsRepository: Repository<
       SagaInstanceParticipantsEntity

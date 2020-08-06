@@ -1,6 +1,5 @@
-import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
-import { Builder } from '@nest-convoy/core';
-import { CommandWithDestination } from '@nest-convoy/commands/consumer';
+import { Builder, RuntimeException } from '@nest-convoy/common';
+import { CommandWithDestination } from '@nest-convoy/commands';
 
 export class SagaActions<Data> {
   constructor(

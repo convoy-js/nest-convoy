@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
-import { Dispatcher, RuntimeException } from '@nest-convoy/core';
+import { Dispatcher, RuntimeException } from '@nest-convoy/common';
 import {
   MessageBuilder,
   ConvoyMessageProducer,
@@ -57,7 +57,6 @@ export class CommandDispatcher implements Dispatcher {
       );
 
       const commandMessage = new CommandMessage(
-        message.id,
         command,
         correlationHeaders,
         message,

@@ -1,21 +1,19 @@
-load("//tools:defaults.bzl", "nest_module")
+load("//tools:defaults.bzl", "nest_library")
 
-nest_module(
+nest_library(
     name = "common",
     srcs = glob(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
     module_name = "@nest-convoy/saga/common",
-    visibility = [
-        "//packages/saga/orchestration:__pkg__",
-    ],
     deps = [
         "//packages/commands/common",
-        "//packages/core",
+        "//packages/common",
         "//packages/messaging/common",
         "//packages/saga/common/entities",
         "@npm//@nestjs/typeorm",
+        "@npm//@nestjs/cqrs",
         "@npm//typeorm",
     ],
 )

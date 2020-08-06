@@ -10,8 +10,10 @@ export class DoSomethingCommandHandler
   implements ICommandHandler<DoSomethingCommand> {
   constructor(private readonly eventBus: EventBus) {}
 
-  async execute(cm: CommandMessage<DoSomethingCommand>): Promise<void> {
-    console.log(cm);
+  async execute({
+    command,
+  }: CommandMessage<DoSomethingCommand>): Promise<void> {
+    console.log(command);
     const event = new AccountDebited(uniqueId);
     await this.eventBus.publish(event);
   }

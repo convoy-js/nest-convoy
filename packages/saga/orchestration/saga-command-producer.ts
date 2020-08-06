@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CommandProducer } from '@nest-convoy/commands/producer';
-import { CommandWithDestination } from '@nest-convoy/commands/consumer';
-import { MessageHeaders } from '@nest-convoy/messaging/common';
+import {
+  CommandWithDestination,
+  ConvoyCommandProducer,
+} from '@nest-convoy/commands';
+import { MessageHeaders } from '@nest-convoy/messaging';
 import { SagaCommandHeaders } from '@nest-convoy/saga/common';
 
 @Injectable()
 export class SagaCommandProducer {
-  constructor(private readonly commandProducer: CommandProducer) {}
+  constructor(private readonly commandProducer: ConvoyCommandProducer) {}
 
   async sendCommands(
     sagaType: string,
@@ -22,10 +24,10 @@ export class SagaCommandProducer {
       headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
       messageId = await this.commandProducer.send(
         command.destinationChannel,
-        command.resource,
         command.command,
         sagaReplyChannel,
         headers,
+        command.resource,
       );
     }
 

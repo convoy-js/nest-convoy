@@ -9,7 +9,7 @@ nest_library(
     module_name = "@nest-convoy/messaging/producer",
     deps = [
         "@npm//uuid",
-        "//packages/core",
+        "//packages/common",
         "//packages/messaging/common",
     ],
 )

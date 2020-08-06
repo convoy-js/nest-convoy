@@ -1,6 +1,6 @@
 import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message } from '@nest-convoy/messaging/common';
-import { RuntimeException } from '@nest-convoy/core';
+import { RuntimeException } from '@nest-convoy/common';
 import { ConvoyMessageProducer } from '@nest-convoy/messaging/producer';
 import {
   SagaLockManager,

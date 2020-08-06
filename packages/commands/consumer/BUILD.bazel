@@ -9,7 +9,7 @@ nest_library(
     module_name = "@nest-convoy/commands/consumer",
     deps = [
         "//packages/commands/common",
-        "//packages/core",
+        "//packages/common",
         "//packages/messaging/common",
         "//packages/messaging/consumer",
         "//packages/messaging/producer",

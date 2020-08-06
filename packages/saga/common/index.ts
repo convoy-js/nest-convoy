@@ -6,3 +6,4 @@ export * from './saga-unlock-command';
 export * from './stash-message-required-exception';
 export * from './stashed-message';
 export * from './tokens';
+export * from './saga-common.module';

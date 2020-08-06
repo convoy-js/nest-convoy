@@ -1,5 +1,5 @@
 import { Message } from '@nest-convoy/messaging/common';
-import { Consumer } from '@nest-convoy/core';
+import { Consumer } from '@nest-convoy/common';
 import {
   CommandReplyOutcome,
   ReplyMessageHeaders,

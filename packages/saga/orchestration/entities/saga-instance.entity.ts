@@ -2,13 +2,13 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('saga_instance')
 export class SagaInstanceEntity<Data = any> {
-  @PrimaryColumn({ name: 'saga_id', length: 100 })
+  @PrimaryColumn({ name: 'saga_id' })
   sagaId: string;
 
-  @PrimaryColumn({ name: 'saga_type', length: 255 })
+  @PrimaryColumn({ name: 'saga_type' })
   sagaType: string;
 
-  @Column({ name: 'state_name', length: 100 })
+  @Column({ name: 'state_name' })
   stateName: string;
 
   @Column({ name: 'compensating', default: false })
@@ -17,7 +17,7 @@ export class SagaInstanceEntity<Data = any> {
   @Column({ name: 'end_state', default: false })
   endState: boolean;
 
-  @Column({ name: 'saga_data_type', length: 1000 })
+  @Column({ name: 'saga_data_type' })
   sagaDataType: string;
 
   @Column({
@@ -26,6 +26,6 @@ export class SagaInstanceEntity<Data = any> {
   })
   sagaData: Data;
 
-  @Column({ name: 'last_request_id', length: 100, nullable: true })
+  @Column({ name: 'last_request_id', nullable: true })
   lastRequestId?: string;
 }

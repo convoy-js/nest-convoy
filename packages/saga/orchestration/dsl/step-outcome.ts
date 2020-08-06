@@ -1,5 +1,5 @@
 import { CommandWithDestination } from '@nest-convoy/commands/consumer';
-import { RuntimeException } from '@nest-convoy/core';
+import { RuntimeException } from '@nest-convoy/common';
 
 import { SagaActionsBuilder } from '../saga-actions';
 

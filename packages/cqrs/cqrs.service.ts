@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit, Type } from '@nestjs/common';
+import { Saga, SagaInstanceFactory } from '@nest-convoy/saga/orchestration';
 import { ModuleRef } from '@nestjs/core';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -17,6 +18,7 @@ import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
 import {
   COMMAND_HANDLER_METADATA,
   EVENTS_HANDLER_METADATA,
+  SAGA_METADATA,
 } from '@nestjs/cqrs/dist/decorators/constants';
 
 import { ICommandHandler, IEventHandler } from './handlers';
@@ -24,6 +26,7 @@ import { ICommandHandler, IEventHandler } from './handlers';
 @Injectable()
 export class CqrsService implements OnModuleInit {
   constructor(
+    private readonly sagaInstanceFactory: SagaInstanceFactory,
     private readonly domainEventDispatcherFactory: DomainEventDispatcherFactory,
     private readonly commandDispatcherFactory: CommandDispatcherFactory,
     private readonly explorer: ExplorerService,
@@ -32,6 +35,28 @@ export class CqrsService implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     const { commands, events, queries, sagas } = this.explorer.explore();
+
+    const sagaInstances = sagas
+      .map(sagaType => Reflect.getMetadata(SAGA_METADATA, sagaType))
+      .map(
+        async ({
+          target,
+          data,
+        }: {
+          target: Type<Saga<any>>;
+          data: Type<any>;
+        }) => {
+          if (target && data) {
+            const saga = this.injector.get(target, {
+              strict: false,
+            }) as Saga<unknown>;
+
+            console.log(
+              await this.sagaInstanceFactory.create(saga, new data()),
+            );
+          }
+        },
+      );
 
     /*
 
@@ -92,6 +117,10 @@ export class CqrsService implements OnModuleInit {
         .subscribe();
     });
 
-    await Promise.all([...commandHandlers, ...eventHandlers]);
+    await Promise.all([
+      ...commandHandlers,
+      ...eventHandlers,
+      ...sagaInstances,
+    ] as Promise<any>[]);
   }
 }

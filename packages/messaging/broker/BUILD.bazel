@@ -9,7 +9,7 @@ nest_library(
     module_name = "@nest-convoy/messaging/broker",
     deps = [
         "//packages/commands",
-        "//packages/core",
+        "//packages/common",
         "//packages/messaging",
         "@npm//@nestjs/microservices",
         "@npm//rxjs",

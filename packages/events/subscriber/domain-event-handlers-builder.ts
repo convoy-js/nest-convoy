@@ -1,5 +1,5 @@
 import { DomainEvent } from '@nest-convoy/events/common';
-import { Builder } from '@nest-convoy/core';
+import { Builder } from '@nest-convoy/common';
 import { Type } from '@nestjs/common';
 
 import { DomainEventHandlers } from './domain-event-handlers';

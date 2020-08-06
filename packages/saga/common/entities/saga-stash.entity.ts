@@ -3,16 +3,16 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('saga_stash')
 export class SagaStashEntity<P = Record<string, unknown>> {
-  @PrimaryColumn({ name: 'message_id', length: 100 })
+  @PrimaryColumn({ name: 'message_id' })
   messageId: string;
 
-  @Column({ length: 100 })
+  @Column()
   target: string;
 
-  @Column({ name: 'saga_type', length: 255 })
+  @Column({ name: 'saga_type' })
   sagaType: string;
 
-  @Column({ name: 'saga_id', length: 100 })
+  @Column({ name: 'saga_id' })
   sagaId: string;
 
   @Column({

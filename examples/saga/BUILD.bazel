@@ -1,0 +1,33 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//packages/commands",
+        "//packages/cqrs",
+        "//packages/events",
+        "//packages/in-memory",
+        "//packages/messaging",
+        "//packages/messaging/broker",
+        "//packages/saga",
+        "@npm//@nestjs/core",
+        "@npm//@nestjs/microservices",
+        "@npm//@nestjs/typeorm",
+        "@npm//pg",
+        "@npm//typeorm",
+    ],
+)
+
+nodejs_binary(
+    name = "saga",
+    data = [
+        ":lib",
+        "@npm//pg",
+    ],
+    entry_point = "main.ts",
+)

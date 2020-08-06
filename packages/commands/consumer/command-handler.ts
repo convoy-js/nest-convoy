@@ -1,4 +1,4 @@
-import { Handler } from '@nest-convoy/core';
+import { Handler } from '@nest-convoy/common';
 import { Message } from '@nest-convoy/messaging/common';
 import {
   Command,

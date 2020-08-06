@@ -4,3 +4,4 @@ export * from './command-bus';
 export * from './event-bus';
 export * from './cqrs.module';
 export * from './handlers';
+export * from './decorators';

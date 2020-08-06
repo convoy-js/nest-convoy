@@ -1,4 +1,4 @@
-import { Consumer } from '@nest-convoy/core';
+import { Consumer } from '@nest-convoy/common';
 
 import { SagaDefinition } from '../saga-definition';
 import { BaseStepBuilder, StepBuilder } from './step-builder';

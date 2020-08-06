@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { CommandProducer } from '@nest-convoy/commands/producer';
-import { MessageConsumer } from '@nest-convoy/messaging/consumer';
+import { ConvoyCommandProducer } from '@nest-convoy/commands';
+import { ConvoyMessageConsumer } from '@nest-convoy/messaging';
 import { SagaLockManager } from '@nest-convoy/saga/common';
 
 import { SagaInstanceRepository } from './saga-instance-repository';
 import { SagaCommandProducer } from './saga-command-producer';
-import { InternalSagaManger, SagaManager } from './saga-manager';
+import { SagaManger, SagaManager } from './saga-manager';
 import { Saga } from './saga';
 
 @Injectable()
 export class SagaManagerFactory {
   constructor(
     private readonly sagaInstanceRepository: SagaInstanceRepository,
-    private readonly commandProducer: CommandProducer,
-    private readonly messageConsumer: MessageConsumer,
+    private readonly commandProducer: ConvoyCommandProducer,
+    private readonly messageConsumer: ConvoyMessageConsumer,
     private readonly sagaLockManager: SagaLockManager,
     private readonly sagaCommandProducer: SagaCommandProducer,
   ) {}
 
   create<Data>(saga: Saga<Data>): SagaManager<Data> {
     // TODO: Should be dynamic
-    return new InternalSagaManger(
+    return new SagaManger(
       saga,
       this.sagaInstanceRepository,
       this.commandProducer,

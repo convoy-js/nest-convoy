@@ -6,9 +6,9 @@ export type MessageHandler = (data: Message) => Promise<void> | void;
 
 export class Message {
   static ID = 'id';
-  static PARTITION_ID = 'PARTITION_ID';
-  static DESTINATION = 'DESTINATION';
-  static DATE = 'DATE';
+  static PARTITION_ID = 'partition_id';
+  static DESTINATION = 'destination';
+  static DATE = 'date';
 
   get id(): string {
     return this.getRequiredHeader(Message.ID);

@@ -1,4 +1,4 @@
-import { DispatcherFactory } from '@nest-convoy/core';
+import { DispatcherFactory } from '@nest-convoy/common';
 import { CommandHandlers } from '@nest-convoy/commands/consumer';
 import { Injectable } from '@nestjs/common';
 import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';

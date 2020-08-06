@@ -1,5 +1,5 @@
 import { Command, CommandType } from '@nest-convoy/commands/common';
-import { Builder } from '@nest-convoy/core';
+import { Builder } from '@nest-convoy/common';
 import { Message } from '@nest-convoy/messaging/common';
 
 import { withFailure, withSuccess } from './command-handler-reply-builder';
@@ -26,8 +26,8 @@ export class CommandHandlersBuilder implements Builder<CommandHandlers> {
   ): CommandHandlerInvoke {
     return async (cm: CommandMessage): Promise<Message[]> => {
       try {
-        const result = await handle(cm);
-        return result ? [result] : [withSuccess()];
+        const reply = await handle(cm);
+        return [withSuccess(reply)];
       } catch (err) {
         return [withFailure(err)];
       }

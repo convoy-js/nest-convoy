@@ -2,15 +2,15 @@ import { Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('saga_instance_participants')
 export class SagaInstanceParticipantsEntity {
-  @PrimaryGeneratedColumn({ name: 'saga_id', type: 'uuid' })
+  @PrimaryColumn({ name: 'saga_id' })
   sagaId: string;
 
-  @PrimaryColumn({ name: 'saga_type', length: 255 })
+  @PrimaryColumn({ name: 'saga_type' })
   sagaType: string;
 
-  @PrimaryColumn({ name: 'destination', length: 100 })
+  @PrimaryColumn({ name: 'destination' })
   destination: string;
 
-  @PrimaryColumn({ name: 'resource', length: 100 })
+  @PrimaryColumn({ name: 'resource' })
   resource: string;
 }

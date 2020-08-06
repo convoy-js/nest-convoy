@@ -4,7 +4,7 @@ import {
   Optional,
   OnApplicationShutdown,
 } from '@nestjs/common';
-import { Consumer } from '@nest-convoy/core';
+import { Consumer } from '@nest-convoy/common';
 import {
   ConvoyChannelMapping,
   Message,

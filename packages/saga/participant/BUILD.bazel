@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "nest_module")
+load("//tools:defaults.bzl", "nest_library")
 
-nest_module(
+nest_library(
     name = "participant",
     srcs = glob(
         ["*.ts"],
@@ -11,6 +11,7 @@ nest_module(
         "//packages/saga:__pkg__",
     ],
     deps = [
+        "//packages/common",
         "//packages/commands/common",
         "//packages/commands/consumer",
         "//packages/messaging/common",

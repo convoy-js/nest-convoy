@@ -8,7 +8,7 @@ nest_library(
     ),
     module_name = "@nest-convoy/events/subscriber",
     deps = [
-        "//packages/core",
+        "//packages/common",
         "//packages/events/common",
         "//packages/messaging/common",
         "//packages/messaging/consumer",

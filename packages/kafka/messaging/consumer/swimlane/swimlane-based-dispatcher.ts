@@ -1,4 +1,4 @@
-import { Consumer } from '@nest-convoy/core';
+import { Consumer } from '@nest-convoy/common';
 
 import { SwimlaneDispatcherBacklog } from './swimlane-dispatcher-backlog';
 import { SwimlaneDispatcher } from './swimlane-dispatcher';

@@ -2,7 +2,7 @@ import { Message } from '@nest-convoy/messaging/common';
 import {
   RuntimeException,
   UnsupportedOperationException,
-} from '@nest-convoy/core';
+} from '@nest-convoy/common';
 import { ReplyMessageHeaders } from '@nest-convoy/commands/common';
 
 import { SagaActions, SagaActionsBuilder } from '../saga-actions';
@@ -19,10 +19,10 @@ import {
 export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
   constructor(private readonly sagaSteps: SagaStep<Data>[]) {}
 
-  private nextStepToExecute(
+  private async nextStepToExecute(
     { compensating, currentlyExecuting }: SagaExecutionState,
     data: Data,
-  ): StepToExecute<Data> {
+  ): Promise<StepToExecute<Data>> {
     const direction = compensating ? -1 : +1;
     let skipped = 0;
 
@@ -32,7 +32,11 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
       i = i + direction
     ) {
       const step = this.sagaSteps[i];
-      if (compensating ? step.hasCompensation(data) : step.hasAction(data)) {
+      if (
+        compensating
+          ? await step.hasCompensation(data)
+          : await step.hasAction(data)
+      ) {
         return new StepToExecute<Data>(skipped, compensating, step);
       } else {
         skipped++;
@@ -42,11 +46,11 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
     return new StepToExecute<Data>(skipped, compensating);
   }
 
-  private executeNextStep(
+  private async executeNextStep(
     sagaData: Data,
     currentState: SagaExecutionState,
-  ): SagaActions<Data> {
-    const stepToExecute = this.nextStepToExecute(currentState, sagaData);
+  ): Promise<SagaActions<Data>> {
+    const stepToExecute = await this.nextStepToExecute(currentState, sagaData);
 
     return stepToExecute.isEmpty()
       ? this.makeEndStateSagaActions(currentState)
@@ -69,11 +73,11 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
     replyHandler: SagaStepReplyHandler<Data>,
   ): void {
     // TODO - eventuate-tram-sagas-orchestration-simple-dsl/src/main/java/io/eventuate/tram/sagas/simpledsl/SimpleSagaDefinition.java
-    // const className = message.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE);
-    replyHandler(data, JSON.parse(message.getPayload()));
+    const replyType = message.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE);
+    replyHandler(data, message.parsePayload());
   }
 
-  start(sagaData: Data): SagaActions<Data> {
+  start(sagaData: Data): Promise<SagaActions<Data>> {
     const currentState = new SagaExecutionState();
     return this.executeNextStep(sagaData, currentState);
   }
@@ -82,7 +86,7 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
     currentState: string,
     sagaData: Data,
     message: Message,
-  ): SagaActions<Data> {
+  ): Promise<SagaActions<Data>> {
     const state = decodeExecutionState(currentState);
     const currentStep = this.sagaSteps[state.currentlyExecuting];
     if (!currentStep) {

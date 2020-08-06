@@ -1,4 +1,4 @@
-import { Predicate } from '@nest-convoy/core';
+import { Predicate } from '@nest-convoy/common';
 import { CommandWithDestination } from '@nest-convoy/commands/consumer';
 import { Command, CommandProvider } from '@nest-convoy/commands/common';
 

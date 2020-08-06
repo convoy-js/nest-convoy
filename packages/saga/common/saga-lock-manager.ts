@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Message } from '@nest-convoy/messaging/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RuntimeException } from '@nest-convoy/core';
+import { RuntimeException } from '@nest-convoy/common';
 
 import { SagaStashEntity, SagaLockEntity } from './entities';
 import { NEST_SAGA_CONNECTION } from './tokens';
@@ -23,8 +23,8 @@ export abstract class SagaLockManager {
   abstract unlock(sagaId: string, target: string): Promise<Message | void>;
 }
 
-@Injectable()
-export class SagaInMemoryLockManager extends SagaLockManager {}
+// @Injectable()
+// export class SagaInMemoryLockManager extends SagaLockManager {}
 
 @Injectable()
 export class SagaDatabaseLockManager extends SagaLockManager {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Consumer } from '@nest-convoy/core';
+import { Consumer } from '@nest-convoy/common';
 import { CommandMessage } from '@nest-convoy/commands';
 import { of } from 'rxjs';
 import {

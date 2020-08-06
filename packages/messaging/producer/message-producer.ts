@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
-import { RuntimeException } from '@nest-convoy/core';
+import { RuntimeException } from '@nest-convoy/common';
 import { v4 as uuidv4 } from 'uuid';
 import {
   ConvoyChannelMapping,

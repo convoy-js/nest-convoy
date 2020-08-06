@@ -1,6 +1,6 @@
 import { Command, CommandProvider } from '@nest-convoy/commands/common';
 import { CommandWithDestination } from '@nest-convoy/commands/consumer';
-import { Builder, Predicate } from '@nest-convoy/core';
+import { Builder, Predicate } from '@nest-convoy/common';
 import { Type } from '@nestjs/common';
 
 import { SagaDefinition } from '../saga-definition';

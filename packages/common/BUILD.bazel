@@ -1,12 +1,12 @@
 load("//tools:defaults.bzl", "nest_library")
 
 nest_library(
-    name = "core",
+    name = "common",
     srcs = glob(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
-    module_name = "@nest-convoy/core",
+    module_name = "@nest-convoy/common",
     deps = [
         "//packages/messaging/common",
         "@npm//@nestjs/core",

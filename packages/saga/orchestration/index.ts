@@ -1,3 +1,4 @@
+export * from './saga-orchestration.module';
 export * from './destination-and-resource';
 export * from './enlisted-aggregate';
 export * from './event-to-publish';

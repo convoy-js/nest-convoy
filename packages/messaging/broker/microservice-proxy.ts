@@ -6,7 +6,6 @@ import {
   Inject,
   Injectable,
   Logger,
-  OnApplicationBootstrap,
   OnApplicationShutdown,
   OnModuleInit,
 } from '@nestjs/common';
@@ -37,7 +36,9 @@ export class MicroserviceProxy implements OnModuleInit, OnApplicationShutdown {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    await this.server.listen(() => this.logger.log('bla bla bla'));
+    await this.server.listen(() =>
+      this.logger.log('Started NestConvoy messaging server'),
+    );
     await this.client.connect();
   }
 

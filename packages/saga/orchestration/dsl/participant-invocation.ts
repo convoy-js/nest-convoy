@@ -1,6 +1,6 @@
 import { Message } from '@nest-convoy/messaging/common';
 import { CommandWithDestination } from '@nest-convoy/commands/consumer';
-import { Predicate } from '@nest-convoy/core';
+import { Predicate } from '@nest-convoy/common';
 import {
   Command,
   CommandProvider,

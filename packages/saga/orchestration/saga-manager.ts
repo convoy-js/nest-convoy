@@ -1,16 +1,18 @@
 import { Injectable, Logger, Type } from '@nestjs/common';
-import { CommandProducer } from '@nest-convoy/commands/producer';
-import { MessageConsumer } from '@nest-convoy/messaging/consumer';
-import { RuntimeException } from '@nest-convoy/core';
-import { Message } from '@nest-convoy/messaging/common';
-import { MessageBuilder } from '@nest-convoy/messaging/producer';
+import { RuntimeException } from '@nest-convoy/common';
+import {
+  Message,
+  MessageBuilder,
+  ConvoyMessageConsumer,
+} from '@nest-convoy/messaging';
 import {
   CommandMessageHeaders,
   CommandReplyOutcome,
   Failure,
   ReplyMessageHeaders,
   Success,
-} from '@nest-convoy/commands/common';
+  ConvoyCommandProducer,
+} from '@nest-convoy/commands';
 import {
   LockTarget,
   SagaLockManager,
@@ -20,13 +22,13 @@ import {
 import { SagaInstance } from './saga-instance';
 import { SagaInstanceRepository } from './saga-instance-repository';
 import { SagaCommandProducer } from './saga-command-producer';
-import { Saga } from './saga';
+import { OnStarting, Saga } from './saga';
 import { SagaDefinition } from './saga-definition';
 import { SagaActions } from './saga-actions';
 import { DestinationAndResource } from './destination-and-resource';
 
 export interface SagaManager<Data> {
-  subscribeToReplyChannel(): void;
+  subscribeToReplyChannel(): Promise<void>;
   create(sagaData: Data): Promise<SagaInstance<Data>>;
   create(sagaData: Data, lockTarget?: string): Promise<SagaInstance<Data>>;
   create(
@@ -36,11 +38,11 @@ export interface SagaManager<Data> {
   ): Promise<SagaInstance<Data>>;
 }
 
-export class InternalSagaManger<Data> implements SagaManager<Data> {
+export class SagaManger<Data> implements SagaManager<Data> {
   private readonly logger = new Logger(this.constructor.name);
 
   private get sagaType(): string {
-    return this.saga.getSagaType();
+    return this.saga.constructor.name;
   }
 
   private get sagaReplyChannel(): string {
@@ -54,14 +56,14 @@ export class InternalSagaManger<Data> implements SagaManager<Data> {
   constructor(
     private readonly saga: Saga<Data>,
     private readonly sagaInstanceRepository: SagaInstanceRepository,
-    private readonly commandProducer: CommandProducer,
-    private readonly messageConsumer: MessageConsumer,
+    private readonly commandProducer: ConvoyCommandProducer,
+    private readonly messageConsumer: ConvoyMessageConsumer,
     private readonly sagaLockManager: SagaLockManager,
     private readonly sagaCommandProducer: SagaCommandProducer,
   ) {}
 
   private getSagaDefinition(): SagaDefinition<Data> {
-    const sm = this.saga.getSagaDefinition();
+    const sm = this.saga.sagaDefinition;
 
     if (sm == null) {
       throw new RuntimeException('state machine cannot be null');
@@ -108,7 +110,7 @@ export class InternalSagaManger<Data> implements SagaManager<Data> {
   ): Promise<void> {
     while (true) {
       if (actions.localException) {
-        actions = this.getSagaDefinition().handleReply(
+        actions = await this.getSagaDefinition().handleReply(
           actions.updatedState,
           actions.updatedSagaData,
           this.createFailureMessage(),
@@ -128,7 +130,7 @@ export class InternalSagaManger<Data> implements SagaManager<Data> {
 
         if (!actions.local) break;
 
-        actions = this.getSagaDefinition().handleReply(
+        actions = await this.getSagaDefinition().handleReply(
           actions.updatedState,
           actions.updatedSagaData,
           this.createSuccessMessage(),
@@ -165,7 +167,7 @@ export class InternalSagaManger<Data> implements SagaManager<Data> {
       );
     }
 
-    const actions = this.getSagaDefinition().handleReply(
+    const actions = await this.getSagaDefinition().handleReply(
       sagaInstance.stateName,
       sagaInstance.sagaData,
       message,
@@ -186,8 +188,8 @@ export class InternalSagaManger<Data> implements SagaManager<Data> {
     }
   }
 
-  subscribeToReplyChannel(): void {
-    this.messageConsumer.subscribe(
+  async subscribeToReplyChannel(): Promise<void> {
+    await this.messageConsumer.subscribe(
       this.sagaSubscriberId,
       [this.sagaReplyChannel],
       this.handleMessage.bind(this),
@@ -220,7 +222,10 @@ export class InternalSagaManger<Data> implements SagaManager<Data> {
 
     sagaInstance = await this.sagaInstanceRepository.save(sagaInstance);
 
-    await this.saga.onStarting(sagaInstance.sagaId, sagaData);
+    await (this.saga as OnStarting<any>).onStarting?.(
+      sagaInstance.sagaId,
+      sagaData,
+    );
 
     if (resource) {
       if (
@@ -234,7 +239,7 @@ export class InternalSagaManger<Data> implements SagaManager<Data> {
       }
     }
 
-    const actions = this.getSagaDefinition().start(sagaData);
+    const actions = await this.getSagaDefinition().start(sagaData);
 
     if (actions.localException) {
       throw actions.localException;

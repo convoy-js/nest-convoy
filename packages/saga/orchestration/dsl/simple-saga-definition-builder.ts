@@ -1,4 +1,4 @@
-import { Builder } from '@nest-convoy/core';
+import { Builder } from '@nest-convoy/common';
 
 import { SagaDefinition } from '../saga-definition';
 import { SagaStep } from './saga-step';

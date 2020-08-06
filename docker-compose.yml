@@ -1,0 +1,16 @@
+version: '3'
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:9.6.18
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: nest-convoy
+      POSTGRES_PASSWORD: nest-convoy
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+volumes:
+  postgres_data: {}

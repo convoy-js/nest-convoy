@@ -15,6 +15,6 @@ export interface SagaStep<Data> {
     compensating: boolean,
   ): void | SagaStepReplyHandler<Data, T>;
   createStepOutcome(data: Data, compensating: boolean): StepOutcome;
-  hasAction(data: Data): boolean;
-  hasCompensation(data: Data): boolean;
+  hasAction(data: Data): Promise<boolean> | boolean;
+  hasCompensation(data: Data): Promise<boolean> | boolean;
 }

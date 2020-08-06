@@ -1,4 +1,4 @@
-import { Builder } from '@nest-convoy/core';
+import { Builder } from '@nest-convoy/common';
 import { Command } from '@nest-convoy/commands/common';
 
 import { CommandWithDestination } from './command-with-destination';

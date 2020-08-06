@@ -1,4 +1,4 @@
-import { Consumer } from '@nest-convoy/core';
+import { Consumer } from '@nest-convoy/common';
 
 import { KafkaMessage } from '../kafka-message';
 import { SwimlaneDispatcherBacklog } from './swimlane-dispatcher-backlog';

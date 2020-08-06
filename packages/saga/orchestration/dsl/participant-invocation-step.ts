@@ -21,11 +21,11 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
     return compensation ? this.compensation : this.participantInvocation;
   }
 
-  hasAction(data: Data): boolean {
+  hasAction(data: Data): Promise<boolean> | boolean {
     return this.participantInvocation?.isInvocable(data);
   }
 
-  hasCompensation(data: Data): boolean {
+  hasCompensation(data: Data): Promise<boolean> | boolean {
     return this.compensation?.isInvocable(data);
   }
 

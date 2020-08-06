@@ -1,4 +1,4 @@
-import { RuntimeException } from '@nest-convoy/core';
+import { RuntimeException } from '@nest-convoy/common';
 
 export class CommandMessageHeaders {
   static readonly COMMAND_HEADER_PREFIX = 'command_';

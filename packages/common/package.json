@@ -1,5 +1,5 @@
 {
-  "name": "@nest-convoy/core",
+  "name": "@nest-convoy/common",
   "version": "0.0.0-PLACEHOLDER",
   "peerDependencies": {
     "@nestjs/common": "7.3.2",

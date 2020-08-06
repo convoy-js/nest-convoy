@@ -1,4 +1,4 @@
-import { Builder } from '@nest-convoy/core';
+import { Builder } from '@nest-convoy/common';
 import { CommandType } from '@nest-convoy/commands/common';
 import { Type } from '@nestjs/common';
 

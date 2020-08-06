@@ -1,4 +1,4 @@
-import { Handlers } from '@nest-convoy/core';
+import { Handlers } from '@nest-convoy/common';
 
 import { DomainEventHandler } from './domain-event-handler';
 

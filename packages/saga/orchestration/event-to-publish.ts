@@ -1,5 +1,5 @@
 import { Type } from '@nestjs/common';
-import { DomainEvent } from '@nest-convoy/events/common';
+import { DomainEvent } from '@nest-convoy/events';
 
 export class EventToPublish {
   constructor(
