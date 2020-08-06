@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DispatcherFactory } from '@nest-convoy/core';
-import { NestConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
-import { DomainEventNameMapping } from '@nest-convoy/events/common';
+import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 
 import { DomainEventHandlers } from './domain-event-handlers';
 import { DomainEventDispatcher } from './domain-event-dispatcher';
@@ -9,10 +8,7 @@ import { DomainEventDispatcher } from './domain-event-dispatcher';
 @Injectable()
 export class DomainEventDispatcherFactory
   implements DispatcherFactory<DomainEventDispatcher, DomainEventHandlers> {
-  constructor(
-    private readonly messageConsumer: NestConvoyMessageConsumer,
-    private readonly domainEventNameMapping: DomainEventNameMapping,
-  ) {}
+  constructor(private readonly messageConsumer: ConvoyMessageConsumer) {}
 
   create(
     eventDispatcherId: string,
@@ -22,7 +18,6 @@ export class DomainEventDispatcherFactory
       eventDispatcherId,
       domainEventHandlers,
       this.messageConsumer,
-      this.domainEventNameMapping,
     );
   }
 }

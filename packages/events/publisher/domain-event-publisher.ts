@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Message } from '@nest-convoy/messaging/common';
 import {
   MessageBuilder,
-  NestConvoyMessageProducer,
+  ConvoyMessageProducer,
 } from '@nest-convoy/messaging/producer';
 import {
   DomainEvent,
@@ -13,45 +13,50 @@ import {
 @Injectable()
 export class DomainEventPublisher {
   constructor(
-    private readonly messageProducer: NestConvoyMessageProducer,
+    private readonly messageProducer: ConvoyMessageProducer,
     private readonly domainEventNameMapping: DomainEventNameMapping,
   ) {}
 
-  private makeMessageForDomainEvent(
-    aggregateType: string,
+  private createMessageForDomainEvent(
+    // aggregateType: string,
     aggregateId: string,
     headers: Map<string, string>,
     event: DomainEvent,
-    eventType: string,
   ): Message {
-    return MessageBuilder.withPayload(JSON.stringify(event))
-      .withExtraHeaders('', headers)
-      .withHeader(Message.PARTITION_ID, aggregateId)
-      .withHeader(EventMessageHeaders.AGGREGATE_ID, aggregateId)
-      .withHeader(EventMessageHeaders.AGGREGATE_TYPE, aggregateType)
-      .withHeader(EventMessageHeaders.EVENT_TYPE, eventType)
-      .build();
+    return (
+      MessageBuilder.withPayload(event)
+        .withExtraHeaders('', headers)
+        // .withHeader(Message.ID, aggregateId)
+        .withHeader(Message.PARTITION_ID, aggregateId)
+        .withHeader(EventMessageHeaders.AGGREGATE_ID, aggregateId)
+        // .withHeader(EventMessageHeaders.AGGREGATE_TYPE, event.constructor.name)
+        .withHeader(EventMessageHeaders.EVENT_TYPE, event.constructor.name)
+        .build()
+    );
   }
 
   async publish(
-    aggregateType: string,
-    aggregateId: string,
+    // aggregateType: string,
+    aggregateId: string | undefined,
     domainEvents: DomainEvent[],
     headers: Map<string, string> = new Map(),
   ): Promise<void> {
     for (const event of domainEvents) {
-      const eventType = this.domainEventNameMapping.eventToExternalEventType(
-        aggregateType,
-        event,
-      );
-      const domainEventMessage = this.makeMessageForDomainEvent(
-        aggregateType,
-        aggregateId,
+      // const eventType = this.domainEventNameMapping.eventToExternalEventType(
+      //   // aggregateType,
+      //   event,
+      // );
+      const domainEventMessage = this.createMessageForDomainEvent(
+        // aggregateType,
+        aggregateId || event.constructor.name,
         headers,
         event,
-        eventType,
       );
-      await this.messageProducer.send(aggregateType, domainEventMessage);
+      await this.messageProducer.send(
+        aggregateId || event.constructor.name,
+        // aggregateId,
+        /*aggregateType*/ domainEventMessage,
+      );
     }
   }
 }

@@ -1,4 +1,4 @@
-import { NestConvoyMessagingConsumerModule } from '@nest-convoy/messaging/consumer';
+import { ConvoyMessagingConsumerModule } from '@nest-convoy/messaging/consumer';
 import { DynamicModule, forwardRef, Global, Module } from '@nestjs/common';
 import {
   PARTIAL_KAFKA_CONSUMER_OPTIONS,
@@ -17,7 +17,7 @@ export class KafkaMessagingConsumerModule {
       module: KafkaMessagingConsumerModule,
       imports: [
         forwardRef(() =>
-          NestConvoyMessagingConsumerModule.register({
+          ConvoyMessagingConsumerModule.register({
             useExisting: KafkaMessageConsumer,
           }),
         ),
@@ -29,7 +29,7 @@ export class KafkaMessagingConsumerModule {
           useValue: options,
         },
       ],
-      exports: [NestConvoyMessagingConsumerModule, KafkaMessageConsumer],
+      exports: [ConvoyMessagingConsumerModule, KafkaMessageConsumer],
     };
   }
 }

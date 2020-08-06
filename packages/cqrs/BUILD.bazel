@@ -1,0 +1,18 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "cqrs",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    module_name = "@nest-convoy/cqrs",
+    deps = [
+        "//packages/commands",
+        "//packages/events",
+        "//packages/messaging",
+        "@npm//@nestjs/core",
+        "@npm//@nestjs/cqrs",
+        "@npm//uuid",
+    ],
+)

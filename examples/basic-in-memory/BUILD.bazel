@@ -1,19 +1,27 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 load("//tools:defaults.bzl", "nest_library")
 
 nest_library(
-    name = "basic-in-memory",
+    name = "lib",
     srcs = glob(
-        ["*.ts"],
+        ["**/*.ts"],
         exclude = ["*.spec.ts"],
     ),
     deps = [
-        "//packages/commands/common",
-        "//packages/commands/consumer",
-        "//packages/commands/producer",
+        "//packages/commands",
+        "//packages/cqrs",
+        "//packages/events",
         "//packages/in-memory",
-        "//packages/messaging/common",
-        "//packages/messaging/consumer",
-        "//packages/messaging/producer",
+        "//packages/messaging",
+        "//packages/messaging/broker",
         "@npm//@nestjs/core",
+        "@npm//@nestjs/microservices",
+        "@npm//@nestjs/platform-express",
     ],
+)
+
+nodejs_binary(
+    name = "basic-in-memory",
+    data = [":lib"],
+    entry_point = "main.ts",
 )

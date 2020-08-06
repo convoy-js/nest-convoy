@@ -1,4 +1,4 @@
-import { CommandType } from '@nest-convoy/commands/common';
+import { Command, CommandType } from '@nest-convoy/commands/common';
 import { Builder } from '@nest-convoy/core';
 import { Message } from '@nest-convoy/messaging/common';
 
@@ -7,10 +7,10 @@ import { CommandHandler, CommandHandlerInvoke } from './command-handler';
 import { CommandHandlers } from './command-handlers';
 import { CommandMessage } from './command-message';
 
-export type CommandMessageHandler<C> = (
+export type CommandMessageHandler<C extends Command = any> = (
   cm: CommandMessage<C>,
-  pvs?: Record<string, string>,
-) => Promise<Message[] | void> | Message[] | void;
+  pvs?: Map<string, string>,
+) => Promise<Message[] | any> | Message[] | any;
 
 export class CommandHandlersBuilder implements Builder<CommandHandlers> {
   private readonly handlers: CommandHandler[] = [];
@@ -22,19 +22,19 @@ export class CommandHandlersBuilder implements Builder<CommandHandlers> {
   }
 
   private wrapMessageHandler(
-    handle: CommandHandlerInvoke,
+    handle: CommandMessageHandler,
   ): CommandHandlerInvoke {
     return async (cm: CommandMessage): Promise<Message[]> => {
       try {
         const result = await handle(cm);
-        return result ?? [withSuccess()];
+        return result ? [result] : [withSuccess()];
       } catch (err) {
         return [withFailure(err)];
       }
     };
   }
 
-  onMessage<C>(command: CommandType, handler: CommandMessageHandler<C>): this {
+  onMessage(command: CommandType, handler: CommandMessageHandler): this {
     this.handlers.push(
       new CommandHandler(
         this.channel,

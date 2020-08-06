@@ -1,25 +1,25 @@
 import { DynamicModule, Global, Module, Provider, Type } from '@nestjs/common';
-import { MessagingCommonModule } from '@nest-convoy/messaging/common';
+import { ConvoyMessagingCommonModule } from '@nest-convoy/messaging/common';
 
-import { NestConvoyMessageConsumer, MessageConsumer } from './message-consumer';
+import { ConvoyMessageConsumer, MessageConsumer } from './message-consumer';
 
 @Global()
 @Module({})
-export class NestConvoyMessagingConsumerModule {
+export class ConvoyMessagingConsumerModule {
   static register(
     provider: Omit<Provider<MessageConsumer>, 'provide'>,
   ): DynamicModule {
     return {
-      module: NestConvoyMessagingConsumerModule,
-      imports: [MessagingCommonModule],
+      module: ConvoyMessagingConsumerModule,
+      imports: [ConvoyMessagingCommonModule],
       providers: [
-        NestConvoyMessageConsumer,
+        ConvoyMessageConsumer,
         {
           provide: MessageConsumer,
           ...provider,
         } as Provider<MessageConsumer>,
       ],
-      exports: [NestConvoyMessageConsumer],
+      exports: [ConvoyMessageConsumer],
     };
   }
 }

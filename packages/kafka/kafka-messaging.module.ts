@@ -3,19 +3,17 @@ import { DynamicModule, forwardRef, Global, Module } from '@nestjs/common';
 import {
   KAFKA_CLIENT_OPTIONS,
   KafkaClient,
-  NestConvoyKafkaMessagingModuleOptions,
+  ConvoyKafkaMessagingModuleOptions,
 } from '@nest-convoy/kafka/common';
 
 import { KafkaMessagingConsumerModule } from './messaging/consumer';
 
 @Global()
 @Module({})
-export class NestConvoyKafkaMessagingModule {
-  static register(
-    options: NestConvoyKafkaMessagingModuleOptions,
-  ): DynamicModule {
+export class ConvoyKafkaMessagingModule {
+  static register(options: ConvoyKafkaMessagingModuleOptions): DynamicModule {
     return {
-      module: NestConvoyKafkaMessagingModule,
+      module: ConvoyKafkaMessagingModule,
       imports: [
         forwardRef(() =>
           KafkaMessagingConsumerModule.register(options.consumer),

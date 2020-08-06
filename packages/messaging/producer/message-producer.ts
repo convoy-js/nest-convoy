@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { RuntimeException } from '@nest-convoy/core';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  ChannelMapping,
+  ConvoyChannelMapping,
   Message,
   MessageInterceptor,
   NEST_CONVOY_MESSAGE_INTERCEPTORS,
@@ -17,13 +17,12 @@ export abstract class MessageProducer {
 }
 
 @Injectable()
-export class NestConvoyMessageProducer {
+export class ConvoyMessageProducer {
   private readonly logger = new Logger(this.constructor.name, true);
 
   constructor(
-    private readonly channelMapping: ChannelMapping,
+    private readonly channelMapping: ConvoyChannelMapping,
     private readonly target: MessageProducer,
-    @Optional()
     @Inject(NEST_CONVOY_MESSAGE_INTERCEPTORS)
     private readonly messageInterceptors: MessageInterceptor[],
   ) {}

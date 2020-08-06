@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DispatcherFactory } from '@nest-convoy/core';
-import { NestConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
-import { NestConvoyMessageProducer } from '@nest-convoy/messaging/producer';
+import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
+import { ConvoyMessageProducer } from '@nest-convoy/messaging/producer';
 
 import { CommandDispatcher } from './command-dispatcher';
 import { CommandHandlers } from './command-handlers';
@@ -10,8 +10,8 @@ import { CommandHandlers } from './command-handlers';
 export class CommandDispatcherFactory
   implements DispatcherFactory<CommandDispatcher, CommandHandlers> {
   constructor(
-    private readonly messageConsumer: NestConvoyMessageConsumer,
-    private readonly messageProducer: NestConvoyMessageProducer,
+    private readonly messageConsumer: ConvoyMessageConsumer,
+    private readonly messageProducer: ConvoyMessageProducer,
   ) {}
 
   create(

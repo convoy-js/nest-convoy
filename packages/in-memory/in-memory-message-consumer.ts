@@ -32,11 +32,17 @@ export class InMemoryMessageConsumer extends MessageConsumer {
     const destination = message.getRequiredHeader(Message.DESTINATION);
     const handlers = this.subscriptions.get(destination) || [];
     this.logger.log(
-      `Sending message ${message} to channel ${destination} that has ${handlers.length} subscriptions`,
+      `Sending message ${JSON.stringify(
+        message,
+      )} to channel ${destination} that has ${handlers.length} subscriptions`,
     );
     await this.dispatchMessageToHandlers(destination, message, handlers);
     this.logger.log(
-      `Sending message ${message} to wildcard channel ${destination} that has ${handlers.length} subscriptions`,
+      `Sending message ${JSON.stringify(
+        message,
+      )} to wildcard channel ${destination} that has ${
+        handlers.length
+      } subscriptions`,
     );
     await this.dispatchMessageToHandlers(destination, message, [
       ...this.wildcardSubscriptions,
@@ -48,10 +54,6 @@ export class InMemoryMessageConsumer extends MessageConsumer {
     channels: string[],
     handler: MessageHandler,
   ): MessageSubscription {
-    if (channels.includes('*')) {
-      channels = channels.filter(channel => channel !== '*');
-    }
-
     channels.forEach(channel => {
       if (channel === '*') {
         this.logger.log(`Subscribing ${subscriberId} to wildcard channels`);
@@ -63,7 +65,9 @@ export class InMemoryMessageConsumer extends MessageConsumer {
     });
 
     return () => {
-      this.logger.log('Closing in-memory consumer');
+      this.logger.log(
+        'Closing in-memory consumer for subscriber ' + subscriberId,
+      );
       this.wildcardSubscriptions.clear();
       this.subscriptions.clear();
       this.logger.log('Closed in-memory consumer');

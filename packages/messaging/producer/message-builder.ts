@@ -16,7 +16,9 @@ export class MessageBuilder {
     return new MessageBuilder(message);
   }
 
-  static withPayload(payload: string): MessageBuilder {
+  static withPayload(payload: string | object): MessageBuilder {
+    if (typeof payload !== 'string') payload = JSON.stringify(payload);
+
     return new MessageBuilder(payload);
   }
 

@@ -1,5 +1,5 @@
 import { Consumer } from 'kafkajs';
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import {
   MessageConsumer,
@@ -16,8 +16,7 @@ import { KafkaMessage } from './kafka-message';
 import { SwimlaneBasedDispatcher } from './swimlane';
 
 @Injectable()
-export class KafkaMessageConsumer extends MessageConsumer
-  implements OnApplicationShutdown {
+export class KafkaMessageConsumer extends MessageConsumer {
   readonly id = uuidv4();
 
   private readonly consumers = new Set<Consumer>();
@@ -83,9 +82,5 @@ export class KafkaMessageConsumer extends MessageConsumer
     for (const consumer of this.consumers.values()) {
       await consumer.disconnect();
     }
-  }
-
-  async onApplicationShutdown(signal?: string): Promise<void> {
-    await this.close();
   }
 }

@@ -1,9 +1,8 @@
 import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
-import { Consumer } from '@nest-convoy/core';
 
 export type MessageHeaders = Map<string, string>;
 
-export type MessageHandler = Consumer<Message, void>;
+export type MessageHandler = (data: Message) => Promise<void> | void;
 
 export class Message {
   static ID = 'id';
@@ -19,6 +18,10 @@ export class Message {
 
   setPayload(payload: string): void {
     this.payload = payload;
+  }
+
+  parsePayload<T = any>(): T {
+    return JSON.parse(this.payload);
   }
 
   getPayload(): string {

@@ -1,12 +1,8 @@
 import { Logger } from '@nestjs/common';
-import { NestConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
+import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message } from '@nest-convoy/messaging/common';
 import { Dispatcher } from '@nest-convoy/core';
-import {
-  DomainEvent,
-  DomainEventNameMapping,
-  EventMessageHeaders,
-} from '@nest-convoy/events/common';
+import { DomainEvent, EventMessageHeaders } from '@nest-convoy/events/common';
 
 import { DomainEventHandlers } from './domain-event-handlers';
 import { DomainEventEnvelope } from './domain-event-envelope';
@@ -17,44 +13,41 @@ export class DomainEventDispatcher implements Dispatcher {
   constructor(
     private readonly eventDispatcherId: string,
     private readonly domainEventHandlers: DomainEventHandlers,
-    private readonly messageConsumer: NestConvoyMessageConsumer,
-    private readonly domainEventNameMapping: DomainEventNameMapping,
+    private readonly messageConsumer: ConvoyMessageConsumer,
   ) {}
 
-  subscribe(): void {
-    this.messageConsumer.subscribe(
+  async subscribe(): Promise<void> {
+    await this.messageConsumer.subscribe(
       this.eventDispatcherId,
       this.domainEventHandlers.getAggregateTypesAndEvents(),
       this.handleMessage.bind(this),
+      true,
     );
   }
 
   async handleMessage(message: Message): Promise<void> {
-    const aggregateType = message.getRequiredHeader(
-      EventMessageHeaders.AGGREGATE_TYPE,
-    );
-
-    const eventType = message.getRequiredHeader(EventMessageHeaders.EVENT_TYPE);
-    const eventName = this.domainEventNameMapping.externalEventTypeToEventClassName(
-      aggregateType,
-      eventType,
-    );
-    message.setHeader(EventMessageHeaders.EVENT_TYPE, eventName);
+    // const aggregateType = message.getRequiredHeader(
+    //   EventMessageHeaders.AGGREGATE_TYPE,
+    // );
 
     const handler = this.domainEventHandlers.findTargetMethod(message);
     if (!handler) return;
 
-    const param = {} as DomainEvent;
+    // TODO: Provide a list of registered events and find it by event type
+    const event = Object.assign(
+      new handler.event(),
+      message.parsePayload<DomainEvent>(),
+    );
     const aggregateId = message.getRequiredHeader(
       EventMessageHeaders.AGGREGATE_ID,
     );
     const messageId = message.getRequiredHeader(Message.ID);
     const dee = new DomainEventEnvelope(
       message,
-      aggregateType,
+      // aggregateType,
       aggregateId,
       messageId,
-      param,
+      event,
     );
 
     await handler.invoke(dee);

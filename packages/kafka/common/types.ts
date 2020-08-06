@@ -1,6 +1,6 @@
 import { ConsumerConfig, KafkaConfig, ProducerConfig } from 'kafkajs';
 
-export interface NestConvoyKafkaMessagingModuleOptions {
+export interface ConvoyKafkaMessagingModuleOptions {
   client: KafkaConfig;
   consumer?: KafkaMessagingConsumerModuleOptions;
   producer?: ProducerConfig;

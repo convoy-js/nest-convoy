@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { NestConvoyMessagingProducerModule } from '@nest-convoy/messaging/producer';
+import { ConvoyMessagingProducerModule } from '@nest-convoy/messaging/producer';
 
-import { NestConvoyEventsCommonModule } from '@nest-convoy/events/common';
+import { ConvoyEventsCommonModule } from '@nest-convoy/events/common';
 import { DomainEventPublisher } from './domain-event-publisher';
 
 @Module({
-  imports: [NestConvoyEventsCommonModule /*NestConvoyMessagingProducerModule*/],
+  imports: [ConvoyEventsCommonModule /*ConvoyMessagingProducerModule*/],
   providers: [DomainEventPublisher],
   exports: [DomainEventPublisher],
 })
-export class NestConvoyEventsPublisherModule {}
+export class ConvoyEventsPublisherModule {}

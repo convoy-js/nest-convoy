@@ -1,20 +1,26 @@
 import { Module } from '@nestjs/common';
-import { NestConvoyEventsPublisherModule } from '@nest-convoy/events/publisher';
-import { NestConvoyEventsSubscriberModule } from '@nest-convoy/events/subscriber';
-import { NestConvoyCommandsConsumerModule } from '@nest-convoy/commands/consumer';
-import { NestConvoyCommandsProducerModule } from '@nest-convoy/commands/producer';
-import { NestConvoyInMemoryMessagingModule } from '@nest-convoy/in-memory/in-memory-messaging.module';
+// import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
+import { ConvoyInMemoryMessagingModule } from '@nest-convoy/in-memory';
+import { ConvoyCqrsModule } from '@nest-convoy/cqrs';
+// import { Transport } from '@nestjs/microservices';
 
-import { TestCommandHandler } from './test-command-handler';
+import { TestCommandsModule } from './commands/test-commands.module';
+import { TestEventsModule } from './events/test-events.module';
 
 @Module({
   imports: [
-    NestConvoyInMemoryMessagingModule.register(),
-    NestConvoyEventsPublisherModule,
-    NestConvoyEventsSubscriberModule,
-    NestConvoyCommandsConsumerModule,
-    NestConvoyCommandsProducerModule,
+    ConvoyInMemoryMessagingModule.register(),
+    // ConvoyMessagingBrokerModule.register(
+    //   {
+    //     transport: Transport.TCP,
+    //   },
+    //   {
+    //     transport: Transport.TCP,
+    //   },
+    // ),
+    ConvoyCqrsModule,
+    TestCommandsModule,
+    TestEventsModule,
   ],
-  providers: [TestCommandHandler],
 })
 export class AppModule {}

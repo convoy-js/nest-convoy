@@ -13,7 +13,7 @@ export function withReply<T extends Outcome>(
   reply: T,
   outcome: CommandReplyOutcome,
 ): Message {
-  return MessageBuilder.withPayload(reply.toString())
+  return MessageBuilder.withPayload(reply)
     .withHeader(ReplyMessageHeaders.REPLY_OUTCOME, outcome)
     .withHeader(ReplyMessageHeaders.REPLY_TYPE, reply.constructor.name)
     .build();
@@ -30,7 +30,7 @@ export function withFailure<T extends Outcome>(reply?: T) {
 @Injectable()
 export class CommandHandlerReplyBuilder {
   with<T extends Outcome>(reply: T, outcome: CommandReplyOutcome): Message {
-    return MessageBuilder.withPayload(reply.toString())
+    return MessageBuilder.withPayload(reply)
       .withHeader(ReplyMessageHeaders.REPLY_OUTCOME, outcome)
       .withHeader(ReplyMessageHeaders.REPLY_TYPE, reply.constructor.name)
       .build();

@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "messaging",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    module_name = "@nest-convoy/messaging",
+    deps = [
+        "//packages/messaging/consumer",
+        "//packages/messaging/common",
+        "//packages/messaging/producer",
+    ],
+)

@@ -1,10 +1,10 @@
 import { Logger } from '@nestjs/common';
-import { NestConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
+import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 import { Dispatcher, RuntimeException } from '@nest-convoy/core';
 import {
   MessageBuilder,
-  NestConvoyMessageProducer,
+  ConvoyMessageProducer,
 } from '@nest-convoy/messaging/producer';
 import {
   CommandMessageHeaders,
@@ -22,8 +22,8 @@ export class CommandDispatcher implements Dispatcher {
   constructor(
     protected readonly commandDispatcherId: string,
     protected readonly commandHandlers: CommandHandlers,
-    protected readonly messageConsumer: NestConvoyMessageConsumer,
-    protected readonly messageProducer: NestConvoyMessageProducer,
+    protected readonly messageConsumer: ConvoyMessageConsumer,
+    protected readonly messageProducer: ConvoyMessageProducer,
   ) {}
 
   async subscribe(): Promise<void> {
@@ -35,37 +35,38 @@ export class CommandDispatcher implements Dispatcher {
   }
 
   async handleMessage(message: Message): Promise<void> {
-    const possibleCommandHandler = this.commandHandlers.findTargetMethod(
-      message,
-    );
-    if (!possibleCommandHandler) {
+    const commandHandler = this.commandHandlers.findTargetMethod(message);
+    if (!commandHandler) {
       throw new RuntimeException(`No method for ${message.id}`);
     }
 
-    const correlationHeaders = this.filterCorrelationHeaders(
-      message.getHeaders(),
-    );
+    const correlationHeaders = message.getHeaders();
+    // const correlationHeaders = this.filterCorrelationHeaders(
+    //   message.getHeaders(),
+    // );
 
-    const defaultReplyChannel = message.getHeader(
+    const defaultReplyChannel = message.getRequiredHeader(
       CommandMessageHeaders.REPLY_TO,
-    );
-
-    const payload = this.convertPayload(
-      possibleCommandHandler,
-      message.getPayload(),
     );
 
     let replies: Message[];
     try {
+      const command = Object.assign(
+        new commandHandler.command(),
+        message.parsePayload(),
+      );
+
       const commandMessage = new CommandMessage(
         message.id,
-        payload,
+        command,
         correlationHeaders,
         message,
       );
-      replies = await possibleCommandHandler.invoke(commandMessage);
+      replies = await commandHandler.invoke(commandMessage);
       this.logger.debug(
-        `Generated replies ${this.commandDispatcherId} ${message.constructor.name} ${replies}`,
+        `Generated replies ${this.commandDispatcherId} ${
+          message.constructor.name
+        } ${JSON.stringify(replies)}`,
       );
     } catch (e) {
       this.logger.error(
@@ -74,6 +75,7 @@ export class CommandDispatcher implements Dispatcher {
       await this.handleException(message, defaultReplyChannel);
       return;
     }
+
     if (Array.isArray(replies)) {
       await this.sendReplies(correlationHeaders, replies, defaultReplyChannel);
     } else {
@@ -84,17 +86,16 @@ export class CommandDispatcher implements Dispatcher {
   private async handleException(
     message: Message,
     // commandHandler: CommandHandler,
-    defaultReplyChannel?: string,
+    defaultReplyChannel: string,
   ): Promise<void> {
-    const reply = MessageBuilder.withPayload(new Failure().toString()).build();
-    const correlationHeaders = this.filterCorrelationHeaders(
-      message.getHeaders(),
-    );
+    const reply = MessageBuilder.withPayload(
+      JSON.stringify(new Failure()),
+    ).build();
+    const correlationHeaders = message.getHeaders();
+    // const correlationHeaders = this.filterCorrelationHeaders(
+    //   message.getHeaders(),
+    // );
     await this.sendReplies(correlationHeaders, [reply], defaultReplyChannel);
-  }
-
-  private convertPayload(ch: CommandHandler, payload: string): any {
-    return JSON.parse(payload);
   }
 
   private async sendReplies(
@@ -106,6 +107,7 @@ export class CommandDispatcher implements Dispatcher {
       const message = MessageBuilder.withMessage(reply)
         .withExtraHeaders('', correlationHeaders)
         .build();
+
       await this.messageProducer.send(defaultReplyChannel, message);
     }
   }

@@ -1,5 +1,6 @@
 import { DomainEvent } from '@nest-convoy/events/common';
 import { Builder } from '@nest-convoy/core';
+import { Type } from '@nestjs/common';
 
 import { DomainEventHandlers } from './domain-event-handlers';
 import {
@@ -11,18 +12,18 @@ export class DomainEventHandlersBuilder
   implements Builder<DomainEventHandlers> {
   private readonly handlers: DomainEventHandler[] = [];
 
-  constructor(private aggregateType: string) {}
+  // constructor(private aggregateType: string) {}
 
   static forAggregateType(aggregateType: string): DomainEventHandlersBuilder {
-    return new DomainEventHandlersBuilder(aggregateType);
+    return new DomainEventHandlersBuilder(/*aggregateType*/);
   }
 
   onEvent<E extends DomainEvent>(
-    event: E,
+    event: Type<E>,
     handler: DomainEventHandlerInvoke<E>,
   ): this {
     const eventHandler = new DomainEventHandler(
-      this.aggregateType,
+      // this.aggregateType,
       event,
       handler,
     );
@@ -31,7 +32,7 @@ export class DomainEventHandlersBuilder
   }
 
   andForAggregateType(aggregateType: string): this {
-    this.aggregateType = aggregateType;
+    // this.aggregateType = aggregateType;
     return this;
   }
 

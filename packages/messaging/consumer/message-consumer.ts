@@ -1,7 +1,12 @@
-import { Injectable, Logger, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  Optional,
+  OnApplicationShutdown,
+} from '@nestjs/common';
 import { Consumer } from '@nest-convoy/core';
 import {
-  ChannelMapping,
+  ConvoyChannelMapping,
   Message,
   MessageHandler,
 } from '@nest-convoy/messaging/common';
@@ -15,15 +20,18 @@ export abstract class MessageConsumer {
     subscriberId: string,
     channels: string[],
     handler: Consumer<Partial<Message>>,
+    isEventHandler?: boolean,
   ): MessageSubscription;
-  async close(): Promise<void> {}
+  close(): Promise<void> | void {}
 }
 
 // @Injectable()
 // export class KafkaMessageConsumer implements MessageConsumer {}
 
 @Injectable()
-export class NestConvoyMessageConsumer implements MessageConsumer {
+export class ConvoyMessageConsumer
+  implements MessageConsumer, OnApplicationShutdown {
+  private readonly subs = new Map<string, any>();
   private readonly logger = new Logger(this.constructor.name);
 
   get id(): string {
@@ -31,28 +39,40 @@ export class NestConvoyMessageConsumer implements MessageConsumer {
   }
 
   constructor(
-    private readonly channelMapping: ChannelMapping,
+    private readonly channelMapping: ConvoyChannelMapping,
     private readonly target: MessageConsumer,
   ) {
     // super();
   }
 
-  subscribe(
+  async subscribe(
     subscriberId: string,
     channels: string[],
     handler: MessageHandler,
+    isEventHandler?: boolean,
   ): MessageSubscription {
-    // this.logger.debug(
-    //   `Subscribing: subscriberId = ${subscriberId}, channels = ${channels}`,
-    // );
-
+    this.logger.debug(`Subscribing ${subscriberId} to channels ${channels}`);
     const transformedChannels = channels.map(channel =>
       this.channelMapping.transform(channel),
     );
-    return this.target.subscribe(subscriberId, transformedChannels, handler);
+    const sub = await this.target.subscribe(
+      subscriberId,
+      transformedChannels,
+      handler,
+      isEventHandler,
+    );
+    this.subs.set(subscriberId, sub);
+    return sub;
   }
 
   async close(): Promise<void> {
+    for (const unsubscribe of this.subs.values()) {
+      await unsubscribe();
+    }
     await this.target.close();
+  }
+
+  async onApplicationShutdown(signal?: string): Promise<void> {
+    await this.close();
   }
 }

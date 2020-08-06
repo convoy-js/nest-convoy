@@ -1,5 +1,5 @@
-import { NestConvoyMessagingConsumerModule } from '@nest-convoy/messaging/consumer';
-import { NestConvoyMessagingProducerModule } from '@nest-convoy/messaging/producer';
+import { ConvoyMessagingConsumerModule } from '@nest-convoy/messaging/consumer';
+import { ConvoyMessagingProducerModule } from '@nest-convoy/messaging/producer';
 import { DynamicModule, Global, Module } from '@nestjs/common';
 
 import { InMemoryMessageProducer } from './in-memory-message-producer';
@@ -7,22 +7,22 @@ import { InMemoryMessageConsumer } from './in-memory-message-consumer';
 
 @Global()
 @Module({})
-export class NestConvoyInMemoryMessagingModule {
+export class ConvoyInMemoryMessagingModule {
   static register(): DynamicModule {
     return {
-      module: NestConvoyInMemoryMessagingModule,
+      module: ConvoyInMemoryMessagingModule,
       imports: [
-        NestConvoyMessagingConsumerModule.register({
+        ConvoyMessagingConsumerModule.register({
           useExisting: InMemoryMessageConsumer,
         }),
-        NestConvoyMessagingProducerModule.register({
+        ConvoyMessagingProducerModule.register({
           useExisting: InMemoryMessageProducer,
         }),
       ],
       providers: [InMemoryMessageConsumer, InMemoryMessageProducer],
       exports: [
-        NestConvoyMessagingConsumerModule,
-        NestConvoyMessagingProducerModule,
+        ConvoyMessagingConsumerModule,
+        ConvoyMessagingProducerModule,
         InMemoryMessageConsumer,
         InMemoryMessageProducer,
       ],

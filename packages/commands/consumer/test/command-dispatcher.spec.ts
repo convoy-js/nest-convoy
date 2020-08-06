@@ -2,31 +2,28 @@ import { Test } from '@nestjs/testing';
 import { Message } from '@nest-convoy/messaging/common';
 import { Command } from '@nest-convoy/commands/common';
 import {
-  NestConvoyCommandsProducerModule,
-  NestConvoyCommandProducer,
+  ConvoyCommandsProducerModule,
+  ConvoyCommandProducer,
 } from '@nest-convoy/commands/producer';
 import {
   CommandDispatcher,
   CommandDispatcherFactory,
   CommandHandler,
   CommandHandlers,
-  NestConvoyCommandsConsumerModule,
+  ConvoyCommandsConsumerModule,
 } from '@nest-convoy/commands/consumer';
 
 describe('CommandDispatcher', () => {
   let commandDispatcherFactory: CommandDispatcherFactory;
-  let commandProducer: NestConvoyCommandProducer;
+  let commandProducer: ConvoyCommandProducer;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [
-        NestConvoyCommandsConsumerModule,
-        NestConvoyCommandsProducerModule,
-      ],
+      imports: [ConvoyCommandsConsumerModule, ConvoyCommandsProducerModule],
     }).compile();
 
     commandDispatcherFactory = moduleRef.get(CommandDispatcherFactory);
-    commandProducer = moduleRef.get(NestConvoyCommandProducer);
+    commandProducer = moduleRef.get(ConvoyCommandProducer);
   });
 
   it('handleMessage', async () => {

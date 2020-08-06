@@ -6,4 +6,4 @@ import { DomainEventNameMapping } from './domain-event-name-mapping';
   providers: [DomainEventNameMapping],
   exports: [DomainEventNameMapping],
 })
-export class NestConvoyEventsCommonModule {}
+export class ConvoyEventsCommonModule {}
