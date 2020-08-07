@@ -13,7 +13,8 @@ import { MicroserviceProxy } from './microservice-proxy';
 import {
   createMicroserviceMessage,
   fromMicroserviceMessage,
-} from '@nest-convoy/messaging/broker/microservice-message';
+  MicroserviceMessage,
+} from './microservice-message';
 
 @Injectable()
 export class MicroserviceMessageConsumer extends MessageConsumer {
@@ -26,10 +27,10 @@ export class MicroserviceMessageConsumer extends MessageConsumer {
   async subscribe(
     subscriberId: string,
     channels: string[],
-    handler: Consumer<Message, CommandMessage | Message>,
+    handler: Consumer<Message, CommandMessage | Message | void>,
     isEventHandler?: boolean,
   ): MessageSubscription {
-    const callback = async (data: any, ctx: any) => {
+    const callback = async (data: MicroserviceMessage, ctx: any) => {
       const handlerMessage = fromMicroserviceMessage(data);
       // TODO: Error handling
       let responseMessage = await handler(handlerMessage, ctx);
@@ -49,9 +50,8 @@ export class MicroserviceMessageConsumer extends MessageConsumer {
     });
 
     return () => {
-      channels.forEach(channel =>
-        this.proxy.server.getHandlers().delete(channel),
-      );
+      const handlers = this.proxy.server.getHandlers();
+      channels.forEach(channel => handlers.delete(channel));
     };
   }
 

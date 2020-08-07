@@ -1,0 +1,11 @@
+import { Column, Entity } from 'typeorm';
+
+import { Money } from '../../common/money';
+
+export class OrderDetails {
+  @Column()
+  customerId: number;
+
+  @Column(() => Money)
+  orderTotal: Money;
+}

@@ -4,6 +4,7 @@ import {
   Message,
   MessageBuilder,
   ConvoyMessageConsumer,
+  MessageHeaders,
 } from '@nest-convoy/messaging';
 import {
   CommandMessageHeaders,
@@ -15,14 +16,22 @@ import {
 } from '@nest-convoy/commands';
 import {
   LockTarget,
+  SagaCommandHeaders,
   SagaLockManager,
   SagaReplyHeaders,
+  SagaUnlockCommand,
 } from '@nest-convoy/saga/common';
 
 import { SagaInstance } from './saga-instance';
 import { SagaInstanceRepository } from './saga-instance-repository';
 import { SagaCommandProducer } from './saga-command-producer';
-import { OnStarting, Saga } from './saga';
+import {
+  OnSagaCompletedSuccessfully,
+  OnSagaRolledBack,
+  OnStarting,
+  Saga,
+  SagaLifecycleHooks,
+} from './saga';
 import { SagaDefinition } from './saga-definition';
 import { SagaActions } from './saga-actions';
 import { DestinationAndResource } from './destination-and-resource';
@@ -54,7 +63,7 @@ export class SagaManger<Data> implements SagaManager<Data> {
   }
 
   constructor(
-    private readonly saga: Saga<Data>,
+    private readonly saga: Saga<Data> & SagaLifecycleHooks<Data>,
     private readonly sagaInstanceRepository: SagaInstanceRepository,
     private readonly commandProducer: ConvoyCommandProducer,
     private readonly messageConsumer: ConvoyMessageConsumer,
@@ -73,7 +82,7 @@ export class SagaManger<Data> implements SagaManager<Data> {
   }
 
   private createFailureMessage(): Message {
-    return MessageBuilder.withPayload('{}')
+    return MessageBuilder.withPayload()
       .withHeader(
         ReplyMessageHeaders.REPLY_OUTCOME,
         CommandReplyOutcome.FAILURE,
@@ -83,7 +92,7 @@ export class SagaManger<Data> implements SagaManager<Data> {
   }
 
   private createSuccessMessage(): Message {
-    return MessageBuilder.withPayload('{}')
+    return MessageBuilder.withPayload()
       .withHeader(
         ReplyMessageHeaders.REPLY_OUTCOME,
         CommandReplyOutcome.SUCCESS,
@@ -100,6 +109,35 @@ export class SagaManger<Data> implements SagaManager<Data> {
       sagaInstance.stateName = actions.updatedState;
       sagaInstance.endState = actions.endState;
       sagaInstance.compensating = actions.compensating;
+    }
+  }
+
+  private async performEndStateActions(
+    sagaId: string,
+    sagaInstance: SagaInstance<Data>,
+    compensating: boolean,
+    sagaData: Data,
+  ): Promise<void> {
+    for (const dr of sagaInstance.destinationsAndResources) {
+      const headers: MessageHeaders = new Map();
+      headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
+      headers.set(SagaCommandHeaders.SAGA_TYPE, this.sagaType);
+      await this.commandProducer.send(
+        dr.destination,
+        new SagaUnlockCommand(),
+        this.sagaReplyChannel,
+        headers,
+        dr.resource,
+      );
+    }
+
+    if (compensating) {
+      await this.saga.onSagaRolledBack?.(sagaInstance.sagaId, sagaData);
+    } else {
+      await this.saga.onSagaCompletedSuccessfully?.(
+        sagaInstance.sagaId,
+        sagaData,
+      );
     }
   }
 
@@ -127,6 +165,17 @@ export class SagaManger<Data> implements SagaManager<Data> {
         this.updateState(sagaInstance, actions);
 
         sagaInstance.sagaData = actions.updatedSagaData || sagaData;
+
+        if (actions.endState) {
+          await this.performEndStateActions(
+            sagaInstance.sagaId,
+            sagaInstance,
+            actions.compensating,
+            sagaData,
+          );
+        }
+
+        await this.sagaInstanceRepository.update(sagaInstance);
 
         if (!actions.local) break;
 
@@ -222,7 +271,7 @@ export class SagaManger<Data> implements SagaManager<Data> {
 
     sagaInstance = await this.sagaInstanceRepository.save(sagaInstance);
 
-    await (this.saga as OnStarting<any>).onStarting?.(
+    await (this.saga as OnStarting<Data>).onStarting?.(
       sagaInstance.sagaId,
       sagaData,
     );

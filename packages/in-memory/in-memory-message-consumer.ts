@@ -31,13 +31,13 @@ export class InMemoryMessageConsumer extends MessageConsumer {
   async dispatchMessage(message: Message): Promise<void> {
     const destination = message.getRequiredHeader(Message.DESTINATION);
     const handlers = this.subscriptions.get(destination) || [];
-    this.logger.log(
+    this.logger.debug(
       `Sending message ${JSON.stringify(
         message,
       )} to channel ${destination} that has ${handlers.length} subscriptions`,
     );
     await this.dispatchMessageToHandlers(destination, message, handlers);
-    this.logger.log(
+    this.logger.debug(
       `Sending message ${JSON.stringify(
         message,
       )} to wildcard channel ${destination} that has ${
@@ -56,21 +56,23 @@ export class InMemoryMessageConsumer extends MessageConsumer {
   ): MessageSubscription {
     channels.forEach(channel => {
       if (channel === '*') {
-        this.logger.log(`Subscribing ${subscriberId} to wildcard channels`);
+        this.logger.debug(`Subscribing ${subscriberId} to wildcard channels`);
         this.wildcardSubscriptions.add(handler);
       } else {
-        this.logger.log(`Subscribing ${subscriberId} to channels ${channels}`);
+        this.logger.debug(
+          `Subscribing ${subscriberId} to channels ${channels}`,
+        );
         this.addHandlerToChannel(channel, handler);
       }
     });
 
     return () => {
-      this.logger.log(
+      this.logger.debug(
         'Closing in-memory consumer for subscriber ' + subscriberId,
       );
       this.wildcardSubscriptions.clear();
       this.subscriptions.clear();
-      this.logger.log('Closed in-memory consumer');
+      this.logger.debug('Closed in-memory consumer');
     };
   }
 }

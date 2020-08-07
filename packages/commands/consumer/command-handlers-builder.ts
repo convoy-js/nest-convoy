@@ -27,7 +27,7 @@ export class CommandHandlersBuilder implements Builder<CommandHandlers> {
     return async (cm: CommandMessage): Promise<Message[]> => {
       try {
         const reply = await handle(cm);
-        return [withSuccess(reply)];
+        return reply instanceof Message ? [reply] : [withSuccess(reply)];
       } catch (err) {
         return [withFailure(err)];
       }

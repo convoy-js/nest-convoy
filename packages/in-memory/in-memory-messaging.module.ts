@@ -8,7 +8,7 @@ import { InMemoryMessageConsumer } from './in-memory-message-consumer';
 @Global()
 @Module({})
 export class ConvoyInMemoryMessagingModule {
-  static register(): DynamicModule {
+  static forRoot(): DynamicModule {
     return {
       module: ConvoyInMemoryMessagingModule,
       imports: [

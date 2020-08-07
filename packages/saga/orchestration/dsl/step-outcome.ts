@@ -25,6 +25,7 @@ export class LocalStepOutcome implements StepOutcome {
       commands: CommandWithDestination[],
     ) => SagaActionsBuilder<Data>,
   ): void {
+    console.log(arguments);
     localConsumer(this.localOutcome);
   }
 }
@@ -40,6 +41,7 @@ export class RemoteStepOutcome implements StepOutcome {
       commands: CommandWithDestination[],
     ) => SagaActionsBuilder<Data>,
   ): void {
+    console.log(arguments);
     commandsConsumer(this.commandsToSend);
   }
 }

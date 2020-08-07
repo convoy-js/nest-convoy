@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { RuntimeException } from '@nest-convoy/common';
 
 import { SagaStashEntity, SagaLockEntity } from './entities';
-import { NEST_SAGA_CONNECTION } from './tokens';
+import { NEST_CONVOY_SAGA_CONNECTION } from './tokens';
 
 @Injectable()
 export abstract class SagaLockManager {
@@ -29,9 +29,9 @@ export abstract class SagaLockManager {
 @Injectable()
 export class SagaDatabaseLockManager extends SagaLockManager {
   constructor(
-    @InjectRepository(SagaLockEntity, NEST_SAGA_CONNECTION)
+    @InjectRepository(SagaLockEntity, NEST_CONVOY_SAGA_CONNECTION)
     private readonly sagaLockRepository: Repository<SagaLockEntity>,
-    @InjectRepository(SagaStashEntity, NEST_SAGA_CONNECTION)
+    @InjectRepository(SagaStashEntity, NEST_CONVOY_SAGA_CONNECTION)
     private readonly sagaStashRepository: Repository<SagaStashEntity>,
   ) {
     super();

@@ -18,10 +18,10 @@ export function withReply<T extends Outcome>(
     .build();
 }
 
-export function withSuccess<T extends Outcome>(reply?: T) {
+export function withSuccess<T extends Outcome>(reply?: T): Message {
   return withReply(reply ?? new Success(), CommandReplyOutcome.SUCCESS);
 }
 
-export function withFailure<T extends Outcome>(reply?: T) {
+export function withFailure<T extends Outcome>(reply?: T): Message {
   return withReply(reply ?? new Failure(), CommandReplyOutcome.FAILURE);
 }

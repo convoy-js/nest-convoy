@@ -9,6 +9,7 @@ nest_library(
     ),
     deps = [
         "//packages/commands",
+        "//packages/core",
         "//packages/cqrs",
         "//packages/events",
         "//packages/in-memory",
@@ -17,6 +18,7 @@ nest_library(
         "//packages/saga",
         "@npm//@nestjs/core",
         "@npm//@nestjs/microservices",
+        "@npm//@nestjs/platform-express",
         "@npm//@nestjs/typeorm",
         "@npm//pg",
         "@npm//typeorm",

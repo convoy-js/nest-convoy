@@ -13,7 +13,6 @@ export class DoSomethingCommandHandler
   async execute({
     command,
   }: CommandMessage<DoSomethingCommand>): Promise<void> {
-    console.log(command);
     const event = new AccountDebited(uniqueId);
     await this.eventBus.publish(event);
   }

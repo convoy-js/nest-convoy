@@ -87,6 +87,8 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
     sagaData: Data,
     message: Message,
   ): Promise<SagaActions<Data>> {
+    console.log('handleReply', arguments);
+
     const state = decodeExecutionState(currentState);
     const currentStep = this.sagaSteps[state.currentlyExecuting];
     if (!currentStep) {

@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
-import { Transport } from '@nestjs/microservices';
-import { ConvoyCqrsModule } from '@nest-convoy/cqrs';
+// import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
+// import { Transport } from '@nestjs/microservices';
+// import { ConvoyCqrsModule } from '@nest-convoy/cqrs';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
-import { NEST_SAGA_CONNECTION } from '@nest-convoy/saga';
+import { NEST_CONVOY_SAGA_CONNECTION } from '@nest-convoy/saga';
+import { ConvoyInMemoryMessagingModule } from '@nest-convoy/in-memory';
 
-import { CreateOrderSaga } from './sagas/create-order/create-order.saga';
-import { Order } from './entities';
+import { CustomersModule } from './customers/customers.module';
+import { OrdersModule } from './orders/orders.module';
 
 const defaultOptions: TypeOrmModuleOptions = {
   type: 'postgres',
-  port: 5432,
   username: 'nest-convoy',
   password: 'nest-convoy',
   autoLoadEntities: true,
@@ -25,24 +25,24 @@ const defaultOptions: TypeOrmModuleOptions = {
     TypeOrmModule.forRoot({
       ...defaultOptions,
       schema: 'default',
-      entities: [Order],
     }),
     TypeOrmModule.forRoot({
       ...defaultOptions,
-      name: NEST_SAGA_CONNECTION,
+      name: NEST_CONVOY_SAGA_CONNECTION,
       schema: 'nest-convoy',
     }),
-    TypeOrmModule.forFeature([Order]),
-    ConvoyMessagingBrokerModule.register(
-      {
-        transport: Transport.TCP,
-      },
-      {
-        transport: Transport.TCP,
-      },
-    ),
-    ConvoyCqrsModule,
+    ConvoyInMemoryMessagingModule.forRoot(),
+    // ConvoyMessagingBrokerModule.register(
+    //   {
+    //     transport: Transport.TCP,
+    //   },
+    //   {
+    //     transport: Transport.TCP,
+    //   },
+    // ),
+    // ConvoyCqrsModule,
+    CustomersModule,
+    OrdersModule,
   ],
-  providers: [CreateOrderSaga],
 })
 export class AppModule {}

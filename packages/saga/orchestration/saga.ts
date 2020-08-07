@@ -1,5 +1,9 @@
 import { SagaDefinition } from './saga-definition';
 
+export type SagaLifecycleHooks<Data> = Partial<
+  OnSagaRolledBack<Data> & OnSagaCompletedSuccessfully<Data> & OnStarting<Data>
+>;
+
 export abstract class Saga<Data> {
   abstract sagaDefinition: SagaDefinition<Data>;
 }

@@ -22,11 +22,19 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
   }
 
   hasAction(data: Data): Promise<boolean> | boolean {
-    return this.participantInvocation?.isInvocable(data);
+    if (typeof this.participantInvocation?.isInvocable === 'function') {
+      return this.participantInvocation?.isInvocable?.(data);
+    }
+
+    return !!this.participantInvocation;
   }
 
   hasCompensation(data: Data): Promise<boolean> | boolean {
-    return this.compensation?.isInvocable(data);
+    if (typeof this.compensation?.isInvocable === 'function') {
+      return this.compensation?.isInvocable?.(data);
+    }
+
+    return !!this.compensation;
   }
 
   getReplyHandler<T>(

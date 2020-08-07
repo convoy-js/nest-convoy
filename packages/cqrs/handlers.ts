@@ -6,7 +6,7 @@ export interface IEventHandler<E extends DomainEvent> {
   handle(dee: DomainEventEnvelope<E>): Promise<void | Message> | void | Message;
 }
 
-export interface ICommandHandler<C extends Command, T = void> {
+export interface ICommandHandler<C extends Command, T = void | Message | any> {
   execute(cm: CommandMessage<C>): Promise<T> | T;
 }
 

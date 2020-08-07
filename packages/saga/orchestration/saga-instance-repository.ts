@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
-import { NEST_SAGA_CONNECTION } from '@nest-convoy/saga/common';
+import { NEST_CONVOY_SAGA_CONNECTION } from '@nest-convoy/saga/common';
 
 import { SagaInstance } from './saga-instance';
 import { SagaInstanceEntity, SagaInstanceParticipantsEntity } from './entities';
@@ -32,13 +32,16 @@ export class SagaMemoryInstanceRepository extends SagaInstanceRepository {
 @Injectable()
 export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
   constructor(
-    @InjectRepository(SagaInstanceEntity, NEST_SAGA_CONNECTION)
+    @InjectRepository(SagaInstanceEntity, NEST_CONVOY_SAGA_CONNECTION)
     private readonly sagaInstanceRepository: Repository<SagaInstanceEntity>,
-    @InjectRepository(SagaInstanceParticipantsEntity, NEST_SAGA_CONNECTION)
+    @InjectRepository(
+      SagaInstanceParticipantsEntity,
+      NEST_CONVOY_SAGA_CONNECTION,
+    )
     private readonly sagaInstanceParticipantsRepository: Repository<
       SagaInstanceParticipantsEntity
     >,
-    @InjectConnection(NEST_SAGA_CONNECTION)
+    @InjectConnection(NEST_CONVOY_SAGA_CONNECTION)
     private readonly connection: Connection,
   ) {
     super();
@@ -49,10 +52,6 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     sagaId,
     sagaType,
   }: SagaInstance): Promise<void> {
-    // const queryRunner = this.sagaInstanceParticipantsRepository.manager.connection.createQueryRunner();
-    // await queryRunner.connect();
-    // await queryRunner.startTransaction();
-
     await this.connection.transaction(async manager => {
       await Promise.all(
         destinationsAndResources.map(dr =>
@@ -64,26 +63,6 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
         ),
       );
     });
-
-    // try {
-    //   await Promise.all(
-    //     destinationsAndResources.map(dr =>
-    //       queryRunner.manager.update(
-    //         SagaInstanceParticipantsEntity,
-    //         { sagaId, sagaType },
-    //         dr,
-    //       ),
-    //     ),
-    //   );
-    //
-    //   await queryRunner.commitTransaction();
-    // } catch (e) {
-    //   // since we have errors lets rollback the changes we made
-    //   await queryRunner.rollbackTransaction();
-    // } finally {
-    //   // you need to release a queryRunner which was manually instantiated
-    //   await queryRunner.release();
-    // }
   }
 
   private async findDestinationsAndResources(

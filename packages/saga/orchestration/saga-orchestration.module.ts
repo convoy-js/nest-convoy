@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConvoyCommandsProducerModule } from '@nest-convoy/commands';
 import {
-  NEST_SAGA_CONNECTION,
+  NEST_CONVOY_SAGA_CONNECTION,
   SagaCommonModule,
 } from '@nest-convoy/saga/common';
 
@@ -20,7 +20,7 @@ import {
     SagaCommonModule,
     TypeOrmModule.forFeature(
       [SagaInstanceEntity, SagaInstanceParticipantsEntity],
-      NEST_SAGA_CONNECTION,
+      NEST_CONVOY_SAGA_CONNECTION,
     ),
     ConvoyCommandsProducerModule,
   ],

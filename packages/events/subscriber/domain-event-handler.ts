@@ -14,9 +14,9 @@ export type DomainEventHandlerInvoke<E extends DomainEvent = DomainEvent> = (
 
 export class DomainEventHandler implements Handler<DomainEventHandlerInvoke> {
   constructor(
-    // readonly aggregateType: string,
     readonly event: DomainEventType,
     readonly invoke: DomainEventHandlerInvoke,
+    readonly aggregateType?: string,
   ) {}
 
   handles(message: Message): boolean {

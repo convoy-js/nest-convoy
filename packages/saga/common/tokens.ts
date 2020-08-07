@@ -1,1 +1,1 @@
-export const NEST_SAGA_CONNECTION = 'nestSagaConnection';
+export const NEST_CONVOY_SAGA_CONNECTION = 'NestConvoySagaConnection';

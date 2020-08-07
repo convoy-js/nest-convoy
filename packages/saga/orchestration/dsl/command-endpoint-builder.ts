@@ -1,14 +1,20 @@
 import { Builder } from '@nest-convoy/common';
-import { CommandType } from '@nest-convoy/commands/common';
+import { Command, CommandType } from '@nest-convoy/commands/common';
 import { Type } from '@nestjs/common';
 
 import { CommandEndpoint } from './command-endpoint';
 
-export class CommandEndpointBuilder implements Builder<CommandEndpoint> {
+export class CommandEndpointBuilder<C> implements Builder<CommandEndpoint<C>> {
   private replies: Type<any>[] = [];
   private channel: string;
 
-  constructor(private readonly command: CommandType) {}
+  constructor(private readonly command: Type<C>) {}
+
+  static forCommand<C extends Command>(
+    command: Type<C>,
+  ): CommandEndpointBuilder<C> {
+    return new CommandEndpointBuilder(command);
+  }
 
   withChannel(channel: string): this {
     this.channel = channel;
@@ -20,7 +26,7 @@ export class CommandEndpointBuilder implements Builder<CommandEndpoint> {
     return this;
   }
 
-  build(): CommandEndpoint {
-    return new CommandEndpoint(this.channel, this.command, this.replies);
+  build(): CommandEndpoint<C> {
+    return new CommandEndpoint<C>(this.channel, this.command, this.replies);
   }
 }
