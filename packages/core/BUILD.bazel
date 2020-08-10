@@ -12,5 +12,6 @@ nest_library(
         "//packages/cqrs",
         "//packages/events",
         "//packages/saga",
+        "//packages/messaging",
     ],
 )

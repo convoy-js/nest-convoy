@@ -1,8 +1,8 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('saga_instance')
 export class SagaInstanceEntity<Data = any> {
-  @PrimaryColumn({ name: 'saga_id' })
+  @PrimaryGeneratedColumn({ name: 'saga_id' })
   sagaId: string;
 
   @PrimaryColumn({ name: 'saga_type' })

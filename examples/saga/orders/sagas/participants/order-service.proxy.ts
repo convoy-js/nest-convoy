@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Success } from '@nest-convoy/commands';
-import { CommandEndpoint, CommandEndpointBuilder } from '@nest-convoy/saga';
+import {
+  CommandEndpoint,
+  CommandEndpointBuilder,
+  Success,
+} from '@nest-convoy/core';
 
 import { Channel } from '../../../common';
 import { ApproveOrderCommand, RejectOrderCommand } from '../../commands';

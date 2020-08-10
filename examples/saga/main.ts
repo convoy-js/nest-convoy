@@ -3,7 +3,7 @@ import {
   SagaInstanceFactory,
   SagaManager,
   SagaManagerFactory,
-} from '@nest-convoy/saga';
+} from '@nest-convoy/core';
 
 import { AppModule } from './app.module';
 import { CustomerService } from './customers/services';
@@ -19,6 +19,8 @@ import {
   LocalCreateOrderSagaData,
 } from './orders/sagas';
 import { ExpressAdapter } from '@nestjs/platform-express';
+
+Error.stackTraceLimit = 100;
 
 export function createRandomOrderDetails(customer: Customer): OrderDetails {
   return Object.assign(new OrderDetails(), {
@@ -52,26 +54,28 @@ export async function localCreateOrder(
 }
 
 (async () => {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter());
-  await app.enableShutdownHooks().listenAsync(3030);
+  try {
+    const app = await NestFactory.create(AppModule, new ExpressAdapter());
+    await app.enableShutdownHooks().listenAsync(3030);
 
-  const customerService = app.get(CustomerService);
-  const orderService = app.get(OrderService);
-  const sagaInstanceFactory = app.get(SagaInstanceFactory);
-  const createOrderSaga = app.get(CreateOrderSaga);
-  const localCreateOrderSaga = app.get(LocalCreateOrderSaga);
+    const customerService = app.get(CustomerService);
+    const orderService = app.get(OrderService);
+    const sagaInstanceFactory = app.get(SagaInstanceFactory);
+    const createOrderSaga = app.get(CreateOrderSaga);
+    const localCreateOrderSaga = app.get(LocalCreateOrderSaga);
 
-  const customer = await customerService.create({
-    name: 'Fred',
-    creditLimit: new Money(200.0),
-  });
+    const customer = await customerService.create({
+      name: 'Fred',
+      creditLimit: new Money(200.0),
+    });
 
-  console.log(
     await localCreateOrder(
       customer,
       orderService,
       localCreateOrderSaga,
       sagaInstanceFactory,
-    ),
-  );
+    );
+  } catch (err) {
+    console.error(err);
+  }
 })();

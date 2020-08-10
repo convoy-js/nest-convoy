@@ -25,7 +25,8 @@ export function getSagaId(message: Message): string {
 }
 
 export function getCommandTarget(message: Message): string {
-  return message.getRequiredHeader(CommandMessageHeaders.RESOURCE);
+  return message.getRequiredHeader(CommandMessageHeaders.COMMAND_TYPE);
+  // return message.getRequiredHeader(CommandMessageHeaders.RESOURCE);
 }
 
 export function addLockedHeader(

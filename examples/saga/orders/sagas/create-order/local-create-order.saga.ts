@@ -1,9 +1,9 @@
-import { Saga } from '@nest-convoy/cqrs';
-import { DomainEventPublisher } from '@nest-convoy/events';
+import { Saga, DomainEventPublisher } from '@nest-convoy/core';
+
+import { OrderService } from '../../services';
 import { CustomerServiceProxy } from '../participants';
 
 import { LocalCreateOrderSagaData } from './local-create-order-saga.data';
-import { OrderService } from '../../services';
 import { BaseCreateOrderSaga } from './base-create-order.saga';
 
 @Saga(LocalCreateOrderSagaData)
@@ -11,15 +11,15 @@ export class LocalCreateOrderSaga extends BaseCreateOrderSaga<
   LocalCreateOrderSagaData
 > {
   readonly sagaDefinition = this.step()
-    .invokeLocal(this.create)
-    .withCompensation(this.reject)
+    .invokeLocal(this.create.bind(this))
+    .withCompensation(this.reject.bind(this))
     .step()
     .invokeParticipant(
       this.customerServiceProxy.reserveCredit,
-      this.createReserveCreditCommand,
+      this.createReserveCreditCommand.bind(this),
     )
     .step()
-    .invokeLocal(this.approve)
+    .invokeLocal(this.approve.bind(this))
     .build();
 
   constructor(
@@ -36,14 +36,16 @@ export class LocalCreateOrderSaga extends BaseCreateOrderSaga<
     });
 
     data.orderId = order.id;
+    console.log('create', data);
   }
 
   private async reject(data: LocalCreateOrderSagaData): Promise<void> {
-    console.log('reject');
+    console.log('reject', data);
     await this.order.noteCreditReservationFailed(data.orderId);
   }
 
   private async approve(data: LocalCreateOrderSagaData): Promise<void> {
+    console.log('approve', data);
     await this.order.noteCreditReserved(data.orderId);
   }
 }

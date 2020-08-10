@@ -116,7 +116,7 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
   }
 
   async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
-    const entity = await this.sagaInstanceRepository.create(sagaInstance);
+    const entity = await this.sagaInstanceRepository.save(sagaInstance);
     await this.createDestinationsAndResources(sagaInstance);
     return Object.assign(sagaInstance, entity);
   }

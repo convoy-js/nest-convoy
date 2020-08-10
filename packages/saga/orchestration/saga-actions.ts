@@ -15,8 +15,8 @@ export class SagaActions<Data> {
 
 export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
   private readonly commands: CommandWithDestination[] = [];
+  private compensating = false;
   private endState?: boolean;
-  private compensating?: boolean;
   private local?: boolean;
   private updatedSagaData?: Data;
   private updatedState?: string;
@@ -43,6 +43,7 @@ export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
   }
 
   withCommands(commands: CommandWithDestination[]): this {
+    console.log('withCommands');
     this.commands.push(...commands);
     return this;
   }
@@ -53,6 +54,7 @@ export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
   }
 
   withIsLocal(localException?: RuntimeException): this {
+    console.log('withIsLocal');
     this.localException = localException;
     this.local = true;
     return this;

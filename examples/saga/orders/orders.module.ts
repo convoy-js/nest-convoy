@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConvoyCommonModule } from '@nest-convoy/core';
-import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
+// import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
 import { Transport } from '@nestjs/microservices';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
-import { NEST_CONVOY_SAGA_CONNECTION } from '@nest-convoy/saga';
 
 import { Order } from './entities';
 import { OrderService } from './services';

@@ -1,11 +1,10 @@
+import { Type } from '@nestjs/common';
 import {
   OnSagaCompletedSuccessfully,
   OnSagaRolledBack,
-  Saga,
+  DomainEventPublisher,
   SimpleSaga,
-} from '@nest-convoy/saga';
-import { DomainEventPublisher } from '@nest-convoy/events';
-import { Type } from '@nestjs/common';
+} from '@nest-convoy/core';
 
 import { CreateOrderSagaData } from './create-order-saga.data';
 import { LocalCreateOrderSagaData } from './local-create-order-saga.data';
@@ -22,7 +21,7 @@ export abstract class BaseCreateOrderSaga<
 > extends SimpleSaga<Data>
   implements OnSagaRolledBack<Data>, OnSagaCompletedSuccessfully<Data> {
   protected constructor(
-    protected readonly sagaType: Type<Saga<any>>,
+    protected readonly sagaType: Type<SimpleSaga<any>>,
     protected readonly domainEventPublisher: DomainEventPublisher,
   ) {
     super();
@@ -32,7 +31,7 @@ export abstract class BaseCreateOrderSaga<
     orderDetails: { customerId, orderTotal },
     orderId,
   }: Data): ReserveCreditCommand {
-    console.log('createReserveCreditCommand', arguments);
+    console.log('createReserveCreditCommand', arguments[0]);
     return new ReserveCreditCommand(customerId, orderId, orderTotal);
   }
 

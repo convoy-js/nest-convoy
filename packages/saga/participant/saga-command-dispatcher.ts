@@ -62,7 +62,7 @@ export class SagaCommandDispatcher extends CommandDispatcher {
       }
     }
 
-    const messages = await commandHandler.invoke(commandMessage);
+    const messages = await super.invoke(commandHandler, commandMessage);
 
     if (lockedTarget) {
       return addLockedHeader(messages, lockedTarget);

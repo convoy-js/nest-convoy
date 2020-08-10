@@ -1,5 +1,9 @@
-import { CommandHandler, EventBus, ICommandHandler } from '@nest-convoy/cqrs';
-import { CommandMessage } from '@nest-convoy/commands';
+import {
+  CommandHandler,
+  EventBus,
+  ICommandHandler,
+  CommandMessage,
+} from '@nest-convoy/core';
 
 import { DoSomethingCommand } from './do-something.command';
 import { AccountDebited } from '../events/account-debited';

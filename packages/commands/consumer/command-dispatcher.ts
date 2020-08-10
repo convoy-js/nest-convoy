@@ -15,6 +15,7 @@ import {
 import { CommandHandlers } from './command-handlers';
 import { CommandMessage } from './command-message';
 import { CommandHandler } from './command-handler';
+import { withFailure, withSuccess } from './command-handler-reply-builder';
 
 export class CommandDispatcher implements Dispatcher {
   private readonly logger = new Logger(this.constructor.name);
@@ -32,6 +33,20 @@ export class CommandDispatcher implements Dispatcher {
       this.commandHandlers.getChannels(),
       this.handleMessage.bind(this),
     );
+  }
+
+  protected async invoke(
+    commandHandler: CommandHandler,
+    commandMessage: CommandMessage,
+  ): Promise<Message[]> {
+    // TODO: This doesnt work properly
+    try {
+      const reply = await commandHandler.invoke(commandMessage);
+      if (Array.isArray(reply)) return reply;
+      return (reply as any) instanceof Message ? [reply] : [withSuccess(reply)];
+    } catch (err) {
+      return [withFailure(err)];
+    }
   }
 
   async handleMessage(message: Message): Promise<void> {
@@ -61,16 +76,19 @@ export class CommandDispatcher implements Dispatcher {
         correlationHeaders,
         message,
       );
-      replies = await commandHandler.invoke(commandMessage);
+      replies = await this.invoke(commandHandler, commandMessage);
       this.logger.debug(
         `Generated replies ${this.commandDispatcherId} ${
           message.constructor.name
         } ${JSON.stringify(replies)}`,
       );
-    } catch (e) {
+    } catch (err) {
       this.logger.error(
-        `Generated error ${this.commandDispatcherId} ${message} ${e.constructor.name}`,
+        `Generated error ${this.commandDispatcherId} ${JSON.stringify(
+          message,
+        )}`,
       );
+      console.error(err);
       await this.handleException(message, defaultReplyChannel);
       return;
     }
@@ -87,9 +105,7 @@ export class CommandDispatcher implements Dispatcher {
     // commandHandler: CommandHandler,
     defaultReplyChannel: string,
   ): Promise<void> {
-    const reply = MessageBuilder.withPayload(
-      JSON.stringify(new Failure()),
-    ).build();
+    const reply = MessageBuilder.withPayload(new Failure()).build();
     const correlationHeaders = message.getHeaders();
     // const correlationHeaders = this.filterCorrelationHeaders(
     //   message.getHeaders(),

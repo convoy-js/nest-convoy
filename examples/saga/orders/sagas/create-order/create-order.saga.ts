@@ -1,9 +1,5 @@
-import { InjectRepository } from '@nestjs/typeorm';
-import { DomainEventPublisher } from '@nest-convoy/events';
-import { Repository } from 'typeorm';
-import { Saga } from '@nest-convoy/cqrs';
+import { DomainEventPublisher, Saga } from '@nest-convoy/core';
 
-import { Order } from '../../entities';
 import { CustomerServiceProxy, OrderServiceProxy } from '../participants';
 import { ApproveOrderCommand, RejectOrderCommand } from '../../commands';
 import { CreateOrderSagaData } from './create-order-saga.data';
@@ -14,17 +10,17 @@ export class CreateOrderSaga extends BaseCreateOrderSaga<CreateOrderSagaData> {
   readonly sagaDefinition = this.step()
     .withCompensation(
       this.orderServiceProxy.reject,
-      this.createRejectOrderCommand,
+      this.createRejectOrderCommand.bind(this),
     )
     .step()
     .invokeParticipant(
       this.customerServiceProxy.reserveCredit,
-      this.createReserveCreditCommand,
+      this.createReserveCreditCommand.bind(this),
     )
     .step()
     .invokeParticipant(
       this.orderServiceProxy.approve,
-      this.createApproveOrderCommand,
+      this.createApproveOrderCommand.bind(this),
     )
     .build();
 
@@ -32,8 +28,6 @@ export class CreateOrderSaga extends BaseCreateOrderSaga<CreateOrderSagaData> {
     protected readonly domainEventPublisher: DomainEventPublisher,
     private readonly orderServiceProxy: OrderServiceProxy,
     private readonly customerServiceProxy: CustomerServiceProxy,
-    @InjectRepository(Order)
-    private readonly orderRepository: Repository<Order>,
   ) {
     super(CreateOrderSaga, domainEventPublisher);
   }

@@ -34,10 +34,3 @@ export function ForAggregateType<T>(aggregateType: () => Type<T>) {
     Reflect.defineMetadata(FOR_AGGREGATE_TYPE_METADATA, aggregateType, target);
   };
 }
-
-// TODO
-// orders-and-customers/src/main/java/io/eventuate/examples/tram/sagas/ordersandcustomers/customers/service/CustomerCommandHandler.java
-// orders-and-customers-spring/src/main/java/io/eventuate/examples/tram/sagas/ordersandcustomers/spring/customers/CustomerConfiguration.java
-export function SagaCommandHandler(): ClassDecorator {
-  return () => {};
-}

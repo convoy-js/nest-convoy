@@ -16,7 +16,7 @@ export class StepToExecute<Data> {
   }
 
   isEmpty(): boolean {
-    return !!this.step;
+    return !this.step;
   }
 
   executeStep(data: Data, currentState: SagaExecutionState): SagaActions<Data> {
@@ -26,9 +26,12 @@ export class StepToExecute<Data> {
     const withIsLocal = builder.withIsLocal.bind(builder);
     const withCommands = builder.withCommands.bind(builder);
 
-    this.step
-      ?.createStepOutcome(data, this.compensating)
-      .visit(withIsLocal, withCommands);
+    console.log(
+      'executeStep',
+      this.step
+        ?.createStepOutcome(data, this.compensating)
+        .visit(withIsLocal, withCommands),
+    );
 
     return builder
       .withUpdatedSagaData(data)

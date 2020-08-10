@@ -1,17 +1,18 @@
-import { CommandMessage } from '@nest-convoy/commands';
 import {
+  CommandMessage,
   CommandHandler,
   FromChannel,
   ICommandHandler,
-} from '@nest-convoy/cqrs';
+} from '@nest-convoy/core';
 
-import { ReserveCreditCommand } from './reserve-credit.command';
 import { Channel } from '../../common';
 import { CustomerService } from '../services';
 import {
   CustomerCreditReserved,
   CustomerCreditReservationFailed,
 } from '../replies';
+
+import { ReserveCreditCommand } from './reserve-credit.command';
 
 @CommandHandler(ReserveCreditCommand)
 @FromChannel(Channel.CUSTOMER_SERVICE)
@@ -22,13 +23,15 @@ export class ReserveCreditCommandHandler
     command,
   }: CommandMessage<ReserveCreditCommand>): Promise<CustomerCreditReserved> {
     const customer = await this.customer.find(command.customerId);
+    console.log('ReserveCreditCommand', arguments);
 
     try {
       await this.customer.reserveCredit(customer, command);
 
       return new CustomerCreditReserved();
-    } catch (e) {
-      throw new CustomerCreditReservationFailed();
+    } catch (err) {
+      console.error('ReserveCreditCommand', err);
+      throw new CustomerCreditReservationFailed(err.message);
     }
   }
 }

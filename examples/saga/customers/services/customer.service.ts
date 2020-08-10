@@ -13,7 +13,9 @@ export class CustomerService {
   ) {}
 
   find(id: Customer['id']): Promise<Customer> {
-    return this.customerRepository.findOne(id);
+    return this.customerRepository.findOne(id, {
+      relations: ['creditReservations'],
+    });
   }
 
   create(customer: Partial<Customer>): Promise<Customer> {
@@ -25,6 +27,6 @@ export class CustomerService {
     command: ReserveCreditCommand,
   ): Promise<void> {
     customer.reserveCredit(command.orderId, command.orderTotal);
-    await this.customerRepository.update(customer.id, customer);
+    await this.customerRepository.save(customer);
   }
 }

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CommandEndpoint, CommandEndpointBuilder } from '@nest-convoy/saga';
-import { Success } from '@nest-convoy/commands';
+import {
+  Success,
+  CommandEndpoint,
+  CommandEndpointBuilder,
+} from '@nest-convoy/core';
 
 import { ReserveCreditCommand } from '../../../customers/commands';
 import { Channel } from '../../../common';

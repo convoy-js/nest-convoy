@@ -88,15 +88,14 @@ export class CqrsService implements OnModuleInit {
         FROM_CHANNEL_METADATA,
         commandHandlerType,
       ) as string;
+      const channel = commandHandlerChannel || commandType.name;
 
       const commandHandler = this.injector.get(commandHandlerType, {
         strict: false,
       }) as ICommandHandler<unknown>;
       const handler = commandHandler.execute.bind(commandHandler);
 
-      const commandHandlers = CommandHandlersBuilder.fromChannel(
-        commandHandlerChannel ?? commandType.name,
-      )
+      const commandHandlers = CommandHandlersBuilder.fromChannel(channel)
         .onMessage(commandType, handler)
         .build();
 
@@ -106,12 +105,13 @@ export class CqrsService implements OnModuleInit {
 
       // TODO: Move this
       const sagaCommandHandler = new SagaCommandHandler(
-        commandHandlerChannel ?? commandType.name,
+        channel,
         null,
         commandType,
         handler,
       );
       const sagaCommandHandlers = new CommandHandlers([sagaCommandHandler]);
+
       await this.sagaCommandDispatcherFactory
         .create(uuidv4(), sagaCommandHandlers)
         .subscribe();

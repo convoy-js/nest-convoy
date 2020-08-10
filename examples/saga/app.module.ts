@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 // import { Transport } from '@nestjs/microservices';
 // import { ConvoyCqrsModule } from '@nest-convoy/cqrs';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
-import { NEST_CONVOY_SAGA_CONNECTION } from '@nest-convoy/saga';
+import { NEST_CONVOY_SAGA_CONNECTION } from '@nest-convoy/core';
 import { ConvoyInMemoryMessagingModule } from '@nest-convoy/in-memory';
 
 import { CustomersModule } from './customers/customers.module';

@@ -67,14 +67,14 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
       .build();
   }
 
-  private invokeReplyHandler(
+  private async invokeReplyHandler(
     message: Message,
     data: Data,
     replyHandler: SagaStepReplyHandler<Data>,
-  ): void {
+  ): Promise<void> {
     // TODO - eventuate-tram-sagas-orchestration-simple-dsl/src/main/java/io/eventuate/tram/sagas/simpledsl/SimpleSagaDefinition.java
     const replyType = message.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE);
-    replyHandler(data, message.parsePayload());
+    await replyHandler(data, message.parsePayload());
   }
 
   start(sagaData: Data): Promise<SagaActions<Data>> {
@@ -82,13 +82,11 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
     return this.executeNextStep(sagaData, currentState);
   }
 
-  handleReply(
+  async handleReply(
     currentState: string,
     sagaData: Data,
     message: Message,
   ): Promise<SagaActions<Data>> {
-    console.log('handleReply', arguments);
-
     const state = decodeExecutionState(currentState);
     const currentStep = this.sagaSteps[state.currentlyExecuting];
     if (!currentStep) {
@@ -100,10 +98,10 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
       state.compensating,
     );
     if (replyHandler) {
-      this.invokeReplyHandler(
+      await this.invokeReplyHandler(
         message,
         sagaData,
-        replyHandler.bind(currentStep),
+        replyHandler, //.bind(currentStep),
       );
     }
 

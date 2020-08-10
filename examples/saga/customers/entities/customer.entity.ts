@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  JoinTable,
+} from 'typeorm';
 
 import { Money } from '../../common';
 import { CustomerCreditLimitExceeded } from '../replies';
@@ -19,9 +25,10 @@ export class Customer {
     () => CreditReservation,
     creditReservation => creditReservation.customer,
     {
-      eager: true,
+      onDelete: 'CASCADE',
     },
   )
+  @JoinTable()
   creditReservations: CreditReservation[];
 
   availableCredit(): Money {

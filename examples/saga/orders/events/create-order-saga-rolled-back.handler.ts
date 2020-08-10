@@ -1,9 +1,9 @@
-import { DomainEventEnvelope } from '@nest-convoy/events';
 import {
+  DomainEventEnvelope,
   EventsHandler,
   ForAggregateType,
   IEventHandler,
-} from '@nest-convoy/cqrs';
+} from '@nest-convoy/core';
 
 import { CreateOrderSagaRolledBack } from './create-order-saga-rolled-back';
 import { LocalCreateOrderSaga } from '../sagas';
@@ -15,6 +15,6 @@ export class CreateOrderSagaRolledBackHandler
   async handle(
     dee: DomainEventEnvelope<CreateOrderSagaRolledBack>,
   ): Promise<void> {
-    console.log(dee);
+    // console.log(dee);
   }
 }

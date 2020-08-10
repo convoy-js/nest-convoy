@@ -1,12 +1,12 @@
-import { DomainEventEnvelope } from '@nest-convoy/events';
 import {
   EventsHandler,
   ForAggregateType,
   IEventHandler,
-} from '@nest-convoy/cqrs';
+  DomainEventEnvelope,
+} from '@nest-convoy/core';
 
 import { CreateOrderSagaCompletedSuccessfully } from './create-order-saga-completed-successfully';
-import { CreateOrderSaga, LocalCreateOrderSaga } from '../sagas';
+import { LocalCreateOrderSaga } from '../sagas';
 
 @EventsHandler(CreateOrderSagaCompletedSuccessfully)
 @ForAggregateType(() => LocalCreateOrderSaga)
