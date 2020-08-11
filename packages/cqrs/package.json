@@ -6,7 +6,7 @@
     "@nestjs/cqrs": "7.0.0"
   },
   "peerDependencies": {
-    "@nestjs/common": "7.3.2",
+    "@nestjs/common": "7.4.2",
     "rxjs": "6.6.0",
     "tslib": "2.0.1"
   }
