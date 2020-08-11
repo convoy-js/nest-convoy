@@ -22,7 +22,7 @@ export class ConvoyMessageProducer {
 
   constructor(
     private readonly channelMapping: ConvoyChannelMapping,
-    private readonly target: MessageProducer,
+    protected readonly target: MessageProducer,
     @Inject(NEST_CONVOY_MESSAGE_INTERCEPTORS)
     private readonly messageInterceptors: MessageInterceptor[],
   ) {}

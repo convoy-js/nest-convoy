@@ -1,18 +1,31 @@
 import { Builder } from '@nest-convoy/common';
-import { Command } from '@nest-convoy/commands/common';
+import { Command, ResourcePathPattern } from '@nest-convoy/commands/common';
+import { MessageHeaders } from '@nest-convoy/messaging/common';
 
 import { CommandWithDestination } from './command-with-destination';
-import { MessageHeaders } from '@nest-convoy/messaging/common';
 
 export class CommandWithDestinationBuilder
   implements Builder<CommandWithDestination> {
   private extraHeaders?: MessageHeaders;
   private destinationChannel?: string;
+  private resource?: string;
 
   constructor(private readonly command: Command) {}
 
+  static send(command: Command): CommandWithDestinationBuilder {
+    return new CommandWithDestinationBuilder(command);
+  }
+
   to(destinationChannel: string): this {
     this.destinationChannel = destinationChannel;
+    return this;
+  }
+
+  forResource(resource: string, ...pathParams: Record<string, string>[]) {
+    this.resource = new ResourcePathPattern(resource)
+      .replacePlaceholders(pathParams)
+      .toPath();
+
     return this;
   }
 
@@ -29,7 +42,7 @@ export class CommandWithDestinationBuilder
     return new CommandWithDestination(
       this.destinationChannel,
       this.command,
-      null,
+      this.resource,
       this.extraHeaders,
     );
   }

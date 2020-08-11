@@ -21,7 +21,6 @@ export abstract class BaseCreateOrderSaga<
 > extends SimpleSaga<Data>
   implements OnSagaRolledBack<Data>, OnSagaCompletedSuccessfully<Data> {
   protected constructor(
-    protected readonly sagaType: Type<SimpleSaga<any>>,
     protected readonly domainEventPublisher: DomainEventPublisher,
   ) {
     super();
@@ -31,14 +30,12 @@ export abstract class BaseCreateOrderSaga<
     orderDetails: { customerId, orderTotal },
     orderId,
   }: Data): ReserveCreditCommand {
-    console.log('createReserveCreditCommand', arguments[0]);
     return new ReserveCreditCommand(customerId, orderId, orderTotal);
   }
 
   async onSagaCompletedSuccessfully(sagaId: string, data: Data): Promise<void> {
     await this.domainEventPublisher.publish(
-      this.sagaType,
-      // this.constructor as Type<any>,
+      this.constructor as Type<any>,
       sagaId,
       [new CreateOrderSagaCompletedSuccessfully(data.orderId)],
     );
@@ -46,8 +43,7 @@ export abstract class BaseCreateOrderSaga<
 
   async onSagaRolledBack(sagaId: string, data: Data): Promise<void> {
     await this.domainEventPublisher.publish(
-      this.sagaType,
-      // this.constructor as Type<any>,
+      this.constructor as Type<any>,
       sagaId,
       [new CreateOrderSagaRolledBack(data.orderId)],
     );

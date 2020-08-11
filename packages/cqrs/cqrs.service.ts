@@ -100,20 +100,20 @@ export class CqrsService implements OnModuleInit {
         .build();
 
       await this.commandDispatcherFactory
-        .create(uuidv4(), commandHandlers)
+        .create(commandType.name, commandHandlers)
         .subscribe();
 
       // TODO: Move this
       const sagaCommandHandler = new SagaCommandHandler(
         channel,
-        null,
         commandType,
         handler,
+        null,
       );
       const sagaCommandHandlers = new CommandHandlers([sagaCommandHandler]);
 
       await this.sagaCommandDispatcherFactory
-        .create(uuidv4(), sagaCommandHandlers)
+        .create(commandType.name, sagaCommandHandlers)
         .subscribe();
     });
 
@@ -143,7 +143,7 @@ export class CqrsService implements OnModuleInit {
       );
 
       await this.domainEventDispatcherFactory
-        .create(uuidv4(), domainEventHandlers)
+        .create(eventHandlerType.name, domainEventHandlers)
         .subscribe();
     });
 

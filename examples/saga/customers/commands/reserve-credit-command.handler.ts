@@ -23,14 +23,12 @@ export class ReserveCreditCommandHandler
     command,
   }: CommandMessage<ReserveCreditCommand>): Promise<CustomerCreditReserved> {
     const customer = await this.customer.find(command.customerId);
-    console.log('ReserveCreditCommand', arguments);
 
     try {
       await this.customer.reserveCredit(customer, command);
 
       return new CustomerCreditReserved();
     } catch (err) {
-      console.error('ReserveCreditCommand', err);
       throw new CustomerCreditReservationFailed(err.message);
     }
   }

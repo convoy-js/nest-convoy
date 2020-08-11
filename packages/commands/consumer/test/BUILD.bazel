@@ -4,9 +4,9 @@ nest_test(
     name = "test",
     srcs = glob(["*.ts"]),
     deps = [
-        "//packages/commands/common",
-        "//packages/commands/consumer",
-        "//packages/commands/producer",
-        "//packages/messaging/common",
+        "@npm//@nestjs/core",
+        "//packages/commands",
+        "//packages/testing",
+        "//packages/messaging",
     ],
 )

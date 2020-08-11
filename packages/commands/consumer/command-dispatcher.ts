@@ -8,7 +8,9 @@ import {
 } from '@nest-convoy/messaging/producer';
 import {
   CommandMessageHeaders,
+  CommandReplyOutcome,
   Failure,
+  MissingCommandHandlerException,
   ReplyMessageHeaders,
 } from '@nest-convoy/commands/common';
 
@@ -40,25 +42,37 @@ export class CommandDispatcher implements Dispatcher {
     commandMessage: CommandMessage,
   ): Promise<Message[]> {
     // TODO: This doesnt work properly
-    try {
-      const reply = await commandHandler.invoke(commandMessage);
-      if (Array.isArray(reply)) return reply;
-      return (reply as any) instanceof Message ? [reply] : [withSuccess(reply)];
-    } catch (err) {
-      return [withFailure(err)];
+    const replies = await commandHandler.invoke(commandMessage);
+    const failure = replies.find(
+      reply =>
+        reply.getHeader(ReplyMessageHeaders.REPLY_OUTCOME) ===
+        CommandReplyOutcome.FAILURE,
+    );
+
+    if (failure) {
+      throw new Error(
+        failure.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE),
+      );
     }
+
+    return replies;
+    // try {
+    //   const reply = await commandHandler.invoke(commandMessage);
+    //   console.log('invoke', reply);
+    //   if (Array.isArray(reply)) return reply;
+    //   return (reply as any) instanceof Message ? [reply] : [withSuccess(reply)];
+    // } catch (err) {
+    //   return [withFailure(err)];
+    // }
   }
 
   async handleMessage(message: Message): Promise<void> {
     const commandHandler = this.commandHandlers.findTargetMethod(message);
     if (!commandHandler) {
-      throw new RuntimeException(`No method for ${message.id}`);
+      throw new MissingCommandHandlerException(message);
     }
 
-    const correlationHeaders = message.getHeaders();
-    // const correlationHeaders = this.filterCorrelationHeaders(
-    //   message.getHeaders(),
-    // );
+    const correlationHeaders = this.correlationHeaders(message.getHeaders());
 
     const defaultReplyChannel = message.getRequiredHeader(
       CommandMessageHeaders.REPLY_TO,
@@ -88,8 +102,7 @@ export class CommandDispatcher implements Dispatcher {
           message,
         )}`,
       );
-      console.error(err);
-      await this.handleException(message, defaultReplyChannel);
+      await this.handleException(message, defaultReplyChannel /*, err*/);
       return;
     }
 
@@ -104,12 +117,10 @@ export class CommandDispatcher implements Dispatcher {
     message: Message,
     // commandHandler: CommandHandler,
     defaultReplyChannel: string,
+    // error: Error,
   ): Promise<void> {
     const reply = MessageBuilder.withPayload(new Failure()).build();
-    const correlationHeaders = message.getHeaders();
-    // const correlationHeaders = this.filterCorrelationHeaders(
-    //   message.getHeaders(),
-    // );
+    const correlationHeaders = this.correlationHeaders(message.getHeaders());
     await this.sendReplies(correlationHeaders, [reply], defaultReplyChannel);
   }
 
@@ -127,7 +138,7 @@ export class CommandDispatcher implements Dispatcher {
     }
   }
 
-  private filterCorrelationHeaders(headers: MessageHeaders): MessageHeaders {
+  private correlationHeaders(headers: MessageHeaders): MessageHeaders {
     const correlationHeaders = new Map(
       [...headers.entries()]
         .filter(([key]) =>

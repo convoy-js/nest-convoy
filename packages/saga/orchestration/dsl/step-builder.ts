@@ -8,7 +8,7 @@ import { InvokeParticipantStepBuilder } from './invoke-participant-step-builder'
 import { CommandEndpoint } from './command-endpoint';
 import { LocalStepBuilder } from './local-step-builder';
 import { Compensation, WithCompensationBuilder } from './with-builder';
-// import { SimpleSaga } from './simple-saga';
+import { SimpleSaga } from './simple-saga';
 
 export interface BaseStepBuilder<Data> {
   step(): StepBuilder<Data>;
@@ -16,15 +16,10 @@ export interface BaseStepBuilder<Data> {
 }
 
 export class StepBuilder<Data> implements WithCompensationBuilder<Data> {
-  constructor(
-    private readonly parent: SimpleSagaDefinitionBuilder<Data>, // private readonly saga?: SimpleSaga<Data>,
-  ) {}
+  constructor(private readonly parent: SimpleSagaDefinitionBuilder<Data>) {}
 
   invokeLocal(handler: Consumer<Data>): LocalStepBuilder<Data> {
-    return new LocalStepBuilder<Data>(
-      this.parent,
-      handler /*.bind(this.saga)*/,
-    );
+    return new LocalStepBuilder<Data>(this.parent, handler);
   }
 
   invokeParticipant(

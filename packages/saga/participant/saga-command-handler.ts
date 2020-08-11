@@ -18,12 +18,12 @@ export type SagaCommandHandlerPreLock = (
 export class SagaCommandHandler extends CommandHandler {
   constructor(
     channel: string,
-    resource: string | undefined,
     command: CommandType,
     invoke: CommandHandlerInvoke,
+    resource?: string,
     readonly preLock?: SagaCommandHandlerPreLock,
     readonly postLock?: SagaCommandHandlerPostLock,
   ) {
-    super(channel, resource, command, invoke);
+    super(channel, command, invoke, resource);
   }
 }

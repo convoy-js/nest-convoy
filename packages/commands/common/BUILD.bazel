@@ -7,5 +7,5 @@ nest_library(
         exclude = ["*.spec.ts"],
     ),
     module_name = "@nest-convoy/commands/common",
-    deps = ["//packages/common"],
+    deps = ["//packages/common" ,"//packages/messaging/common", "//packages/commands/common/paths"],
 )

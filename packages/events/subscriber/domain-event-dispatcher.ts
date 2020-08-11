@@ -26,9 +26,9 @@ export class DomainEventDispatcher implements Dispatcher {
   }
 
   async handleMessage(message: Message): Promise<void> {
-    // const aggregateType = message.getRequiredHeader(
-    //   EventMessageHeaders.AGGREGATE_TYPE,
-    // );
+    const aggregateType = message.getRequiredHeader(
+      EventMessageHeaders.AGGREGATE_TYPE,
+    );
 
     const handler = this.domainEventHandlers.findTargetMethod(message);
     if (!handler) return;
@@ -44,7 +44,7 @@ export class DomainEventDispatcher implements Dispatcher {
     const messageId = message.getRequiredHeader(Message.ID);
     const dee = new DomainEventEnvelope(
       message,
-      // aggregateType,
+      aggregateType,
       aggregateId,
       messageId,
       event,

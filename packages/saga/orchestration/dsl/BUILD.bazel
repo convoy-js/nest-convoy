@@ -11,6 +11,7 @@ nest_library(
 #        "//packages/saga:__pkg__",
 #    ],
     deps = [
+        "@npm//@nestjs/cqrs",
         "//packages/commands/common",
         "//packages/commands/consumer",
         "//packages/common",

@@ -5,7 +5,7 @@ import { SagaLockManager } from '@nest-convoy/saga/common';
 
 import { SagaInstanceRepository } from './saga-instance-repository';
 import { SagaCommandProducer } from './saga-command-producer';
-import { SagaManger, SagaManager } from './saga-manager';
+import { SagaManager } from './saga-manager';
 import { Saga } from './saga';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class SagaManagerFactory {
 
   create<Data>(saga: Saga<Data>): SagaManager<Data> {
     // TODO: Should be dynamic
-    return new SagaManger(
+    return new SagaManager(
       saga,
       this.sagaInstanceRepository,
       this.commandProducer,

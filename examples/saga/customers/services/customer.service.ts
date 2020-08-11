@@ -13,9 +13,7 @@ export class CustomerService {
   ) {}
 
   find(id: Customer['id']): Promise<Customer> {
-    return this.customerRepository.findOne(id, {
-      relations: ['creditReservations'],
-    });
+    return this.customerRepository.findOne(id);
   }
 
   create(customer: Partial<Customer>): Promise<Customer> {

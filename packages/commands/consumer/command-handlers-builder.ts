@@ -38,8 +38,8 @@ export class CommandHandlersBuilder implements Builder<CommandHandlers> {
     this.handlers.push(
       new CommandHandler(
         this.channel,
-        null,
         command,
+        // handler,
         this.wrapMessageHandler(handler),
       ),
     );

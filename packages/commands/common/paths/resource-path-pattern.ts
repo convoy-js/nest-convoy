@@ -1,22 +1,38 @@
 import { ResourcePath } from './resource-path';
-import { isPlaceholder, pathSegmentMatches } from './utils';
+import {
+  getPlaceholderValue,
+  isPlaceholder,
+  pathSegmentMatches,
+} from './utils';
 
 export class ResourcePathPattern extends ResourcePath {
-  getPathVariableValues(mr: ResourcePath): Record<string, string> {
+  getPathVariableValues(rp: ResourcePath): Record<string, string> {
     return this.splits.reduce((result, name, idx) => {
       if (isPlaceholder(name)) {
-        result[name] = mr.splits[idx];
+        result[name] = rp.splits[idx];
       }
 
       return result;
     }, {} as Record<string, string>);
   }
 
-  isSatisfiedBy(mr: ResourcePath): boolean {
-    if (this.length !== mr.length) return false;
+  replacePlaceholders(pathParams: Record<string, string>[]): ResourcePath {
+    let idx = 0;
 
-    return this.splits.some((split, idx) =>
-      pathSegmentMatches(split, mr.splits[idx]),
+    return new ResourcePath(
+      this.splits
+        .map(s =>
+          isPlaceholder(s) ? getPlaceholderValue(pathParams, idx++) : s,
+        )
+        .join('/'),
+    );
+  }
+
+  isSatisfiedBy(rp: ResourcePath): boolean {
+    if (this.length !== rp.length) return false;
+
+    return this.splits.every((split, idx) =>
+      pathSegmentMatches(split, rp.splits[idx]),
     );
   }
 }

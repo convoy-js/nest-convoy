@@ -1,0 +1,10 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "paths",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    visibility = ["//packages/commands/common:__pkg__"],
+)

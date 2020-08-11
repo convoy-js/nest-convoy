@@ -4,6 +4,8 @@ import { DomainEventHandler } from './domain-event-handler';
 
 export class DomainEventHandlers extends Handlers<DomainEventHandler> {
   getAggregateTypesAndEvents(): string[] {
-    return this.handlers.map(handler => handler.event.name);
+    return this.handlers.map(
+      handler => handler.aggregateType || handler.event.name,
+    );
   }
 }

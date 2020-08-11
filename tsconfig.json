@@ -15,7 +15,7 @@
       "@nest-convoy/*": ["packages/*"],
       "nest_convoy/*": ["dist/bin/*"]
     },
-    "types": ["@types/jest"]
+    "types": ["jest"]
   },
   "bazelOptions": {
     "devmodeTargetOverride": "es2017",

@@ -122,7 +122,9 @@ export class InvokeParticipantStepBuilder<Data>
       );
     } else {
       // 1: compensation
-      this.compensation = new ParticipantInvocation(compensation);
+      this.compensation = new ParticipantInvocation(
+        compensation.bind(this.parent.saga),
+      );
     }
 
     return this;
@@ -132,6 +134,7 @@ export class InvokeParticipantStepBuilder<Data>
     replyType: Type<T>,
     replyHandler: SagaStepReplyHandler<Data, T>,
   ): this {
+    replyHandler = replyHandler.bind(this.parent.saga);
     if (this.compensation) {
       this.compensationReplyHandlers.set(replyType.name, replyHandler);
     } else {

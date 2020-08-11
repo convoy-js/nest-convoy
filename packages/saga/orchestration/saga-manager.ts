@@ -47,7 +47,7 @@ export interface SagaManager<Data> {
   ): Promise<SagaInstance<Data>>;
 }
 
-export class SagaManger<Data> implements SagaManager<Data> {
+export class SagaManager<Data> implements SagaManager<Data> {
   private readonly logger = new Logger(this.constructor.name);
 
   private get sagaType(): string {
@@ -225,7 +225,7 @@ export class SagaManger<Data> implements SagaManager<Data> {
     await this.processActions(sagaInstance, sagaInstance.sagaData, actions);
   }
 
-  private async handleMessage(message: Message): Promise<void> {
+  async handleMessage(message: Message): Promise<void> {
     this.logger.debug('handleMessage invoked with ' + JSON.stringify(message));
     if (message.hasHeader(SagaReplyHeaders.REPLY_SAGA_ID)) {
       await this.handleReply(message);

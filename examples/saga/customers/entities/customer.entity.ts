@@ -25,7 +25,8 @@ export class Customer {
     () => CreditReservation,
     creditReservation => creditReservation.customer,
     {
-      onDelete: 'CASCADE',
+      cascade: true,
+      eager: true,
     },
   )
   @JoinTable()

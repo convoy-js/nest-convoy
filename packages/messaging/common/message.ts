@@ -1,4 +1,4 @@
-import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
+import { MissingRequiredMessageHeaderException } from './exceptions';
 
 export type MessageHeaders = Map<string, string>;
 
@@ -54,9 +54,8 @@ export class Message {
   getRequiredHeader(name: string): string {
     const value = this.getHeader(name);
     if (!value) {
-      throw new RuntimeException(
-        `No such header: ${name} in this message - ${this}`,
-      );
+      console.error(name, this);
+      throw new MissingRequiredMessageHeaderException(name, this);
     }
     return value;
   }

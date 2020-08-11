@@ -10,5 +10,5 @@ export class SagaReplyHeaders {
     SagaCommandHeaders.SAGA_ID,
   );
 
-  static readonly REPLY_LOCKED = 'saga-locked-target';
+  static readonly REPLY_LOCKED = 'saga_locked_target';
 }

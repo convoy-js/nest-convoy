@@ -15,6 +15,6 @@ export class CreateOrderSagaRolledBackHandler
   async handle(
     dee: DomainEventEnvelope<CreateOrderSagaRolledBack>,
   ): Promise<void> {
-    // console.log(dee);
+    console.log(CreateOrderSagaRolledBackHandler.name, dee);
   }
 }

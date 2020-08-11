@@ -25,8 +25,10 @@ export abstract class CommandProducer {
 }
 
 @Injectable()
-export class ConvoyCommandProducer implements CommandProducer {
-  constructor(private readonly messageProducer: ConvoyMessageProducer) {}
+export class ConvoyCommandProducer extends CommandProducer {
+  constructor(private readonly messageProducer: ConvoyMessageProducer) {
+    super();
+  }
 
   createMessage(
     channel: string,

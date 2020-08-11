@@ -10,17 +10,17 @@ export class CreateOrderSaga extends BaseCreateOrderSaga<CreateOrderSagaData> {
   readonly sagaDefinition = this.step()
     .withCompensation(
       this.orderServiceProxy.reject,
-      this.createRejectOrderCommand.bind(this),
+      this.createRejectOrderCommand,
     )
     .step()
     .invokeParticipant(
       this.customerServiceProxy.reserveCredit,
-      this.createReserveCreditCommand.bind(this),
+      this.createReserveCreditCommand,
     )
     .step()
     .invokeParticipant(
       this.orderServiceProxy.approve,
-      this.createApproveOrderCommand.bind(this),
+      this.createApproveOrderCommand,
     )
     .build();
 
@@ -29,7 +29,7 @@ export class CreateOrderSaga extends BaseCreateOrderSaga<CreateOrderSagaData> {
     private readonly orderServiceProxy: OrderServiceProxy,
     private readonly customerServiceProxy: CustomerServiceProxy,
   ) {
-    super(CreateOrderSaga, domainEventPublisher);
+    super(domainEventPublisher);
   }
 
   private createRejectOrderCommand(

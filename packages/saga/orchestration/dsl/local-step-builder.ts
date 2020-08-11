@@ -14,11 +14,16 @@ export class LocalStepBuilder<Data> implements BaseStepBuilder<Data> {
   ) {}
 
   private addStep() {
-    this.parent.addStep(new LocalStep<Data>(this.handler, this.compensation));
+    this.parent.addStep(
+      new LocalStep<Data>(
+        this.handler.bind(this.parent.saga),
+        this.compensation,
+      ),
+    );
   }
 
   withCompensation(localCompensation: Consumer<Data>): this {
-    this.compensation = localCompensation;
+    this.compensation = localCompensation.bind(this.parent.saga);
     return this;
   }
 

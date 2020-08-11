@@ -11,13 +11,17 @@ import { SagaDefinition } from '../saga-definition';
 import { SagaStep, SagaStepReplyHandler } from './saga-step';
 import { SagaExecutionState } from './saga-execution-state';
 import { StepToExecute } from './step-to-execute';
+import { SimpleSaga } from './simple-saga';
 import {
   decodeExecutionState,
   encodeExecutionState,
 } from './saga-execution-state-json-serde';
 
 export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
-  constructor(private readonly sagaSteps: SagaStep<Data>[]) {}
+  constructor(
+    private readonly sagaSteps: SagaStep<Data>[],
+    private readonly saga: SimpleSaga<Data>,
+  ) {}
 
   private async nextStepToExecute(
     { compensating, currentlyExecuting }: SagaExecutionState,
@@ -73,7 +77,7 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
     replyHandler: SagaStepReplyHandler<Data>,
   ): Promise<void> {
     // TODO - eventuate-tram-sagas-orchestration-simple-dsl/src/main/java/io/eventuate/tram/sagas/simpledsl/SimpleSagaDefinition.java
-    const replyType = message.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE);
+    // const replyType = message.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE);
     await replyHandler(data, message.parsePayload());
   }
 
@@ -98,11 +102,7 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
       state.compensating,
     );
     if (replyHandler) {
-      await this.invokeReplyHandler(
-        message,
-        sagaData,
-        replyHandler, //.bind(currentStep),
-      );
+      await this.invokeReplyHandler(message, sagaData, replyHandler);
     }
 
     if (currentStep.isSuccessfulReply(state.compensating, message)) {

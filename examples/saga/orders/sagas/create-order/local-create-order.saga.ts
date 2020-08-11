@@ -1,4 +1,4 @@
-import { Saga, DomainEventPublisher } from '@nest-convoy/core';
+import { Saga, DomainEventPublisher, Failure } from '@nest-convoy/core';
 
 import { OrderService } from '../../services';
 import { CustomerServiceProxy } from '../participants';
@@ -18,6 +18,7 @@ export class LocalCreateOrderSaga extends BaseCreateOrderSaga<
       this.customerServiceProxy.reserveCredit,
       this.createReserveCreditCommand.bind(this),
     )
+    .onReply(Failure, this.reject.bind(this))
     .step()
     .invokeLocal(this.approve.bind(this))
     .build();
@@ -27,7 +28,7 @@ export class LocalCreateOrderSaga extends BaseCreateOrderSaga<
     private readonly customerServiceProxy: CustomerServiceProxy,
     private readonly order: OrderService,
   ) {
-    super(LocalCreateOrderSaga, domainEventPublisher);
+    super(domainEventPublisher);
   }
 
   private async create(data: LocalCreateOrderSagaData): Promise<void> {
@@ -36,16 +37,13 @@ export class LocalCreateOrderSaga extends BaseCreateOrderSaga<
     });
 
     data.orderId = order.id;
-    console.log('create', data);
   }
 
   private async reject(data: LocalCreateOrderSagaData): Promise<void> {
-    console.log('reject', data);
     await this.order.noteCreditReservationFailed(data.orderId);
   }
 
   private async approve(data: LocalCreateOrderSagaData): Promise<void> {
-    console.log('approve', data);
     await this.order.noteCreditReserved(data.orderId);
   }
 }

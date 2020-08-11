@@ -12,10 +12,10 @@ export class DomainEventHandlersBuilder
   implements Builder<DomainEventHandlers> {
   private readonly handlers: DomainEventHandler[] = [];
 
-  // constructor(private aggregateType: string) {}
+  constructor(private aggregateType?: string) {}
 
   static forAggregateType(aggregateType: string): DomainEventHandlersBuilder {
-    return new DomainEventHandlersBuilder(/*aggregateType*/);
+    return new DomainEventHandlersBuilder(aggregateType);
   }
 
   onEvent<E extends DomainEvent>(
@@ -23,16 +23,16 @@ export class DomainEventHandlersBuilder
     handler: DomainEventHandlerInvoke<E>,
   ): this {
     const eventHandler = new DomainEventHandler(
-      // this.aggregateType,
       event,
       handler,
+      this.aggregateType,
     );
     this.handlers.push(eventHandler);
     return this;
   }
 
   andForAggregateType(aggregateType: string): this {
-    // this.aggregateType = aggregateType;
+    this.aggregateType = aggregateType;
     return this;
   }
 

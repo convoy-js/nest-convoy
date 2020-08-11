@@ -1,0 +1,17 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "testing",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@nest-convoy/testing",
+    deps = [
+        "@npm//@types/jest",
+        "@npm//@nestjs/testing",
+        "//packages/commands",
+        "//packages/in-memory",
+        "//packages/messaging",
+    ],
+)

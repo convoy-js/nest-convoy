@@ -28,7 +28,7 @@ export class ConvoyMessagingProducerModule {
           ...provider,
         } as Provider<MessageProducer>,
       ],
-      exports: [ConvoyMessageProducer],
+      exports: [ConvoyMessageProducer, MessageProducer],
     };
   }
 }
