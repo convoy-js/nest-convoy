@@ -1,0 +1,45 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("@io_bazel_rules_docker//nodejs:image.bzl", "nodejs_image")
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "src",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "@npm//@nestjs/core",
+        "@npm//@nestjs/microservices",
+        "@npm//@nestjs/typeorm",
+        "@npm//@nestjs/platform-express",
+        "@npm//typeorm",
+        "@npm//kafkajs",
+        "@npm//pg",
+        "//packages/core",
+        "//packages/common",
+        "//packages/messaging/broker",
+        "//examples/sagas-customers-orders/common",
+    ],
+)
+
+nodejs_binary(
+    name = "customers",
+    data = [
+        ":src",
+    ],
+    entry_point = ":main.ts",
+)
+
+nodejs_image(
+    name = "image",
+    binary = ":customers",
+    tags = ["local"],
+)
+
+#container_push(
+#   name = "push_container",
+#   image = ":image",
+#   format = "Docker",
+#   repository = "nest-convoy-customer-service",
+#   tag = "dev",
+#)
+
