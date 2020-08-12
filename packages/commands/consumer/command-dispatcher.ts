@@ -41,21 +41,16 @@ export class CommandDispatcher implements Dispatcher {
     commandHandler: CommandHandler,
     commandMessage: CommandMessage,
   ): Promise<Message[]> {
-    // TODO: This doesnt work properly
-    const replies = await commandHandler.invoke(commandMessage);
-    const failure = replies.find(
-      reply =>
-        reply.getHeader(ReplyMessageHeaders.REPLY_OUTCOME) ===
-        CommandReplyOutcome.FAILURE,
-    );
-
-    if (failure) {
-      throw new Error(
-        failure.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE),
-      );
+    // TODO: Figure out whether or not it should sendReplies or handleException
+    const reply = await commandHandler.invoke(commandMessage);
+    if (
+      reply.getHeader(ReplyMessageHeaders.REPLY_OUTCOME) ===
+      CommandReplyOutcome.FAILURE
+    ) {
+      throw new Error(reply.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE));
     }
 
-    return replies;
+    return [reply];
     // try {
     //   const reply = await commandHandler.invoke(commandMessage);
     //   console.log('invoke', reply);

@@ -12,7 +12,7 @@ import { CommandMessage } from './command-message';
 export type CommandHandlerInvoke<C extends Command = any> = (
   cm: CommandMessage<C>,
   pvs?: Map<string, string>,
-) => Promise<Message[]> | Message[];
+) => Promise<Message>;
 
 export class CommandHandler implements Handler<CommandHandlerInvoke> {
   constructor(

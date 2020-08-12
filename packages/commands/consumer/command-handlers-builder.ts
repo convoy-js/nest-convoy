@@ -10,7 +10,7 @@ import { CommandMessage } from './command-message';
 export type CommandMessageHandler<C extends Command = any> = (
   cm: CommandMessage<C>,
   pvs?: Map<string, string>,
-) => Promise<Message[] | any> | Message[] | any;
+) => Promise<Message | any> | Message | any;
 
 export class CommandHandlersBuilder implements Builder<CommandHandlers> {
   private readonly handlers: CommandHandler[] = [];
@@ -24,12 +24,12 @@ export class CommandHandlersBuilder implements Builder<CommandHandlers> {
   private wrapMessageHandler(
     handle: CommandMessageHandler,
   ): CommandHandlerInvoke {
-    return async (cm: CommandMessage): Promise<Message[]> => {
+    return async (cm: CommandMessage): Promise<Message> => {
       try {
         const reply = await handle(cm);
-        return reply instanceof Message ? [reply] : [withSuccess(reply)];
+        return reply instanceof Message ? reply : withSuccess(reply);
       } catch (err) {
-        return [withFailure(err)];
+        return withFailure(err);
       }
     };
   }
@@ -39,7 +39,6 @@ export class CommandHandlersBuilder implements Builder<CommandHandlers> {
       new CommandHandler(
         this.channel,
         command,
-        // handler,
         this.wrapMessageHandler(handler),
       ),
     );
