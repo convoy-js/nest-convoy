@@ -9,6 +9,7 @@ import {
 import {
   CommandMessageHeaders,
   CommandReplyOutcome,
+  correlateMessageHeaders,
   Failure,
   MissingCommandHandlerException,
   ReplyMessageHeaders,
@@ -43,12 +44,12 @@ export class CommandDispatcher implements Dispatcher {
   ): Promise<Message[]> {
     // TODO: Figure out whether or not it should sendReplies or handleException
     const reply = await commandHandler.invoke(commandMessage);
-    if (
-      reply.getHeader(ReplyMessageHeaders.REPLY_OUTCOME) ===
-      CommandReplyOutcome.FAILURE
-    ) {
-      throw new Error(reply.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE));
-    }
+    // if (
+    //   reply.getHeader(ReplyMessageHeaders.REPLY_OUTCOME) ===
+    //   CommandReplyOutcome.FAILURE
+    // ) {
+    //   throw new Error(reply.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE));
+    // }
 
     return [reply];
     // try {
@@ -67,7 +68,7 @@ export class CommandDispatcher implements Dispatcher {
       throw new MissingCommandHandlerException(message);
     }
 
-    const correlationHeaders = this.correlationHeaders(message.getHeaders());
+    const correlationHeaders = correlateMessageHeaders(message.getHeaders());
 
     const defaultReplyChannel = message.getRequiredHeader(
       CommandMessageHeaders.REPLY_TO,
@@ -115,7 +116,7 @@ export class CommandDispatcher implements Dispatcher {
     // error: Error,
   ): Promise<void> {
     const reply = MessageBuilder.withPayload(new Failure()).build();
-    const correlationHeaders = this.correlationHeaders(message.getHeaders());
+    const correlationHeaders = correlateMessageHeaders(message.getHeaders());
     await this.sendReplies(correlationHeaders, [reply], defaultReplyChannel);
   }
 
@@ -131,20 +132,5 @@ export class CommandDispatcher implements Dispatcher {
 
       await this.messageProducer.send(defaultReplyChannel, message);
     }
-  }
-
-  private correlationHeaders(headers: MessageHeaders): MessageHeaders {
-    const correlationHeaders = new Map(
-      [...headers.entries()]
-        .filter(([key]) =>
-          CommandMessageHeaders.headerStartsWithCommandPrefix(key),
-        )
-        .map(([key, value]) => [CommandMessageHeaders.inReply(key), value]),
-    );
-    correlationHeaders.set(
-      ReplyMessageHeaders.IN_REPLY_TO,
-      headers.get(Message.ID),
-    );
-    return correlationHeaders;
   }
 }

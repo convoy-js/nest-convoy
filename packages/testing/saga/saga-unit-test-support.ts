@@ -1,4 +1,4 @@
-import { forwardRef, Global, Inject, Injectable, Module } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Module } from '@nestjs/common';
 import {
   SagaCommandProducer,
   SagaInstance,
@@ -15,18 +15,10 @@ import {
 } from '@nest-convoy/commands';
 import { SagaManager, SimpleSaga } from '@nest-convoy/saga';
 import {
-  ConvoyChannelMapping,
-  ConvoyMessageConsumer,
   ConvoyMessageProducer,
-  ConvoyMessagingCommonModule,
   Message,
   MessageBuilder,
-  MessageConsumer,
-  MessageInterceptor,
-  MessageProducer,
-  NEST_CONVOY_MESSAGE_INTERCEPTORS,
 } from '@nest-convoy/messaging';
-import { ConvoyInMemoryMessagingModule } from '@nest-convoy/in-memory';
 
 import { MessageWithDestination } from './message-with-destination';
 
@@ -140,13 +132,13 @@ export class SagaUnitTestSupport<Data> {
 
   async successReply<T>(reply?: T): Promise<this> {
     await this.sendReply(reply ?? new Success(), CommandReplyOutcome.SUCCESS);
-    await nextTick();
+    // await nextTick();
     return this;
   }
 
   async failureReply<T>(reply?: T): Promise<this> {
     await this.sendReply(reply ?? new Failure(), CommandReplyOutcome.FAILURE);
-    await nextTick();
+    // await nextTick();
     return this;
   }
 
@@ -172,7 +164,7 @@ export class SagaUnitTestSupport<Data> {
     );
     try {
       await this.sagaManager.create(sagaData);
-      await nextTick();
+      // await nextTick();
     } catch (err) {
       this.createException = err;
     }
@@ -216,7 +208,6 @@ export class TestMessageProducer {
   }
 }
 
-// @Global()
 @Module({
   providers: [
     TestMessageProducer,

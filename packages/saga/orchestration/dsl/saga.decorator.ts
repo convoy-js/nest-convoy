@@ -14,6 +14,5 @@ export function Saga<Data>(data: Type<Data>) {
       },
       target,
     );
-    // Reflect.defineMetadata(CONVOY_SAGA_DATA_TYPE, data, target);
   };
 }

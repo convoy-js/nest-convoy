@@ -3,7 +3,6 @@ import {
   RuntimeException,
   UnsupportedOperationException,
 } from '@nest-convoy/common';
-import { ReplyMessageHeaders } from '@nest-convoy/commands/common';
 
 import { SagaActions, SagaActionsBuilder } from '../saga-actions';
 import { SagaDefinition } from '../saga-definition';
@@ -74,11 +73,11 @@ export class SimpleSagaDefinition<Data> implements SagaDefinition<Data> {
   private async invokeReplyHandler(
     message: Message,
     data: Data,
-    replyHandler: SagaStepReplyHandler<Data>,
+    handleReply: SagaStepReplyHandler<Data>,
   ): Promise<void> {
     // TODO - eventuate-tram-sagas-orchestration-simple-dsl/src/main/java/io/eventuate/tram/sagas/simpledsl/SimpleSagaDefinition.java
     // const replyType = message.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE);
-    await replyHandler(data, message.parsePayload());
+    await handleReply(data, message.parsePayload());
   }
 
   start(sagaData: Data): Promise<SagaActions<Data>> {

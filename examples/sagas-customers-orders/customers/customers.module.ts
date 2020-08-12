@@ -7,7 +7,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
 import { Transport } from '@nestjs/microservices';
 
-import { defaultOptions, TypeOrmModuleOptions } from '../common';
+import {
+  ConvoySagaTypeOrmModule,
+  defaultOptions,
+  TypeOrmModuleOptions,
+} from '../common';
 
 import { CreditReservation, Customer } from './entities';
 import { CustomerService } from './services';
@@ -18,15 +22,11 @@ import { ReserveCreditCommandHandler } from './commands';
     ConvoyCommonModule,
     TypeOrmModule.forRoot({
       ...defaultOptions,
-      host: 'customer-db',
-      database: 'customerdb',
+      host: 'customers-db',
+      port: 5435,
+      database: 'customers',
     } as TypeOrmModuleOptions),
-    TypeOrmModule.forRoot({
-      ...defaultOptions,
-      name: NEST_CONVOY_SAGA_CONNECTION,
-      host: 'sagas-db',
-      database: 'sagasdb',
-    } as TypeOrmModuleOptions),
+    ConvoySagaTypeOrmModule,
     TypeOrmModule.forFeature([CreditReservation, Customer]),
     ConvoyMessagingBrokerModule.register(
       {

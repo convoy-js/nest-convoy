@@ -22,7 +22,7 @@ describe('ConditionalSaga', () => {
     conditionalSaga = module.get(ConditionalSaga);
   });
 
-  it.only('shouldExecuteAllStepsSuccessfully', async () => {
+  it('shouldExecuteAllStepsSuccessfully', async () => {
     const conditionalSagaData = new ConditionalSagaData(true);
     const saga = await sagaTest.create(conditionalSaga, conditionalSagaData);
 
