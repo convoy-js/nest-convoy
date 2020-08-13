@@ -6,6 +6,6 @@ nest_test(
     deps = [
         "//packages/saga/orchestration/dsl",
         "//packages/commands",
-        "//packages/testing",
+        "//packages/testing/saga",
     ],
 )

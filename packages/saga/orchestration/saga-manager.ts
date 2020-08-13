@@ -48,7 +48,7 @@ export interface SagaManager<Data> {
 }
 
 export class SagaManager<Data> implements SagaManager<Data> {
-  private readonly logger = new Logger(this.constructor.name);
+  private readonly logger = new Logger(this.constructor.name, true);
 
   private get sagaType(): string {
     return this.saga.constructor.name;

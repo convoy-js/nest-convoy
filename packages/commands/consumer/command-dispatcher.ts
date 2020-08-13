@@ -21,7 +21,7 @@ import { CommandHandler } from './command-handler';
 import { withFailure, withSuccess } from './command-handler-reply-builder';
 
 export class CommandDispatcher implements Dispatcher {
-  private readonly logger = new Logger(this.constructor.name);
+  private readonly logger = new Logger(this.constructor.name, true);
 
   constructor(
     protected readonly commandDispatcherId: string,

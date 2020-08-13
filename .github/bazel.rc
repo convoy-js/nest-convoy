@@ -1,0 +1,9 @@
+ build --verbose_failures
+build --announce_rc
+common --logging 6
+
+
+#build --remote_upload_local_results
+
+test --build_tests_only
+test --cache_test_results

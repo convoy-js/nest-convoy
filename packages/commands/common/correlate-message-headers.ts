@@ -1,4 +1,4 @@
-import { Message, MessageHeaders } from '@nest-convoy/messaging';
+import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 
 import { CommandMessageHeaders } from './command-message-headers';
 import { ReplyMessageHeaders } from './reply-message-headers';
@@ -13,9 +13,11 @@ export function correlateMessageHeaders(
       )
       .map(([key, value]) => [CommandMessageHeaders.inReply(key), value]),
   );
+
   correlationHeaders.set(
     ReplyMessageHeaders.IN_REPLY_TO,
     headers.get(Message.ID),
   );
+
   return correlationHeaders;
 }

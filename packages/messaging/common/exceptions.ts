@@ -7,3 +7,9 @@ export class MissingRequiredMessageHeaderException extends RuntimeException {
     super(`No such header "${header}" in message - ${JSON.stringify(message)}`);
   }
 }
+
+export class MissingRequiredMessageIDException extends RuntimeException {
+  constructor(message: Message) {
+    super('Message needs an ID');
+  }
+}

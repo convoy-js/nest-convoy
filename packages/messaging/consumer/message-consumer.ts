@@ -32,7 +32,7 @@ export abstract class MessageConsumer {
 export class ConvoyMessageConsumer
   implements MessageConsumer, OnApplicationShutdown {
   private readonly subs = new Map<string, any>();
-  private readonly logger = new Logger(this.constructor.name);
+  private readonly logger = new Logger(this.constructor.name, true);
 
   get id(): string {
     return this.target.id;

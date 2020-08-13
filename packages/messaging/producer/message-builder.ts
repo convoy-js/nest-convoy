@@ -12,6 +12,7 @@ export class MessageBuilder {
       this.body = messageOrPayload;
     }
   }
+
   static withMessage(message: Message): MessageBuilder {
     return new MessageBuilder(message);
   }

@@ -7,7 +7,7 @@ import {
 
 @Injectable()
 export class InMemoryMessageConsumer extends MessageConsumer {
-  private readonly logger = new Logger(this.constructor.name);
+  private readonly logger = new Logger(this.constructor.name, true);
   private subscriptions = new Map<string, MessageHandler[]>();
   private wildcardSubscriptions = new Set<MessageHandler>();
 

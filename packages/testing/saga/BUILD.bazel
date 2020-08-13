@@ -1,7 +1,7 @@
 load("//tools:defaults.bzl", "nest_library")
 
 nest_library(
-    name = "testing",
+    name = "saga",
     srcs = glob(
         ["*.ts"],
         exclude = ["**/*.spec.ts"],
