@@ -3,12 +3,13 @@ set -u -e -o pipefail
 
 bazelrc_conf="$1"
 bazelrc_user="$2"
+base_ref="$3"
 
 cp ${bazelrc_conf} ${bazelrc_user}
 
 echo 'build --remote_accept_cached=true' >> ${bazelrc_user}
 echo "Reading from remote cache for bazel remote jobs."
-if [[ $CIRCLE_BRANCH == "dev" || $CIRCLE_BRANCH == "master" ]]; then
+if [[ $base_ref == "dev" || $base_ref == "master" ]]; then
   echo 'build --remote_upload_local_results=true' >> ${bazelrc_user}
   echo "Uploading local build results to remote cache."
 else

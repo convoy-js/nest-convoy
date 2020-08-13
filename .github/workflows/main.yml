@@ -49,7 +49,7 @@ jobs:
 #          args: # optional
 
       - name: Setting up Bazel configuration for Github Actions
-        run: ./.github/setup_bazel.sh .github/bazel.rc .bazelrc.user
+        run: ./.github/setup_bazel.sh .github/bazel.rc .bazelrc.user ${{ github.base_ref }}
         env:
           BUILD_BUDDY_TOKEN: ${{ secrets.BUILD_BUDDY }}
 
