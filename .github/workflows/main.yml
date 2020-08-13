@@ -40,8 +40,8 @@ jobs:
       - name: Running Yarn install
         run: yarn install --frozen-lockfile
 
-      - name: Snyk
-        uses: snyk/actions@0.1.1
+#      - name: Snyk
+#        uses: snyk/actions@0.1.1
 #        with:
 #          # Which Snyk command to run, defaults to test
 #          command: # optional, default is test
