@@ -47,9 +47,12 @@ jobs:
 #          command: # optional, default is test
 #          # Additional arguments to pass to Snyk
 #          args: # optional
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
 
       - name: Setting up Bazel configuration for Github Actions
-        run: ./.github/setup_bazel.sh .github/bazel.rc .bazelrc.user ${{ github.base_ref }}
+        run: ./.github/setup_bazel.sh .github/bazel.rc .bazelrc.user ${{ steps.extract_branch.outputs.branch }}
         env:
           BUILD_BUDDY_TOKEN: ${{ secrets.BUILD_BUDDY }}
 
