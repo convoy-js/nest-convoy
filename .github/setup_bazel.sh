@@ -3,13 +3,13 @@ set -u -e -o pipefail
 
 bazelrc_conf="$1"
 bazelrc_user="$2"
-base_ref="$3"
+git_branch="$3"
 
 cp ${bazelrc_conf} ${bazelrc_user}
 
 echo 'build --remote_accept_cached=true' >> ${bazelrc_user}
 echo "Reading from remote cache for bazel remote jobs."
-if [[ $base_ref == "dev" || $base_ref == "master" ]]; then
+if [[ $git_branch == "dev" || $git_branch == "master" ]]; then
   echo 'build --remote_upload_local_results=true' >> ${bazelrc_user}
   echo "Uploading local build results to remote cache."
 else
@@ -17,7 +17,7 @@ else
   echo "Not uploading local build results to remote cache."
 fi
 
-if [[ -z $BUILD_BUDDY_TOKEN ]]; then;
+if [[ -z $BUILD_BUDDY_TOKEN ]]; then
   eval echo 'build --bes_results_url=https://app.buildbuddy.io/invocation/' >> ${bazelrc_user}
   eval echo 'build --bes_backend=grpcs://$BUILD_BUDDY_TOKEN@cloud.buildbuddy.io' >> ${bazelrc_user}
   eval echo 'build --remote_cache=grpcs://$BUILD_BUDDY_TOKEN@cloud.buildbuddy.io' >> ${bazelrc_user}
