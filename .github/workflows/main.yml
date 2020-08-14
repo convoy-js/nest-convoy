@@ -13,17 +13,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x]
-
     steps:
       - uses: actions/checkout@v2
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 14.x
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -40,29 +37,17 @@ jobs:
       - name: Running Yarn install
         run: yarn install --frozen-lockfile
 
-#      - name: Snyk
-#        uses: snyk/actions@0.1.1
-#        with:
-#          # Which Snyk command to run, defaults to test
-#          command: # optional, default is test
-#          # Additional arguments to pass to Snyk
-#          args: # optional
       - name: Extract branch name
         id: extract_branch
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
 
       - name: Setting up Bazel configuration for Github Actions
-        run: ./.github/setup_bazel.sh .github/bazel.rc .bazelrc.user ${{ steps.extract_branch.outputs.branch }}
+        run: ./scripts/setup_ci_bazel.sh .github/bazel.rc .bazelrc.user ${{ steps.extract_branch.outputs.branch }}
         env:
           BUILD_BUDDY_TOKEN: ${{ secrets.BUILD_BUDDY }}
 
       - name: Initializing Bazel
-        run: |
-          # Symlink fetched bazelisk to /usr/local/bin/bazel
-          pathToBazel=$(realpath ./node_modules/@bazel/bazelisk/bazelisk-linux_amd64)
-          sudo ln -fs $pathToBazel /usr/local/bin/bazel
-          echo "Bazel version:"
-          bazel version
+        run: ./scripts/setup_bazel.sh
 
       - name: Build packages
         run: bazel build //packages/...
@@ -70,3 +55,8 @@ jobs:
       - name: Test packages
         run: bazel test //packages/...
 
+      - name: Publish packages
+        if: ${{ steps.extract_branch.outputs.branch }} == 'master' && github.event_name == 'push'
+        run: ./scripts/publish.sh
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

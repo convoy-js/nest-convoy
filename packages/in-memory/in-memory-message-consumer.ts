@@ -31,19 +31,17 @@ export class InMemoryMessageConsumer extends MessageConsumer {
   async dispatchMessage(message: Message): Promise<void> {
     const destination = message.getRequiredHeader(Message.DESTINATION);
     const handlers = this.subscriptions.get(destination) || [];
-    this.logger.debug(
-      `Sending message ${JSON.stringify(
-        message,
-      )} to channel ${destination} that has ${handlers.length} subscriptions`,
-    );
+    // this.logger.debug(
+    //   `Sending message ${message.toString()} to channel ${destination} that has ${
+    //     handlers.length
+    //   } subscriptions`,
+    // );
     await this.dispatchMessageToHandlers(destination, message, handlers);
-    this.logger.debug(
-      `Sending message ${JSON.stringify(
-        message,
-      )} to wildcard channel ${destination} that has ${
-        handlers.length
-      } subscriptions`,
-    );
+    // this.logger.debug(
+    //   `Sending message ${message.toString()} to wildcard channel ${destination} that has ${
+    //     handlers.length
+    //   } subscriptions`,
+    // );
     await this.dispatchMessageToHandlers(destination, message, [
       ...this.wildcardSubscriptions,
     ]);

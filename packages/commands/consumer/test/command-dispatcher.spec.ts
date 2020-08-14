@@ -12,7 +12,7 @@ import {
   MissingCommandHandlerException,
 } from '@nest-convoy/commands/common';
 import {
-  CommandDispatcher,
+  ConvoyCommandDispatcher,
   CommandDispatcherFactory,
   CommandHandler,
   CommandHandlers,
@@ -128,7 +128,7 @@ describe('CommandDispatcher', () => {
 
     describe('errors', () => {
       let message: Message;
-      let commandDispatcher: CommandDispatcher;
+      let commandDispatcher: ConvoyCommandDispatcher;
 
       beforeEach(() => {
         message = new Message(

@@ -8,10 +8,11 @@ nest_library(
     ),
     module_name = "@nest-convoy/core",
     deps = [
+        "@npm//@nestjs/cqrs",
+        "@npm//@nestjs/core",
         "//packages/commands",
-        "//packages/cqrs",
         "//packages/events",
-        "//packages/saga",
+        "//packages/sagas",
         "//packages/messaging",
     ],
 )

@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "participant",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    module_name = "@nest-convoy/sagas/participant",
+    visibility = [
+        "//packages/sagas:__pkg__",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/commands/common",
+        "//packages/commands/consumer",
+        "//packages/messaging/common",
+        "//packages/messaging/consumer",
+        "//packages/messaging/producer",
+        "//packages/sagas/common",
+    ],
+)

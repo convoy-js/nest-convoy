@@ -1,15 +1,15 @@
-import {
-  Injectable,
-  Logger,
-  Optional,
-  OnApplicationShutdown,
-} from '@nestjs/common';
 import { Consumer } from '@nest-convoy/common';
 import {
   ConvoyChannelMapping,
   Message,
   MessageHandler,
 } from '@nest-convoy/messaging/common';
+import {
+  Injectable,
+  Logger,
+  Optional,
+  OnApplicationShutdown,
+} from '@nestjs/common';
 
 import { MessageSubscription } from './message-subscription';
 

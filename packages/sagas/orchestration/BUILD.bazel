@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "orchestration",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    module_name = "@nest-convoy/sagas/orchestration",
+#    visibility = [
+#        "//packages/sagas/orchestration/dsl:__pkg__",
+#        "//packages/sagas:__pkg__",
+#    ],
+    deps = [
+        "//packages/commands",
+        "//packages/common",
+        "//packages/events",
+        "//packages/messaging",
+        "//packages/sagas/common",
+        "//packages/sagas/orchestration/entities",
+        "@npm//@nestjs/typeorm",
+        "@npm//typeorm",
+    ],
+)

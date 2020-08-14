@@ -1,26 +1,23 @@
 import { Logger } from '@nestjs/common';
 import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
-import { Dispatcher, RuntimeException } from '@nest-convoy/common';
+import { Dispatcher } from '@nest-convoy/common';
 import {
   MessageBuilder,
   ConvoyMessageProducer,
 } from '@nest-convoy/messaging/producer';
 import {
   CommandMessageHeaders,
-  CommandReplyOutcome,
   correlateMessageHeaders,
   Failure,
   MissingCommandHandlerException,
-  ReplyMessageHeaders,
 } from '@nest-convoy/commands/common';
 
 import { CommandHandlers } from './command-handlers';
 import { CommandMessage } from './command-message';
 import { CommandHandler } from './command-handler';
-import { withFailure, withSuccess } from './command-handler-reply-builder';
 
-export class CommandDispatcher implements Dispatcher {
+export class ConvoyCommandDispatcher implements Dispatcher {
   private readonly logger = new Logger(this.constructor.name, true);
 
   constructor(
@@ -44,22 +41,8 @@ export class CommandDispatcher implements Dispatcher {
   ): Promise<Message[]> {
     // TODO: Figure out whether or not it should sendReplies or handleException
     const reply = await commandHandler.invoke(commandMessage);
-    // if (
-    //   reply.getHeader(ReplyMessageHeaders.REPLY_OUTCOME) ===
-    //   CommandReplyOutcome.FAILURE
-    // ) {
-    //   throw new Error(reply.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE));
-    // }
 
     return [reply];
-    // try {
-    //   const reply = await commandHandler.invoke(commandMessage);
-    //   console.log('invoke', reply);
-    //   if (Array.isArray(reply)) return reply;
-    //   return (reply as any) instanceof Message ? [reply] : [withSuccess(reply)];
-    // } catch (err) {
-    //   return [withFailure(err)];
-    // }
   }
 
   async handleMessage(message: Message): Promise<void> {
@@ -94,9 +77,7 @@ export class CommandDispatcher implements Dispatcher {
       );
     } catch (err) {
       this.logger.error(
-        `Generated error ${this.commandDispatcherId} ${JSON.stringify(
-          message,
-        )}`,
+        `Generated error ${this.commandDispatcherId} ${message.toString()}`,
       );
       await this.handleException(message, defaultReplyChannel /*, err*/);
       return;

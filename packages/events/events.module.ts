@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { ConvoyEventsPublisherModule } from '@nest-convoy/events/publisher';
-import { ConvoyEventsSubscriberModule } from '@nest-convoy/events/subscriber';
+import { ConvoyEventsPublisherModule } from './publisher';
+import { ConvoyEventsSubscriberModule } from './subscriber';
 
 @Module({
   imports: [ConvoyEventsPublisherModule, ConvoyEventsSubscriberModule],

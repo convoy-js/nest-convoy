@@ -6,19 +6,18 @@ import {
 } from '@nest-convoy/messaging/producer';
 import {
   DomainEvent,
-  DomainEventNameMapping,
+  // DomainEventNameMapping,
   EventMessageHeaders,
 } from '@nest-convoy/events/common';
 
 @Injectable()
 export class DomainEventPublisher {
   constructor(
-    private readonly messageProducer: ConvoyMessageProducer,
-    private readonly domainEventNameMapping: DomainEventNameMapping,
+    private readonly messageProducer: ConvoyMessageProducer, // private readonly domainEventNameMapping: DomainEventNameMapping,
   ) {}
 
   private createMessageForDomainEvent(
-    aggregateType: Type<any>,
+    aggregateType: string,
     aggregateId: string,
     headers: Map<string, string>,
     event: DomainEvent,
@@ -29,7 +28,7 @@ export class DomainEventPublisher {
         // .withHeader(Message.ID, aggregateId)
         .withHeader(Message.PARTITION_ID, aggregateId)
         .withHeader(EventMessageHeaders.AGGREGATE_ID, aggregateId)
-        .withHeader(EventMessageHeaders.AGGREGATE_TYPE, aggregateType.name)
+        .withHeader(EventMessageHeaders.AGGREGATE_TYPE, aggregateType)
         .withHeader(EventMessageHeaders.EVENT_TYPE, event.constructor.name)
         .build()
     );
@@ -42,20 +41,21 @@ export class DomainEventPublisher {
     headers: Map<string, string> = new Map(),
   ): Promise<void> {
     for (const event of domainEvents) {
+      const eventName = event.constructor.name;
       // const eventType = this.domainEventNameMapping.eventToExternalEventType(
-      //   // aggregateType,
+      //   aggregateType?.name,
       //   event,
       // );
       const domainEventMessage = this.createMessageForDomainEvent(
-        aggregateType,
-        aggregateId || event.constructor.name,
+        aggregateType?.name || eventName,
+        aggregateId || eventName,
         headers,
         event,
       );
+
       await this.messageProducer.send(
-        aggregateId || event.constructor.name,
-        // aggregateId,
-        /*aggregateType*/ domainEventMessage,
+        aggregateId || eventName,
+        domainEventMessage,
       );
     }
   }

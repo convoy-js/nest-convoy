@@ -16,6 +16,13 @@ export class Message {
 
   constructor(private payload: string, private headers: MessageHeaders) {}
 
+  toString(): string {
+    return JSON.stringify({
+      payload: this.payload,
+      headers: Object.fromEntries(this.headers.entries()),
+    });
+  }
+
   setPayload(payload: string): void {
     this.payload = payload;
   }

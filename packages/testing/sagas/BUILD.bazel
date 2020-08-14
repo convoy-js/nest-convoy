@@ -1,0 +1,20 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "sagas",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    deps = [
+        "@npm//@types/jest",
+        "@npm//@nestjs/testing",
+        "@npm//@nestjs/core",
+        "//packages/commands",
+        "//packages/in-memory",
+        "//packages/messaging",
+        "//packages/sagas/orchestration",
+        "//packages/sagas/common",
+        "//packages/sagas",
+    ],
+)

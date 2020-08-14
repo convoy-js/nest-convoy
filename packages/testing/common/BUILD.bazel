@@ -1,0 +1,12 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "common",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "@npm//@types/jest",
+    ],
+)

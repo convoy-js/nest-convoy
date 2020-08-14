@@ -1,5 +1,5 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { NEST_CONVOY_SAGA_CONNECTION } from '@nest-convoy/saga';
+import { NEST_CONVOY_SAGA_CONNECTION } from '@nest-convoy/sagas';
 import { Module } from '@nestjs/common';
 
 import {

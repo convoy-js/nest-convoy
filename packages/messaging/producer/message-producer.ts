@@ -66,7 +66,7 @@ export class ConvoyMessageProducer {
     await this.preSend(message);
     try {
       this.logger.debug(
-        `Sending message ${JSON.stringify(message)} to channel ${destination}`,
+        `Sending message ${message.toString()} to channel ${destination}`,
       );
       await this.target.send(message);
       await this.postSend(message);

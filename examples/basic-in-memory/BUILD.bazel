@@ -8,15 +8,9 @@ nest_library(
         exclude = ["*.spec.ts"],
     ),
     deps = [
-        "//packages/commands",
-        "//packages/cqrs",
-        "//packages/events",
+        "//packages/core",
         "//packages/in-memory",
-        "//packages/messaging",
-        "//packages/messaging/broker",
         "@npm//@nestjs/core",
-        "@npm//@nestjs/microservices",
-        "@npm//@nestjs/platform-express",
     ],
 )
 

@@ -18,6 +18,13 @@ export class MessageBuilder {
   }
 
   static withPayload(payload: string | object = '{}'): MessageBuilder {
+    if (payload instanceof Error) {
+      payload = {
+        name: payload.name,
+        message: payload.message,
+        stack: payload.stack,
+      };
+    }
     if (typeof payload !== 'string') payload = JSON.stringify(payload);
 
     return new MessageBuilder(payload);
