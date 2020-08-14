@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConvoyMessagingConsumerModule } from '@nest-convoy/messaging/consumer';
-import { ConvoyMessagingProducerModule } from '@nest-convoy/messaging/producer';
-import { ConvoyMessagingCommonModule } from '@nest-convoy/messaging/common';
+
+import { ConvoyMessagingConsumerModule } from './consumer';
+import { ConvoyMessagingProducerModule } from './producer';
+import { ConvoyMessagingCommonModule } from './common';
 
 @Module({
   imports: [

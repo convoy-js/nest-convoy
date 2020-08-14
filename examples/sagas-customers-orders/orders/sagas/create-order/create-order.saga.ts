@@ -1,4 +1,4 @@
-import { Saga, SimpleSaga } from '@nest-convoy/core';
+import { Saga, NestSaga } from '@nest-convoy/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -15,7 +15,7 @@ import { OrderState, RejectionReason } from '../../common';
 import { Order } from '../../entities';
 
 @Saga(CreateOrderSagaData)
-export class CreateOrderSaga extends SimpleSaga<CreateOrderSagaData> {
+export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
   readonly sagaDefinition = this.step()
     .invokeLocal(this.create)
     .withCompensation(this.reject)

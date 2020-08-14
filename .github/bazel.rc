@@ -1,0 +1,4 @@
+build --verbose_failures
+common --logging 6
+test --build_tests_only
+test --cache_test_results

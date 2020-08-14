@@ -1,0 +1,12 @@
+load("//tools:defaults.bzl", "nest_test")
+
+nest_test(
+    name = "test",
+    srcs = ["message-producer.spec.ts"],
+#    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages/testing",
+        "//packages/messaging/common",
+        "//packages/messaging/producer",
+    ],
+)

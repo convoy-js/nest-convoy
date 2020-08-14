@@ -9,7 +9,7 @@ import { AccountDebited } from './account-debited';
 @EventsHandler(AccountDebited)
 export class AccountDebitedHandler implements IEventHandler<AccountDebited> {
   handle({ event }: DomainEventEnvelope<AccountDebited>): void {
-    // console.log(event);
+    console.log(event);
     /*
     const event = new AccountDebited(uniqueId);
     await this.domainEventPublisher.publish(EVENT_DISPATCHER_ID, [event]);

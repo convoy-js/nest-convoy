@@ -4,6 +4,7 @@ nest_library(
     name = "common",
     srcs = glob(["**/*.ts"]),
     deps = [
+        "//packages/sagas",
         "@npm//@nestjs/typeorm",
         "@npm//typeorm",
     ],

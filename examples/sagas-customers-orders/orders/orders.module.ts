@@ -7,7 +7,11 @@ import {
 } from '@nest-convoy/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { TypeOrmModuleOptions, defaultOptions } from '../common';
+import {
+  TypeOrmModuleOptions,
+  defaultOptions,
+  ConvoySagaTypeOrmModule,
+} from '../common';
 
 import { CreateOrderSaga } from './sagas/create-order';
 import { CustomerServiceProxy } from './sagas/participants';
@@ -18,15 +22,11 @@ import { Order } from './entities';
     ConvoyCommonModule,
     TypeOrmModule.forRoot({
       ...defaultOptions,
-      host: 'order-db',
-      database: 'orderdb',
+      host: 'orders-db',
+      port: 5433,
+      database: 'orders',
     } as TypeOrmModuleOptions),
-    TypeOrmModule.forRoot({
-      ...defaultOptions,
-      name: NEST_CONVOY_SAGA_CONNECTION,
-      host: 'sagas-db',
-      database: 'sagasdb',
-    } as TypeOrmModuleOptions),
+    ConvoySagaTypeOrmModule,
     TypeOrmModule.forFeature([Order]),
     ConvoyMessagingBrokerModule.register(
       {

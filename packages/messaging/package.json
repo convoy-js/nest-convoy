@@ -1,0 +1,26 @@
+{
+  "name": "@nest-convoy/messaging",
+  "license": "MIT",
+  "version": "0.0.0-PLACEHOLDER",
+  "bugs": {
+    "url": "https://github.com/marcus-sa/nest-convoy/issues"
+  },
+  "dependencies": {
+    "@nest-convoy/core": "0.0.0-PLACEHOLDER",
+    "@nest-convoy/common": "0.0.0-PLACEHOLDER",
+    "uuid": "8.3.0",
+    "tslib": "2.0.1"
+  },
+  "peerDependencies": {
+    "@nestjs/common": ">=7.3.0"
+  },
+  "optionalDependencies": {
+    "@nestjs/microservices": ">=7.3.0"
+  },
+  "keywords": [
+    "nestjs",
+    "nest convoy",
+    "sagas",
+    "cqrs"
+  ]
+}

@@ -5,6 +5,7 @@ import {
   ConvoyChannelMapping,
   Message,
   MessageInterceptor,
+  MissingRequiredMessageIDException,
   NEST_CONVOY_MESSAGE_INTERCEPTORS,
 } from '@nest-convoy/messaging/common';
 
@@ -23,12 +24,13 @@ export class ConvoyMessageProducer {
   constructor(
     private readonly channelMapping: ConvoyChannelMapping,
     protected readonly target: MessageProducer,
+    @Optional()
     @Inject(NEST_CONVOY_MESSAGE_INTERCEPTORS)
     private readonly messageInterceptors: MessageInterceptor[],
   ) {}
 
   private async preSend(message: Message): Promise<void> {
-    for (const interceptor of this.messageInterceptors) {
+    for (const interceptor of this.messageInterceptors || []) {
       await interceptor.preSend?.(message);
     }
   }
@@ -45,7 +47,7 @@ export class ConvoyMessageProducer {
   private prepareMessageHeaders(destination: string, message: Message): void {
     const id = this.target.generateMessageId();
     if (!id && !message.hasHeader(Message.ID)) {
-      throw new RuntimeException('Message needs an ID');
+      throw new MissingRequiredMessageIDException(message);
     } else {
       message.setHeader(Message.ID, id);
     }
@@ -54,6 +56,7 @@ export class ConvoyMessageProducer {
       Message.DESTINATION,
       this.channelMapping.transform(destination),
     );
+
     message.setHeader(Message.DATE, new Date().toJSON());
   }
 
@@ -63,7 +66,7 @@ export class ConvoyMessageProducer {
     await this.preSend(message);
     try {
       this.logger.debug(
-        `Sending message ${JSON.stringify(message)} to channel ${destination}`,
+        `Sending message ${message.toString()} to channel ${destination}`,
       );
       await this.target.send(message);
       await this.postSend(message);
@@ -73,28 +76,4 @@ export class ConvoyMessageProducer {
       throw err;
     }
   }
-
-  /*private preSend(message: Message): Observable<[unknown]> {
-    return forkJoin(
-      ...this.messageInterceptors.map(x => from(x.preSend?.(message) || of())),
-    );
-  }
-
-  private postSend(message: Message, error?: RuntimeException) {
-    return forkJoin(
-      ...this.messageInterceptors.map(x =>
-        from(x.postSend?.(message, error) || of()),
-      ),
-    );
-  }
-
-  private send(message: Message) {
-    return this.preSend(message).pipe(
-      mergeMap(() => this.postSend(message)),
-      catchError((error: RuntimeException) => {
-        this.logger.error(error.message);
-        return this.postSend(message, error).pipe(map(() => throwError(error)));
-      }),
-    );
-  }*/
 }

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ConvoyCommandsConsumerModule } from '@nest-convoy/commands/consumer';
-import { ConvoyCommandsProducerModule } from '@nest-convoy/commands/producer';
+
+import { ConvoyCommandsConsumerModule } from './consumer';
+import { ConvoyCommandsProducerModule } from './producer';
 
 @Module({
   imports: [ConvoyCommandsConsumerModule, ConvoyCommandsProducerModule],

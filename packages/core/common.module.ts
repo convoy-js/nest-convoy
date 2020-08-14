@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
-import { ConvoyEventsModule } from '@nest-convoy/events';
 import { ConvoyCommandsModule } from '@nest-convoy/commands';
-import { ConvoyCqrsModule } from '@nest-convoy/cqrs';
+import { ConvoyEventsModule } from '@nest-convoy/events';
+
+import { EventBus } from './event-bus';
+import { CommandBus } from './command-bus';
 
 @Module({
-  imports: [ConvoyEventsModule, ConvoyCommandsModule, ConvoyCqrsModule],
-  exports: [ConvoyEventsModule, ConvoyCommandsModule, ConvoyCqrsModule],
+  imports: [ConvoyEventsModule, ConvoyCommandsModule],
+  providers: [EventBus, CommandBus],
+  exports: [ConvoyEventsModule, ConvoyCommandsModule, EventBus, CommandBus],
 })
 export class ConvoyCommonModule {}

@@ -1,0 +1,16 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "entities",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    visibility = [
+        "//packages/sagas/common:__pkg__",
+    ],
+    deps = [
+        "//packages/messaging/common",
+        "@npm//typeorm",
+    ],
+)

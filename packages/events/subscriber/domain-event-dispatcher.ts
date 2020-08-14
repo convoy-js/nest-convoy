@@ -8,7 +8,7 @@ import { DomainEventHandlers } from './domain-event-handlers';
 import { DomainEventEnvelope } from './domain-event-envelope';
 
 export class DomainEventDispatcher implements Dispatcher {
-  private readonly logger = new Logger(this.constructor.name);
+  private readonly logger = new Logger(this.constructor.name, true);
 
   constructor(
     private readonly eventDispatcherId: string,

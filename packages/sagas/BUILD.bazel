@@ -1,0 +1,16 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "sagas",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    module_name = "@nest-convoy/sagas",
+    deps = [
+        "//packages/sagas/common",
+        "//packages/sagas/orchestration",
+        "//packages/sagas/orchestration/dsl",
+        "//packages/sagas/participant",
+    ],
+)

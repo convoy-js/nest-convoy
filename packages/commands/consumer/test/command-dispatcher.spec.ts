@@ -8,19 +8,22 @@ import {
 } from '@nest-convoy/messaging';
 import {
   CommandMessageHeaders,
-  CommandDispatcher,
+  correlateMessageHeaders,
+  MissingCommandHandlerException,
+} from '@nest-convoy/commands/common';
+import {
+  ConvoyCommandDispatcher,
   CommandDispatcherFactory,
   CommandHandler,
   CommandHandlers,
   CommandMessage,
-  MissingCommandHandlerException,
-} from '@nest-convoy/commands';
+} from '@nest-convoy/commands/consumer';
 
 describe('CommandDispatcher', () => {
   let commandDispatcherFactory: CommandDispatcherFactory;
 
   beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       providers: [
         mockProvider(ConvoyMessageConsumer),
         mockProvider(ConvoyMessageProducer),
@@ -28,16 +31,16 @@ describe('CommandDispatcher', () => {
       ],
     }).compile();
 
-    commandDispatcherFactory = moduleRef.get(CommandDispatcherFactory);
+    commandDispatcherFactory = module.get(CommandDispatcherFactory);
   });
 
   describe('handleMessage', () => {
     const commandDispatcherId = 'foo';
     const channel = 'test';
-    const handler = jest.fn();
     const replyTo = 'replyTo-xxx';
+    let handler: jest.Mock;
 
-    beforeEach(() => handler.mockClear());
+    beforeEach(() => (handler = jest.fn()));
 
     class TestCommand {
       constructor(readonly id: string) {}
@@ -51,15 +54,10 @@ describe('CommandDispatcher', () => {
         commandHandlers,
       );
       const invokeSpy = jest
-        .spyOn<any, any>(
-          commandDispatcher,
-          // @ts-ignore
-          'invoke',
-        )
+        .spyOn<any, any>(commandDispatcher, 'invoke')
         .mockResolvedValue([]);
-      const sendRepliesSpy = jest.spyOn(
+      const sendRepliesSpy = jest.spyOn<any, any>(
         commandDispatcher,
-        // @ts-ignore
         'sendReplies',
       );
 
@@ -73,12 +71,13 @@ describe('CommandDispatcher', () => {
       );
 
       await commandDispatcher.handleMessage(message);
+      const correlationHeaders = correlateMessageHeaders(message.getHeaders());
       expect(invokeSpy).toHaveBeenCalledWith(
         commandHandler,
-        new CommandMessage(new TestCommand('1'), message.getHeaders(), message),
+        new CommandMessage(new TestCommand('1'), correlationHeaders, message),
       );
       expect(sendRepliesSpy).toHaveBeenCalledWith(
-        message.getHeaders(),
+        correlationHeaders,
         [],
         replyTo,
       );
@@ -117,10 +116,11 @@ describe('CommandDispatcher', () => {
       );
 
       await commandDispatcher.handleMessage(message);
+      const correlationHeaders = correlateMessageHeaders(message.getHeaders());
 
       expect(handleExceptionSpy).toHaveBeenCalledWith(message, replyTo);
       expect(sendRepliesSpy).toHaveBeenCalledWith(
-        message.getHeaders(),
+        correlationHeaders,
         [expect.any(Message)],
         replyTo,
       );
@@ -128,7 +128,7 @@ describe('CommandDispatcher', () => {
 
     describe('errors', () => {
       let message: Message;
-      let commandDispatcher: CommandDispatcher;
+      let commandDispatcher: ConvoyCommandDispatcher;
 
       beforeEach(() => {
         message = new Message(

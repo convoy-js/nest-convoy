@@ -1,10 +1,8 @@
-import { Global, Module } from '@nestjs/common';
-import { ConvoyMessagingProducerModule } from '@nest-convoy/messaging/producer';
+import { Module } from '@nestjs/common';
 
 import { ConvoyCommandProducer } from './command-producer';
 
 @Module({
-  // imports: [ConvoyMessagingProducerModule],
   providers: [ConvoyCommandProducer],
   exports: [ConvoyCommandProducer],
 })

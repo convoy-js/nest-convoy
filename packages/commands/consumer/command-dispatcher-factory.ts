@@ -3,12 +3,12 @@ import { DispatcherFactory } from '@nest-convoy/common';
 import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { ConvoyMessageProducer } from '@nest-convoy/messaging/producer';
 
-import { CommandDispatcher } from './command-dispatcher';
+import { ConvoyCommandDispatcher } from './command-dispatcher';
 import { CommandHandlers } from './command-handlers';
 
 @Injectable()
 export class CommandDispatcherFactory
-  implements DispatcherFactory<CommandDispatcher, CommandHandlers> {
+  implements DispatcherFactory<ConvoyCommandDispatcher, CommandHandlers> {
   constructor(
     private readonly messageConsumer: ConvoyMessageConsumer,
     private readonly messageProducer: ConvoyMessageProducer,
@@ -17,8 +17,8 @@ export class CommandDispatcherFactory
   create(
     commandDispatcherId: string,
     commandHandlers: CommandHandlers,
-  ): CommandDispatcher {
-    return new CommandDispatcher(
+  ): ConvoyCommandDispatcher {
+    return new ConvoyCommandDispatcher(
       commandDispatcherId,
       commandHandlers,
       this.messageConsumer,
