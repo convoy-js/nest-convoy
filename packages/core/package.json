@@ -11,7 +11,7 @@
     "@nest-convoy/messaging": "0.0.0-PLACEHOLDER",
     "@nest-convoy/common": "0.0.0-PLACEHOLDER",
     "@nest-convoy/sagas": "0.0.0-PLACEHOLDER",
-    "@nestjs/cqrs": ">=7.3.0",
+    "@nestjs/cqrs": "7.0.0",
     "tslib": "2.0.1"
   },
   "peerDependencies": {
