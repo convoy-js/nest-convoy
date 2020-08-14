@@ -1,5 +1,6 @@
 import { Message } from '@nest-convoy/messaging/common';
 import {
+  Type,
   RuntimeException,
   UnsupportedOperationException,
 } from '@nest-convoy/common';
@@ -73,11 +74,11 @@ export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
   private async invokeReplyHandler(
     message: Message,
     data: Data,
+    replyType: Type<any>,
     handleReply: SagaStepReplyHandler<Data>,
   ): Promise<void> {
-    // TODO - eventuate-tram-sagas-orchestration-simple-dsl/src/main/java/io/eventuate/tram/sagas/simpledsl/SimpleSagaDefinition.java
-    // const replyType = message.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE);
-    await handleReply(data, message.parsePayload());
+    const reply = Object.assign(new replyType(), message.parsePayload());
+    await handleReply(data, reply);
   }
 
   start(sagaData: Data): Promise<SagaActions<Data>> {
@@ -93,15 +94,19 @@ export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
     const state = decodeExecutionState(currentState);
     const currentStep = this.sagaSteps[state.currentlyExecuting];
     if (!currentStep) {
-      throw new RuntimeException();
+      throw new RuntimeException(
+        `Saga step is missing for execution state ${currentState}`,
+      );
     }
 
-    const replyHandler = currentStep.getReplyHandler(
-      message,
-      state.compensating,
-    );
-    if (replyHandler) {
-      await this.invokeReplyHandler(message, sagaData, replyHandler);
+    const reply = currentStep.getReply(message, state.compensating);
+    if (reply) {
+      await this.invokeReplyHandler(
+        message,
+        sagaData,
+        reply.type,
+        reply.handler,
+      );
     }
 
     if (currentStep.isSuccessfulReply(state.compensating, message)) {

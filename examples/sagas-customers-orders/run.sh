@@ -1,5 +1,5 @@
 #!/bin/sh
-bazel run //examples/sagas-customers-orders/orders:image
-bazel run //examples/sagas-customers-orders/customers:image
+bazel run //examples/sagas-customers-orders/orders
+bazel run //examples/sagas-customers-orders/customers
 
 docker-compose up -d

@@ -3,6 +3,7 @@ import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
 import { Transport } from '@nestjs/microservices';
 import {
   ConvoyCommonModule,
+  ConvoySagasModule,
   NEST_CONVOY_SAGA_CONNECTION,
 } from '@nest-convoy/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -41,6 +42,7 @@ import { Order } from './entities';
         },
       },
     ),
+    ConvoySagasModule,
   ],
   providers: [CreateOrderSaga, CustomerServiceProxy],
 })

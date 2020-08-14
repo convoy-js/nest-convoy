@@ -1,11 +1,11 @@
 import { Message } from '@nest-convoy/messaging/common';
 import { ReplyMessageHeaders } from '@nest-convoy/commands/common';
 
-import { SagaStep, SagaStepReplyHandler } from './saga-step';
+import { SagaStep, SagaStepReply } from './saga-step';
 import { BaseParticipantInvocation } from './participant-invocation';
 import { RemoteStepOutcome, StepOutcome } from './step-outcome';
 
-export type ReplyHandlers<Data> = Map<string, SagaStepReplyHandler<Data>>;
+export type ReplyHandlers<Data> = Map<string, SagaStepReply<Data>>;
 
 export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
   constructor(
@@ -37,10 +37,10 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
     return !!this.compensation;
   }
 
-  getReplyHandler<T>(
+  getReply<T>(
     message: Message,
     compensating: boolean,
-  ): void | SagaStepReplyHandler<Data, unknown> {
+  ): SagaStepReply<Data> | undefined {
     const replyType = message.getRequiredHeader(ReplyMessageHeaders.REPLY_TYPE);
     const replyHandlers = compensating
       ? this.compensationReplyHandlers

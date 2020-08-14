@@ -5,7 +5,7 @@ import {
   ReplyMessageHeaders,
 } from '@nest-convoy/commands/common';
 
-import { SagaStep, SagaStepReplyHandler } from './saga-step';
+import { SagaStep, SagaStepReplyHandler, SagaStepReply } from './saga-step';
 import { LocalStepOutcome } from './step-outcome';
 
 export class LocalStep<Data> implements SagaStep<Data> {
@@ -14,10 +14,10 @@ export class LocalStep<Data> implements SagaStep<Data> {
     private readonly compensation?: Consumer<Data>,
   ) {}
 
-  getReplyHandler<T>(
+  getReply<T>(
     message: Message,
     compensating: boolean,
-  ): void | SagaStepReplyHandler<Data, T> {}
+  ): SagaStepReply<Data> | void {}
 
   hasAction(data: Data): boolean {
     return true;
@@ -38,7 +38,7 @@ export class LocalStep<Data> implements SagaStep<Data> {
   createStepOutcome(data: Data, compensating: boolean): LocalStepOutcome {
     try {
       if (compensating) {
-        this.compensation(data);
+        this.compensation?.(data);
       } else {
         this.handler(data);
       }

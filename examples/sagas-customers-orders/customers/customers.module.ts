@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import {
   ConvoyCommonModule,
+  ConvoySagasModule,
   NEST_CONVOY_SAGA_CONNECTION,
 } from '@nest-convoy/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -41,6 +42,7 @@ import { ReserveCreditCommandHandler } from './commands';
         },
       },
     ),
+    ConvoySagasModule,
   ],
   providers: [CustomerService, ReserveCreditCommandHandler],
 })

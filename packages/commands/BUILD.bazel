@@ -1,3 +1,4 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("//tools:defaults.bzl", "nest_library")
 
 nest_library(
@@ -12,4 +13,10 @@ nest_library(
         "//packages/commands/common",
         "//packages/commands/producer",
     ],
+)
+
+pkg_npm(
+    name = "package",
+    srcs = ["package.json"],
+    deps = [":commands"],
 )

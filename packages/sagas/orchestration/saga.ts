@@ -5,7 +5,7 @@ export type SagaLifecycleHooks<Data> = Partial<
 >;
 
 export abstract class Saga<Data> {
-  abstract sagaDefinition: SagaDefinition<Data>;
+  abstract readonly sagaDefinition: SagaDefinition<Data>;
 }
 
 // export abstract class Saga<Data> {

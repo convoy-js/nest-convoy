@@ -55,22 +55,15 @@ export class InvokeParticipantStepBuilder<Data>
     commandProvider: CommandProvider<Data, C>,
     participantInvocationPredicate?: Predicate<Data>,
   ): this;
-  withAction(
-    actionOrCommandEndpoint,
-    commandProviderOrPredicate,
-    invocationPredicate?,
-  ): this {
-    if (actionOrCommandEndpoint instanceof CommandEndpoint) {
+  withAction(...args: any[]): this {
+    if (arguments[0] instanceof CommandEndpoint) {
       this.action = new ParticipantEndpointInvocation(
-        actionOrCommandEndpoint,
-        commandProviderOrPredicate,
-        invocationPredicate,
+        args[0],
+        args[1],
+        args[2],
       );
     } else {
-      this.action = new ParticipantInvocation(
-        actionOrCommandEndpoint,
-        commandProviderOrPredicate,
-      );
+      this.action = new ParticipantInvocation(args[0], args[1]);
     }
 
     return this;
@@ -80,49 +73,27 @@ export class InvokeParticipantStepBuilder<Data>
     compensation: Compensation<Data, CommandWithDestination>,
   ): this;
   withCompensation(
-    compensationPredicate: Predicate<Data>,
     compensation: Compensation<Data, CommandWithDestination>,
-  ): this;
-  withCompensation<C extends Command>(
-    commandEndpoint: CommandEndpoint<C>,
-    commandProvider: Compensation<Data, C>,
-  ): this;
-  withCompensation<C extends Command>(
     compensationPredicate: Predicate<Data>,
+  ): this;
+  withCompensation<C extends Command>(
     commandEndpoint: CommandEndpoint<C>,
     commandProvider: Compensation<Data, C>,
   ): this;
-  withCompensation(
-    compensationPredicate,
-    compensation?,
-    commandProvider?,
-  ): this {
-    if (compensationPredicate instanceof CommandEndpoint) {
-      // 1: commandEndpoint
-      // 2: commandProvider
+  withCompensation<C extends Command>(
+    commandEndpoint: CommandEndpoint<C>,
+    commandProvider: Compensation<Data, C>,
+    compensationPredicate: Predicate<Data>,
+  ): this;
+  withCompensation(...args: any[]): this {
+    if (arguments[0] instanceof CommandEndpoint) {
       this.compensation = new ParticipantEndpointInvocation(
-        compensationPredicate,
-        compensation,
-      );
-    } else if (compensation instanceof CommandEndpoint) {
-      // 1: compensationPredicate
-      // 2: commandEndpoint
-      // 3: commandProvider
-      this.compensation = new ParticipantEndpointInvocation(
-        compensation,
-        commandProvider,
-        compensationPredicate,
-      );
-    } else if (arguments.length > 1) {
-      // 1: compensationPredicate
-      // 2: compensation
-      this.compensation = new ParticipantInvocation(
-        compensation,
-        compensationPredicate,
+        args[0],
+        args[1],
+        args[2],
       );
     } else {
-      // 1: compensation
-      this.compensation = new ParticipantInvocation(compensation);
+      this.compensation = new ParticipantInvocation(args[0], args[1]);
     }
 
     return this;
@@ -133,10 +104,12 @@ export class InvokeParticipantStepBuilder<Data>
     replyHandler: SagaStepReplyHandler<Data, T>,
   ): this {
     replyHandler = replyHandler.bind(this.parent.saga);
+    const store = { type: replyType, handler: replyHandler };
+
     if (this.compensation) {
-      this.compensationReplyHandlers.set(replyType.name, replyHandler);
+      this.compensationReplyHandlers.set(replyType.name, store);
     } else {
-      this.actionReplyHandlers.set(replyType.name, replyHandler);
+      this.actionReplyHandlers.set(replyType.name, store);
     }
 
     return this;

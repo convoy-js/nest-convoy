@@ -23,19 +23,19 @@ export interface WithActionBuilder<Data> {
 
 export interface WithCompensationBuilder<Data> {
   withCompensation(
-    compensationPredicate: Predicate<Data>,
     compensation: Compensation<Data, CommandWithDestination>,
   ): any;
   withCompensation(
     compensation: Compensation<Data, CommandWithDestination>,
-  ): any;
-  withCompensation<C extends Command>(
-    commandEndpoint: CommandEndpoint<C>,
-    commandProvider: Compensation<Data, C>,
-  ): any;
-  withCompensation<C extends Command>(
     compensationPredicate: Predicate<Data>,
+  ): any;
+  withCompensation<C extends Command>(
     commandEndpoint: CommandEndpoint<C>,
     commandProvider: Compensation<Data, C>,
+  ): any;
+  withCompensation<C extends Command>(
+    commandEndpoint: CommandEndpoint<C>,
+    commandProvider: Compensation<Data, C>,
+    compensationPredicate: Predicate<Data>,
   ): any;
 }

@@ -5,26 +5,28 @@ import {
 } from '@nest-convoy/commands';
 
 import { ConditionalSagaData } from './conditional-saga.data';
-import { Do1Command, Do2Command, Undo1Command } from './commands';
+import {
+  do1,
+  Do1Command,
+  do2,
+  Do2Command,
+  isInvoke1,
+  undo1,
+  Undo1Command,
+} from './commands';
 
 @Saga(ConditionalSagaData)
 export class ConditionalSaga extends NestSaga<ConditionalSagaData> {
   static readonly DO1_COMMAND_EXTRA_HEADERS = new Map([['k', 'v']]);
 
   readonly sagaDefinition = this.step()
-    .invokeParticipant(
-      this.do1.bind(this),
-      (data: ConditionalSagaData) => data.invoke1,
-    )
-    .withCompensation(
-      (data: ConditionalSagaData) => data.invoke1,
-      this.undo1.bind(this),
-    )
+    .invokeParticipant(do1, isInvoke1)
+    .withCompensation(undo1, isInvoke1)
     .step()
-    .invokeParticipant(this.do2.bind(this))
+    .invokeParticipant(do2)
     .build();
 
-  private do1(): CommandWithDestination {
+  /*private do1(): CommandWithDestination {
     return CommandWithDestinationBuilder.send(new Do1Command())
       .to('participant1')
       .withExtraHeaders(ConditionalSaga.DO1_COMMAND_EXTRA_HEADERS)
@@ -37,5 +39,5 @@ export class ConditionalSaga extends NestSaga<ConditionalSagaData> {
 
   private do2(): CommandWithDestination {
     return new CommandWithDestination('participant2', new Do2Command());
-  }
+  }*/
 }

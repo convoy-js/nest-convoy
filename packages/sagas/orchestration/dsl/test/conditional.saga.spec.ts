@@ -9,7 +9,7 @@ import { ConditionalSagaData } from './conditional-saga.data';
 import { Do1Command, Do2Command, Undo1Command } from './commands';
 
 describe('ConditionalSaga', () => {
-  let sagaTest: SagaUnitTestSupport<any>;
+  let saga: SagaUnitTestSupport<any>;
   let conditionalSaga: ConditionalSaga;
 
   beforeEach(async () => {
@@ -18,13 +18,13 @@ describe('ConditionalSaga', () => {
       providers: [ConditionalSaga],
     }).compile();
 
-    sagaTest = module.get(SagaUnitTestSupport);
+    saga = module.get(SagaUnitTestSupport);
     conditionalSaga = module.get(ConditionalSaga);
   });
 
-  it('shouldExecuteAllStepsSuccessfully', async () => {
+  it('should execute all steps successfully', async () => {
     const conditionalSagaData = new ConditionalSagaData(true);
-    const saga = await sagaTest.create(conditionalSaga, conditionalSagaData);
+    await saga.create(conditionalSaga, conditionalSagaData);
 
     await saga
       .expect()
@@ -42,9 +42,9 @@ describe('ConditionalSaga', () => {
     saga.expectCompletedSuccessfully();
   });
 
-  it('shouldRollback', async () => {
+  it('should rollback', async () => {
     const conditionalSagaData = new ConditionalSagaData(true);
-    const saga = await sagaTest.create(conditionalSaga, conditionalSagaData);
+    await saga.create(conditionalSaga, conditionalSagaData);
 
     await saga
       .expect()
@@ -67,9 +67,9 @@ describe('ConditionalSaga', () => {
     saga.expectRolledBack();
   });
 
-  it('shouldExecuteAllStepsExcept1Successfully', async () => {
+  it('should execute all steps successfully except for first', async () => {
     const conditionalSagaData = new ConditionalSagaData(false);
-    const saga = await sagaTest.create(conditionalSaga, conditionalSagaData);
+    await saga.create(conditionalSaga, conditionalSagaData);
 
     await saga
       .expect()
@@ -80,9 +80,9 @@ describe('ConditionalSaga', () => {
     saga.expectCompletedSuccessfully();
   });
 
-  it('shouldRollbackExcept1', async () => {
+  it('should rollback except for first', async () => {
     const conditionalSagaData = new ConditionalSagaData(false);
-    const saga = await sagaTest.create(conditionalSaga, conditionalSagaData);
+    await saga.create(conditionalSaga, conditionalSagaData);
 
     await saga
       .expect()
@@ -93,9 +93,9 @@ describe('ConditionalSaga', () => {
     saga.expectRolledBack();
   });
 
-  it('shouldFailOnFirstStep', async () => {
+  it('should fail on first step', async () => {
     const conditionalSagaData = new ConditionalSagaData(true);
-    const saga = await sagaTest.create(conditionalSaga, conditionalSagaData);
+    await saga.create(conditionalSaga, conditionalSagaData);
 
     await saga
       .expect()
