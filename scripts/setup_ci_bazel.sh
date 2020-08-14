@@ -21,6 +21,6 @@ if [[ -z $BUILD_BUDDY_TOKEN ]]; then
   eval echo 'build --bes_results_url=https://app.buildbuddy.io/invocation/' >> ${bazelrc_user}
   eval echo 'build --bes_backend=grpcs://$BUILD_BUDDY_TOKEN@cloud.buildbuddy.io' >> ${bazelrc_user}
   eval echo 'build --remote_cache=grpcs://$BUILD_BUDDY_TOKEN@cloud.buildbuddy.io' >> ${bazelrc_user}
-  echo "Using Build Buddy."
 #  eval echo 'build --remote_executor=grpcs://$BUILD_BUDDY_TOKEN@cloud.buildbuddy.io' >> ${bazelrc_user}
+  echo "Using Build Buddy."
 fi
