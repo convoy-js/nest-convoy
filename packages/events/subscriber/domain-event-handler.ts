@@ -21,10 +21,10 @@ export class DomainEventHandler implements Handler<DomainEventHandlerInvoke> {
 
   handles(message: Message): boolean {
     return (
-      // this.aggregateType ===
-      //   message.getRequiredHeader(EventMessageHeaders.AGGREGATE_TYPE) &&
+      this.aggregateType ===
+        message.getHeader(EventMessageHeaders.AGGREGATE_TYPE) ||
       this.event.name ===
-      message.getRequiredHeader(EventMessageHeaders.EVENT_TYPE)
+        message.getRequiredHeader(EventMessageHeaders.EVENT_TYPE)
     );
   }
 }

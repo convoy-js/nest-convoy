@@ -116,4 +116,46 @@ describe('WithReplyHandlersSaga', () => {
     expectFailure2();
     expectCompensating();
   });
+
+  it('should execute all steps except first successfully', async () => {
+    const conditionalSagaData = new ConditionalSagaData(false);
+    await saga.create(withReplyHandlersSaga, conditionalSagaData);
+
+    await saga
+      .expect()
+      .command(new Do2Command())
+      .to('participant2')
+      .successReply();
+
+    saga.expectCompletedSuccessfully();
+    expectSuccess2();
+  });
+
+  it('should rollback except first', async () => {
+    const conditionalSagaData = new ConditionalSagaData(false);
+    await saga.create(withReplyHandlersSaga, conditionalSagaData);
+
+    await saga
+      .expect()
+      .command(new Do2Command())
+      .to('participant2')
+      .failureReply();
+
+    saga.expectRolledBack();
+    expectFailure2();
+  });
+
+  it('should fail on first step', async () => {
+    const conditionalSagaData = new ConditionalSagaData(true);
+    await saga.create(withReplyHandlersSaga, conditionalSagaData);
+
+    await saga
+      .expect()
+      .command(new Do1Command())
+      .to('participant1')
+      .failureReply();
+
+    saga.expectRolledBack();
+    expectFailure1();
+  });
 });

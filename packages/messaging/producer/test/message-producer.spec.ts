@@ -14,13 +14,13 @@ import { ConvoyMessageProducer, MessageProducer } from '../message-producer';
 
 @Injectable()
 class TestMessageProducer extends MessageProducer {
-  send = jest.fn();
+  async send(message: Message): Promise<void> {}
 }
 
 @Injectable()
 class TestMessageInterceptor implements MessageInterceptor {
-  preSend = jest.fn();
-  postSend = jest.fn();
+  preSend(): void {}
+  postSend(): void {}
 }
 
 describe('ConvoyMessageProducer', () => {
@@ -34,12 +34,13 @@ describe('ConvoyMessageProducer', () => {
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
+        mockProvider(TestMessageProducer),
         {
           provide: MessageProducer,
-          useClass: TestMessageProducer,
+          useExisting: TestMessageProducer,
         },
         mockProvider(ConvoyChannelMapping),
-        TestMessageInterceptor,
+        mockProvider(TestMessageInterceptor),
         {
           provide: NEST_CONVOY_MESSAGE_INTERCEPTORS,
           useFactory(
