@@ -1,47 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
-import { NEST_CONVOY_SAGA_CONNECTION } from '@nest-convoy/sagas/common';
+import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { SagaInstance } from './saga-instance';
 import { SagaInstanceEntity, SagaInstanceParticipantsEntity } from './entities';
 import { DestinationAndResource } from './destination-and-resource';
 
 @Injectable()
-export abstract class SagaInstanceRepository {
-  abstract save(sagaInstance: SagaInstance): Promise<SagaInstance>;
-  abstract find(sagaType: string, sagaId: string): Promise<SagaInstance>;
-  abstract update(sagaInstance: SagaInstance): Promise<void>;
-}
+export class SagaInstanceRepository {
+  private readonly store = new Map<string, SagaInstance>();
 
-@Injectable()
-export class SagaMemoryInstanceRepository extends SagaInstanceRepository {
-  find(sagaType: string, sagaId: string): Promise<SagaInstance> {
-    return undefined;
+  async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
+    return this.store.get(`${sagaType}-${sagaId}`);
   }
 
-  save(sagaInstance: SagaInstance): Promise<SagaInstance> {
-    return undefined;
+  async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
+    this.store.set(
+      `${sagaInstance.sagaType}-${sagaInstance.sagaId}`,
+      sagaInstance,
+    );
+
+    return sagaInstance;
   }
 
-  update(sagaInstance: SagaInstance): Promise<void> {
-    return undefined;
+  async update(sagaInstance: SagaInstance): Promise<void> {
+    await this.save(sagaInstance);
   }
 }
 
 @Injectable()
 export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
   constructor(
-    @InjectRepository(SagaInstanceEntity, NEST_CONVOY_SAGA_CONNECTION)
+    @InjectRepository(SagaInstanceEntity, NEST_CONVOY_CONNECTION)
     private readonly sagaInstanceRepository: Repository<SagaInstanceEntity>,
-    @InjectRepository(
-      SagaInstanceParticipantsEntity,
-      NEST_CONVOY_SAGA_CONNECTION,
-    )
+    @InjectRepository(SagaInstanceParticipantsEntity, NEST_CONVOY_CONNECTION)
     private readonly sagaInstanceParticipantsRepository: Repository<
       SagaInstanceParticipantsEntity
     >,
-    @InjectConnection(NEST_CONVOY_SAGA_CONNECTION)
+    @InjectConnection(NEST_CONVOY_CONNECTION)
     private readonly connection: Connection,
   ) {
     super();
@@ -88,30 +85,25 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
       sagaId,
     );
 
-    const {
-      stateName,
-      lastRequestId,
-      sagaData,
-      sagaDataType,
-    } = await this.sagaInstanceRepository.findOne({
+    const entity = await this.sagaInstanceRepository.findOne({
       sagaType,
       sagaId,
     });
 
-    // if (!sagaInstance) {
-    //   throw new RuntimeException(
-    //     `Cannot find saga instance ${sagaType} ${sagaId}`,
-    //   );
-    // }
+    if (!entity) {
+      throw new Error(`Cannot find saga instance ${sagaType} ${sagaId}`);
+    }
 
     return new SagaInstance(
       sagaType,
       sagaId,
-      stateName,
-      lastRequestId,
-      sagaDataType,
-      sagaData,
+      entity.stateName,
+      entity.lastRequestId,
+      entity.sagaDataType,
+      entity.sagaData,
       destinationAndResources,
+      entity.compensating,
+      entity.endState,
     );
   }
 

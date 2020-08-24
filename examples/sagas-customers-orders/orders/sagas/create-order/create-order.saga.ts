@@ -1,4 +1,4 @@
-import { Saga, NestSaga } from '@nest-convoy/core';
+import { Saga, NestSaga, CommandWithDestination } from '@nest-convoy/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -8,17 +8,18 @@ import {
   CustomerNotFound,
 } from '../../../customers/replies';
 
+import { OrderState, RejectionReason } from '../../common';
 import { CustomerServiceProxy } from '../participants';
+import { Order } from '../../entities';
 
 import { CreateOrderSagaData } from './create-order-saga.data';
-import { OrderState, RejectionReason } from '../../common';
-import { Order } from '../../entities';
+import { Channel } from '../../../common';
 
 @Saga(CreateOrderSagaData)
 export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
   readonly sagaDefinition = this.step()
-    .invokeLocal(this.create)
-    .withCompensation(this.reject)
+    .invokeLocal(this.create.bind(this))
+    .withCompensation(this.reject.bind(this))
     .step()
     .invokeParticipant(
       this.customerServiceProxy.reserveCredit,
@@ -30,7 +31,7 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
       this.handleCustomerCreditLimitExceeded,
     )
     .step()
-    .invokeLocal(this.approve)
+    .invokeLocal(this.approve.bind(this))
     .build();
 
   constructor(
@@ -78,7 +79,7 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
 
   private async reject(data: CreateOrderSagaData): Promise<void> {
     await this.orderRepository.update(data.orderId, {
-      state: OrderState.APPROVED,
+      state: OrderState.REJECTED,
       rejectionReason: data.rejectionReason,
     });
   }

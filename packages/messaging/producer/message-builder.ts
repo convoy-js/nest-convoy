@@ -30,14 +30,14 @@ export class MessageBuilder {
     return new MessageBuilder(payload);
   }
 
-  withHeader(name: string, value: string): this {
-    this.headers.set(name, value);
+  withHeader(name: string, value: string | number): this {
+    this.headers.set(name, String(value));
     return this;
   }
 
   withExtraHeaders(prefix: string, headers: MessageHeaders): this {
     for (const [key, value] of headers.entries()) {
-      this.headers.set(`${prefix}${key}`, value);
+      this.headers.set(`${prefix}${key}`, String(value));
     }
 
     return this;

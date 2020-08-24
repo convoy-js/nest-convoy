@@ -34,10 +34,10 @@ export class Customer {
   creditReservations: CreditReservation[];
 
   availableCredit(): Money {
-    const totalReserved: Money = this.creditReservations.reduce(
+    const totalReserved = this.creditReservations.reduce(
       (totalReserved, creditReservation) =>
         totalReserved.add(creditReservation.amount),
-      Money.ZERO as Money,
+      new Money(),
     );
 
     return this.creditLimit.subtract(totalReserved);

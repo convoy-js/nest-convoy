@@ -18,9 +18,9 @@ export class CommandBus implements ICommandBus {
 
   execute<T extends Command>(
     command: T,
-    commandChannel = null,
-    replyChannel = uuidv4(),
+    commandChannel?: string,
     subscriberId = uuidv4(),
+    replyChannel = uuidv4(),
   ): Promise<Message> {
     return new Promise(async (resolve, reject) => {
       await this.messageConsumer.subscribe(

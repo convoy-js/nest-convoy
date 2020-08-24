@@ -1,9 +1,5 @@
 import { Module } from '@nestjs/common';
-import {
-  ConvoyCommonModule,
-  ConvoySagasModule,
-  NEST_CONVOY_SAGA_CONNECTION,
-} from '@nest-convoy/core';
+import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
 import { Transport } from '@nestjs/microservices';
@@ -15,35 +11,67 @@ import {
 } from '../common';
 
 import { CreditReservation, Customer } from './entities';
-import { CustomerService } from './services';
 import { ReserveCreditCommandHandler } from './commands';
+import { CustomerService } from './customer.service';
+import { CustomersController } from './customers.controller';
 
 @Module({
   imports: [
     ConvoyCommonModule,
     TypeOrmModule.forRoot({
       ...defaultOptions,
-      host: 'customers-db',
-      port: 5435,
-      database: 'customers',
+      // host: 'customers-db',
+      port: 5432,
+      schema: 'customers',
     } as TypeOrmModuleOptions),
     ConvoySagaTypeOrmModule,
     TypeOrmModule.forFeature([CreditReservation, Customer]),
     ConvoyMessagingBrokerModule.register(
       {
-        transport: Transport.KAFKA,
+        // @ts-ignore
+        transport: Transport.TCP,
+        options: {
+          port: '4030',
+          // url: 'redis://localhost:6379',
+        },
       },
       {
-        transport: Transport.KAFKA,
+        transport: Transport.TCP,
         options: {
-          client: {
-            brokers: ['kafka:9092'],
-          },
+          port: '4031',
+          // url: 'redis://localhost:6379',
         },
       },
     ),
+    // ConvoyMessagingBrokerModule.register(
+    //   {
+    //     transport: Transport.KAFKA,
+    //     options: {
+    //       consumer: {
+    //         groupId: 'customers',
+    //       },
+    //       client: {
+    //         clientId: 'customers-consumer',
+    //         brokers: ['localhost:9092'],
+    //       },
+    //     },
+    //   },
+    //   {
+    //     transport: Transport.KAFKA,
+    //     options: {
+    //       consumer: {
+    //         groupId: 'customers',
+    //       },
+    //       client: {
+    //         clientId: 'customers-consumer',
+    //         brokers: ['localhost:9092'],
+    //       },
+    //     },
+    //   },
+    // ),
     ConvoySagasModule,
   ],
+  controllers: [CustomersController],
   providers: [CustomerService, ReserveCreditCommandHandler],
 })
 export class CustomersModule {}

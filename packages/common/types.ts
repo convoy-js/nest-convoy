@@ -1,6 +1,14 @@
-import { Message } from '@nest-convoy/messaging/common';
+// import { Message } from '@nest-convoy/messaging/common';
+import { Type } from '@nestjs/common';
 
 import { Handlers } from './handlers';
+
+export function isType<T>(value: any): value is Type<T> {
+  return (
+    (typeof value === 'object' || typeof value === 'function') &&
+    value.prototype?.constructor === value
+  );
+}
 
 export type Consumer<T, S = any> = (data: T, ...args: any[]) => Promise<S> | S;
 
@@ -12,11 +20,11 @@ export interface Builder<T> {
 
 export interface Dispatcher {
   subscribe(): Promise<void>;
-  handleMessage(message: Message): Promise<void>;
+  handleMessage(message: any): Promise<void>;
 }
 
 export interface Handler<I> {
-  handles(message: Message): boolean;
+  handles(message: any): boolean;
   invoke: I;
 }
 

@@ -16,13 +16,13 @@ export class DomainEventHandler implements Handler<DomainEventHandlerInvoke> {
   constructor(
     readonly event: DomainEventType,
     readonly invoke: DomainEventHandlerInvoke,
-    readonly aggregateType?: string,
+    readonly aggregateType: string,
   ) {}
 
   handles(message: Message): boolean {
     return (
       this.aggregateType ===
-        message.getHeader(EventMessageHeaders.AGGREGATE_TYPE) ||
+        message.getHeader(EventMessageHeaders.AGGREGATE_TYPE) &&
       this.event.name ===
         message.getRequiredHeader(EventMessageHeaders.EVENT_TYPE)
     );

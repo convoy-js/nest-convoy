@@ -1,17 +1,14 @@
+import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 import { Consumer } from '@nest-convoy/common';
 import {
   ConvoyChannelMapping,
   Message,
   MessageHandler,
+  SubscriberIdAndMessage,
 } from '@nest-convoy/messaging/common';
-import {
-  Injectable,
-  Logger,
-  Optional,
-  OnApplicationShutdown,
-} from '@nestjs/common';
 
 import { MessageSubscription } from './message-subscription';
+import { DuplicateMessageDetector } from './duplicate-message-detectors';
 
 @Injectable()
 export abstract class MessageConsumer {
@@ -25,9 +22,6 @@ export abstract class MessageConsumer {
   close(): Promise<void> | void {}
 }
 
-// @Injectable()
-// export class KafkaMessageConsumer implements MessageConsumer {}
-
 @Injectable()
 export class ConvoyMessageConsumer
   implements MessageConsumer, OnApplicationShutdown {
@@ -39,11 +33,10 @@ export class ConvoyMessageConsumer
   }
 
   constructor(
+    private readonly duplicateMessageDetector: DuplicateMessageDetector,
     private readonly channelMapping: ConvoyChannelMapping,
     private readonly target: MessageConsumer,
-  ) {
-    // super();
-  }
+  ) {}
 
   async subscribe(
     subscriberId: string,
@@ -58,7 +51,11 @@ export class ConvoyMessageConsumer
     const sub = await this.target.subscribe(
       subscriberId,
       transformedChannels,
-      handler,
+      (message: Message) =>
+        this.duplicateMessageDetector.doWithMessage(
+          new SubscriberIdAndMessage(subscriberId, message),
+          handler,
+        ),
       isEventHandler,
     );
     this.subs.set(subscriberId, sub);

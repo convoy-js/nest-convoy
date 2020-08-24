@@ -12,28 +12,33 @@ export class StepToExecute<Data> {
   ) {}
 
   private size(): number {
-    return (!!this.step ? 1 : 0) + this.skipped;
+    return (!this.isEmpty() ? 1 : 0) + this.skipped;
   }
 
   isEmpty(): boolean {
     return !this.step;
   }
 
-  executeStep(data: Data, currentState: SagaExecutionState): SagaActions<Data> {
+  async executeStep(
+    data: Data,
+    currentState: SagaExecutionState,
+  ): Promise<SagaActions<Data>> {
     const newState = currentState.nextState(this.size());
 
     const builder = new SagaActionsBuilder<Data>();
     const withIsLocal = builder.withIsLocal.bind(builder);
     const withCommands = builder.withCommands.bind(builder);
 
-    this.step
-      ?.createStepOutcome(data, this.compensating)
-      .visit(withIsLocal, withCommands);
+    (await this.step?.createStepOutcome(data, this.compensating)).visit(
+      withIsLocal,
+      withCommands,
+    );
 
     return builder
       .withUpdatedSagaData(data)
       .withUpdatedState(encodeExecutionState(newState))
       .withIsEndState(newState.endState)
+      .withIsCompensating(currentState.compensating)
       .build();
   }
 }

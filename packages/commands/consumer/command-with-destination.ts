@@ -5,7 +5,7 @@ export class CommandWithDestination<C = Command> implements Command {
   constructor(
     readonly destinationChannel: string,
     readonly command: C,
-    readonly resource: string = null,
+    readonly resource?: string,
     readonly extraHeaders: MessageHeaders = new Map(),
   ) {}
 }

@@ -11,8 +11,8 @@ import {
 import { CommandEndpoint } from './command-endpoint';
 
 export abstract class BaseParticipantInvocation<Data> {
-  abstract createCommandToSend(data: Data): CommandWithDestination;
-  isInvocable?: Predicate<Data>;
+  abstract createCommandToSend(data: Data): Promise<CommandWithDestination>;
+  readonly isInvocable?: Predicate<Data>;
   isSuccessfulReply(message: Message): boolean {
     return (
       CommandReplyOutcome.SUCCESS ===
@@ -35,7 +35,7 @@ export class ParticipantInvocation<
     super();
   }
 
-  createCommandToSend(data: Data): CommandWithDestination {
+  async createCommandToSend(data: Data): Promise<CommandWithDestination> {
     return this.commandBuilder(data);
   }
 }
@@ -52,11 +52,10 @@ export class ParticipantEndpointInvocation<
     super();
   }
 
-  createCommandToSend(data: Data): CommandWithDestination {
+  async createCommandToSend(data: Data): Promise<CommandWithDestination> {
     return new CommandWithDestination(
       this.commandEndpoint.commandChannel,
-      this.commandProvider(data),
-      null,
+      await this.commandProvider(data),
     );
   }
 }

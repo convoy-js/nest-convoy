@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Type } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 
 import { Saga } from './saga';
 import { SagaManager } from './saga-manager';
@@ -7,9 +8,15 @@ import { SagaInstance } from './saga-instance';
 
 @Injectable()
 export class SagaInstanceFactory {
-  private sagaManagers = new WeakMap<Saga<any>, SagaManager<any>>();
+  private readonly sagaManagers = new WeakMap<
+    Type<Saga<any>>,
+    SagaManager<any>
+  >();
 
-  constructor(private readonly sagaManagerFactory: SagaManagerFactory) {}
+  constructor(
+    private readonly sagaManagerFactory: SagaManagerFactory,
+    private readonly moduleRef: ModuleRef,
+  ) {}
 
   private async createSagaManager<SagaData>(
     saga: Saga<SagaData>,
@@ -20,14 +27,15 @@ export class SagaInstanceFactory {
   }
 
   async create<SagaData>(
-    saga: Saga<SagaData>,
+    sagaType: Type<Saga<SagaData>>,
     data: SagaData,
   ): Promise<SagaInstance<SagaData>> {
-    if (!this.sagaManagers.has(saga)) {
+    if (!this.sagaManagers.has(sagaType)) {
+      const saga = this.moduleRef.get(sagaType, { strict: false });
       const sagaManager = await this.createSagaManager(saga);
-      this.sagaManagers.set(saga, sagaManager);
+      this.sagaManagers.set(sagaType, sagaManager);
     }
 
-    return this.sagaManagers.get(saga).create(data);
+    return this.sagaManagers.get(sagaType).create(data);
   }
 }

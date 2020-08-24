@@ -4,7 +4,7 @@ nest_library(
     name = "producer",
     srcs = glob(
         ["*.ts"],
-        exclude = ["*.spec.ts"],
+        exclude = ["*.spec.ts", "database-message-producer.ts"],
     ),
     module_name = "@nest-convoy/messaging/producer",
     deps = [

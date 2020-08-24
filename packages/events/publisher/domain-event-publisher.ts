@@ -22,20 +22,17 @@ export class DomainEventPublisher {
     headers: Map<string, string>,
     event: DomainEvent,
   ): Message {
-    return (
-      MessageBuilder.withPayload(event)
-        .withExtraHeaders('', headers)
-        // .withHeader(Message.ID, aggregateId)
-        .withHeader(Message.PARTITION_ID, aggregateId)
-        .withHeader(EventMessageHeaders.AGGREGATE_ID, aggregateId)
-        .withHeader(EventMessageHeaders.AGGREGATE_TYPE, aggregateType)
-        .withHeader(EventMessageHeaders.EVENT_TYPE, event.constructor.name)
-        .build()
-    );
+    return MessageBuilder.withPayload(event)
+      .withExtraHeaders('', headers)
+      .withHeader(Message.PARTITION_ID, aggregateId)
+      .withHeader(EventMessageHeaders.AGGREGATE_ID, aggregateId)
+      .withHeader(EventMessageHeaders.AGGREGATE_TYPE, aggregateType)
+      .withHeader(EventMessageHeaders.EVENT_TYPE, event.constructor.name)
+      .build();
   }
 
   async publish(
-    aggregateType: Type<any> | undefined,
+    aggregateType: string | undefined,
     aggregateId: string | undefined,
     domainEvents: DomainEvent[],
     headers: Map<string, string> = new Map(),
@@ -47,15 +44,16 @@ export class DomainEventPublisher {
       //   event,
       // );
       const domainEventMessage = this.createMessageForDomainEvent(
-        aggregateType?.name || eventName,
-        aggregateId || eventName,
+        aggregateType || eventName,
+        aggregateId,
         headers,
         event,
       );
 
       await this.messageProducer.send(
-        aggregateId || eventName,
+        aggregateType || eventName,
         domainEventMessage,
+        true,
       );
     }
   }

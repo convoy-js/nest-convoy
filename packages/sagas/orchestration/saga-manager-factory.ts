@@ -19,7 +19,6 @@ export class SagaManagerFactory {
   ) {}
 
   create<Data>(saga: Saga<Data>): SagaManager<Data> {
-    // TODO: Should be dynamic
     return new SagaManager(
       saga,
       this.sagaInstanceRepository,

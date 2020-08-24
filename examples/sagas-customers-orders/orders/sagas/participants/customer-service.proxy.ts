@@ -9,7 +9,7 @@ export class CustomerServiceProxy {
   readonly reserveCredit = CommandEndpointBuilder.forCommand(
     ReserveCreditCommand,
   )
-    .withChannel(Channel.CUSTOMER_SERVICE)
+    .withChannel(Channel.CUSTOMER)
     .withReply(Success)
     .build();
 }

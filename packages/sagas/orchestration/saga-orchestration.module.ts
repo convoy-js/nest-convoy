@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConvoyCommandsProducerModule } from '@nest-convoy/commands';
-import {
-  NEST_CONVOY_SAGA_CONNECTION,
-  SagaCommonModule,
-} from '@nest-convoy/sagas/common';
+import { SagaCommonModule } from '@nest-convoy/sagas/common';
+import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { SagaInstanceEntity, SagaInstanceParticipantsEntity } from './entities';
 import { SagaInstanceFactory } from './saga-instance-factory';
@@ -20,18 +18,17 @@ import {
     SagaCommonModule,
     TypeOrmModule.forFeature(
       [SagaInstanceEntity, SagaInstanceParticipantsEntity],
-      NEST_CONVOY_SAGA_CONNECTION,
+      NEST_CONVOY_CONNECTION,
     ),
     ConvoyCommandsProducerModule,
   ],
   providers: [
-    SagaDatabaseInstanceRepository,
     SagaInstanceFactory,
     SagaManagerFactory,
     SagaCommandProducer,
     {
       provide: SagaInstanceRepository,
-      useExisting: SagaDatabaseInstanceRepository,
+      useClass: SagaDatabaseInstanceRepository,
     },
   ],
   exports: [

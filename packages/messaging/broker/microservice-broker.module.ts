@@ -1,10 +1,11 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ClientOptions, MicroserviceOptions } from '@nestjs/microservices';
+
+import { ConvoyCoreModule } from '@nest-convoy/core/core.module';
 import {
   ConvoyMessagingConsumerModule,
   ConvoyMessagingProducerModule,
 } from '@nest-convoy/messaging';
-import { ConvoyCoreModule } from '@nest-convoy/core/core.module';
 
 import { MicroserviceMessageConsumer } from './microservice-message-consumer';
 import { MicroserviceMessageProducer } from './microservice-message-producer';

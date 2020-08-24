@@ -1,5 +1,4 @@
-export * from '@nest-convoy/sagas';
-export * from '@nest-convoy/events';
+export { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 export {
   Message,
   ConvoyChannelMapping,
@@ -14,7 +13,10 @@ export {
   CommandReplyOutcome,
   Success,
   Failure,
+  CommandWithDestination,
 } from '@nest-convoy/commands';
+export * from '@nest-convoy/sagas';
+export * from '@nest-convoy/events';
 
 export { EventsHandler, CommandHandler, QueryHandler } from '@nestjs/cqrs';
 

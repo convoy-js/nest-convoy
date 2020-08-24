@@ -31,18 +31,22 @@ export class MicroserviceMessageConsumer extends MessageConsumer {
     isEventHandler?: boolean,
   ): MessageSubscription {
     const callback = async (data: MicroserviceMessage, ctx: any) => {
-      const handlerMessage = fromMicroserviceMessage(data);
-      // TODO: Error handling
-      let responseMessage = await handler(handlerMessage, ctx);
-      responseMessage =
-        responseMessage instanceof CommandMessage
-          ? responseMessage.message
-          : responseMessage;
+      try {
+        const handlerMessage = fromMicroserviceMessage(data);
+        // TODO: Error handling
+        let responseMessage = await handler(handlerMessage, ctx);
+        responseMessage =
+          responseMessage instanceof CommandMessage
+            ? responseMessage.message
+            : responseMessage;
 
-      if (!responseMessage) return of();
+        if (!responseMessage) return of();
 
-      const responseData = createMicroserviceMessage(responseMessage);
-      return this.proxy.client.send(subscriberId, responseData);
+        const responseData = createMicroserviceMessage(responseMessage);
+      } catch (err) {
+        console.error(err);
+      }
+      // return this.proxy.client.send(subscriberId, responseData);
     };
 
     channels.forEach(channel => {

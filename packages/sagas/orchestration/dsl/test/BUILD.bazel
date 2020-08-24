@@ -1,51 +1,6 @@
 load("//tools:defaults.bzl", "nest_test")
 
 nest_test(
-    name = "conditional-saga",
-    srcs = [
-        "commands.ts",
-        "conditional.saga.spec.ts",
-        "conditional.saga.ts",
-        "conditional-saga.data.ts",
-    ],
-    deps = [
-        "//packages/sagas/orchestration/dsl",
-        "//packages/commands",
-        "//packages/testing",
-    ],
-)
-
-nest_test(
-    name = "local-saga",
-    srcs = [
-        "commands.ts",
-        "local.saga.spec.ts",
-        "local.saga.ts",
-        "local-saga.data.ts",
-    ],
-    deps = [
-        "//packages/sagas/orchestration/dsl",
-        "//packages/commands",
-        "//packages/testing",
-    ],
-)
-
-nest_test(
-    name = "with-handlers-saga",
-    srcs = [
-        "commands.ts",
-        "local.saga.spec.ts",
-        "local.saga.ts",
-        "local-saga.data.ts",
-    ],
-    deps = [
-        "//packages/sagas/orchestration/dsl",
-        "//packages/commands",
-        "//packages/testing",
-    ],
-)
-
-nest_test(
     name = "test",
     srcs = glob(["*.ts"]),
     deps = [

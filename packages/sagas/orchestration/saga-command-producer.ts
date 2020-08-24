@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { MessageHeaders } from '@nest-convoy/messaging';
+import { SagaCommandHeaders } from '@nest-convoy/sagas/common';
 import {
   CommandWithDestination,
   ConvoyCommandProducer,
 } from '@nest-convoy/commands';
-import { MessageHeaders } from '@nest-convoy/messaging';
-import { SagaCommandHeaders } from '@nest-convoy/sagas/common';
 
 @Injectable()
 export class SagaCommandProducer {
@@ -22,6 +22,7 @@ export class SagaCommandProducer {
       const headers: MessageHeaders = new Map(command.extraHeaders);
       headers.set(SagaCommandHeaders.SAGA_TYPE, sagaType);
       headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
+
       messageId = await this.commandProducer.send(
         command.destinationChannel,
         command.command,

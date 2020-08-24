@@ -9,3 +9,12 @@ export class LockTarget {
     }
   }
 }
+
+export function createLockTarget(
+  target: string | object,
+  targetId: string | object,
+): string {
+  return typeof target === 'object' && typeof targetId === 'object'
+    ? `${target.constructor.name}/${targetId.constructor.name}`
+    : `${target}/${targetId}`;
+}

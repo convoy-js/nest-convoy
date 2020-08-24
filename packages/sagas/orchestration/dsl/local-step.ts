@@ -5,7 +5,7 @@ import {
   ReplyMessageHeaders,
 } from '@nest-convoy/commands/common';
 
-import { SagaStep, SagaStepReplyHandler, SagaStepReply } from './saga-step';
+import { SagaStep, SagaStepReply } from './saga-step';
 import { LocalStepOutcome } from './step-outcome';
 
 export class LocalStep<Data> implements SagaStep<Data> {
@@ -24,28 +24,32 @@ export class LocalStep<Data> implements SagaStep<Data> {
   }
 
   hasCompensation(data: Data): boolean {
-    return !!this.compensation;
+    return typeof this.compensation === 'function'
+      ? this.compensation?.(data)
+      : !!this.compensation;
   }
 
   isSuccessfulReply(compensating: boolean, message: Message): boolean {
-    // TODO: Make reusable
     return (
       CommandReplyOutcome.SUCCESS ===
       message.getRequiredHeader(ReplyMessageHeaders.REPLY_OUTCOME)
     );
   }
 
-  createStepOutcome(data: Data, compensating: boolean): LocalStepOutcome {
+  async createStepOutcome(
+    data: Data,
+    compensating: boolean,
+  ): Promise<LocalStepOutcome> {
     try {
       if (compensating) {
-        this.compensation?.(data);
+        await this.compensation?.(data);
       } else {
-        this.handler(data);
+        await this.handler(data);
       }
 
       return new LocalStepOutcome();
-    } catch (e) {
-      return new LocalStepOutcome(e);
+    } catch (err) {
+      return new LocalStepOutcome(err);
     }
   }
 }

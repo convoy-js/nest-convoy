@@ -22,19 +22,15 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
   }
 
   hasAction(data: Data): Promise<boolean> | boolean {
-    if (typeof this.participantInvocation?.isInvocable === 'function') {
-      return this.participantInvocation?.isInvocable?.(data);
-    }
-
-    return !!this.participantInvocation;
+    return typeof this.participantInvocation?.isInvocable === 'function'
+      ? this.participantInvocation?.isInvocable?.(data)
+      : !!this.participantInvocation;
   }
 
   hasCompensation(data: Data): Promise<boolean> | boolean {
-    if (typeof this.compensation?.isInvocable === 'function') {
-      return this.compensation?.isInvocable?.(data);
-    }
-
-    return !!this.compensation;
+    return typeof this.compensation?.isInvocable === 'function'
+      ? this.compensation?.isInvocable?.(data)
+      : !!this.compensation;
   }
 
   getReply<T>(
@@ -55,9 +51,12 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
     );
   }
 
-  createStepOutcome(data: Data, compensating: boolean): StepOutcome {
+  async createStepOutcome(
+    data: Data,
+    compensating: boolean,
+  ): Promise<StepOutcome> {
     const invocation = this.getParticipantInvocation(compensating);
-    const command = invocation.createCommandToSend(data);
+    const command = await invocation.createCommandToSend(data);
 
     return new RemoteStepOutcome([command]);
   }

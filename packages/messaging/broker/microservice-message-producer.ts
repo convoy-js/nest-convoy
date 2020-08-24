@@ -10,10 +10,17 @@ export class MicroserviceMessageProducer extends MessageProducer {
     super();
   }
 
-  async send(message: Message): Promise<void> {
-    const destination = message.getRequiredHeader(Message.DESTINATION);
+  async send(
+    destination: string,
+    message: Message,
+    isEvent: boolean,
+  ): Promise<void> {
     const data = createMicroserviceMessage(message);
-    // TODO: Check if message is an event, because then we simply use emit
-    await this.proxy.client.emit(destination, data).toPromise();
+
+    if (isEvent) {
+      this.proxy.client.emit(destination, data).subscribe();
+    } else {
+      this.proxy.client.send(destination, data).subscribe();
+    }
   }
 }

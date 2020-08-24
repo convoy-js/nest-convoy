@@ -1,0 +1,16 @@
+load("//tools:defaults.bzl", "nest_test")
+
+nest_test(
+    name = "test",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages/sagas/orchestration",
+        "//packages/sagas/orchestration/dsl",
+        "//packages/sagas/common",
+        "//packages/sagas",
+        "//packages/commands",
+        "//packages/testing",
+        "//packages/messaging",
+    ],
+)
+

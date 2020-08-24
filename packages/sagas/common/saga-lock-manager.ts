@@ -2,36 +2,36 @@ import { Injectable } from '@nestjs/common';
 import { Message } from '@nest-convoy/messaging/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RuntimeException } from '@nest-convoy/common';
+import { RuntimeException, NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { SagaStashEntity, SagaLockEntity } from './entities';
-import { NEST_CONVOY_SAGA_CONNECTION } from './tokens';
 
 @Injectable()
-export abstract class SagaLockManager {
-  abstract claimLock(
+export class SagaLockManager {
+  async claimLock(
     sagaType: string,
     sagaId: string,
     target: string,
-  ): Promise<boolean>;
-  abstract stashMessage(
+  ): Promise<boolean> {
+    return true;
+  }
+
+  async stashMessage(
     sagaType: string,
     sagaId: string,
     target: string,
     message: Message,
-  ): Promise<void>;
-  abstract unlock(sagaId: string, target: string): Promise<Message | void>;
-}
+  ): Promise<void> {}
 
-// @Injectable()
-// export class SagaInMemoryLockManager extends SagaLockManager {}
+  async unlock(sagaId: string, target: string): Promise<Message | void> {}
+}
 
 @Injectable()
 export class SagaDatabaseLockManager extends SagaLockManager {
   constructor(
-    @InjectRepository(SagaLockEntity, NEST_CONVOY_SAGA_CONNECTION)
+    @InjectRepository(SagaLockEntity, NEST_CONVOY_CONNECTION)
     private readonly sagaLockRepository: Repository<SagaLockEntity>,
-    @InjectRepository(SagaStashEntity, NEST_CONVOY_SAGA_CONNECTION)
+    @InjectRepository(SagaStashEntity, NEST_CONVOY_CONNECTION)
     private readonly sagaStashRepository: Repository<SagaStashEntity>,
   ) {
     super();

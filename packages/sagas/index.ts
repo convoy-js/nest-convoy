@@ -1,4 +1,3 @@
-export { NEST_CONVOY_SAGA_CONNECTION } from './common';
 export {
   NestSaga,
   Saga,
@@ -15,9 +14,5 @@ export {
   OnStarting,
   SagaDefinition,
 } from './orchestration';
-export {
-  SagaCommandHandler,
-  SagaCommandDispatcherFactory,
-} from './participant';
 
 export * from './sagas.module';

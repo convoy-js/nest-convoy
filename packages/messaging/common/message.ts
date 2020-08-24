@@ -2,7 +2,7 @@ import { MissingRequiredMessageHeaderException } from './exceptions';
 
 export type MessageHeaders = Map<string, string>;
 
-export type MessageHandler = (data: Message) => Promise<void> | void;
+export type MessageHandler = (message: Message) => Promise<void> | void;
 
 export class Message {
   static ID = 'id';
@@ -39,11 +39,11 @@ export class Message {
     this.headers = headers;
   }
 
-  setHeader(name: string, value: string): void {
+  setHeader(name: string, value: string | number): void {
     if (!this.headers) {
       this.headers = new Map();
     }
-    this.headers.set(name, value);
+    this.headers.set(name, String(value));
   }
 
   removeHeader(name: string): boolean {
@@ -61,7 +61,6 @@ export class Message {
   getRequiredHeader(name: string): string {
     const value = this.getHeader(name);
     if (!value) {
-      console.error(name, this);
       throw new MissingRequiredMessageHeaderException(name, this);
     }
     return value;

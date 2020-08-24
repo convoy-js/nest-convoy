@@ -21,10 +21,10 @@ import { CLIENT_OPTIONS, SERVER_OPTIONS } from './tokens';
 @Injectable()
 export class MicroserviceProxy implements OnModuleInit, OnApplicationShutdown {
   readonly logger = new Logger(this.constructor.name, true);
-  readonly server: Server & CustomTransportStrategy = ServerFactory.create(
+  server: Server & CustomTransportStrategy = ServerFactory.create(
     this.serverOptions,
   );
-  readonly client: ClientProxy & Closeable = ClientProxyFactory.create(
+  client: ClientProxy & Closeable = ClientProxyFactory.create(
     this.clientOptions,
   );
 

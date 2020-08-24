@@ -1,8 +1,8 @@
 import {
   CommandHandler,
-  EventBus,
   ICommandHandler,
   CommandMessage,
+  DomainEventPublisher,
 } from '@nest-convoy/core';
 
 import { DoSomethingCommand } from './do-something.command';
@@ -12,12 +12,12 @@ import { uniqueId } from './tokens';
 @CommandHandler(DoSomethingCommand)
 export class DoSomethingCommandHandler
   implements ICommandHandler<DoSomethingCommand> {
-  constructor(private readonly eventBus: EventBus) {}
+  constructor(private readonly domainEventPublisher: DomainEventPublisher) {}
 
   async execute({
     command,
   }: CommandMessage<DoSomethingCommand>): Promise<void> {
     const event = new AccountDebited(uniqueId);
-    await this.eventBus.publish(event);
+    await this.domainEventPublisher.publish(AccountDebited.name, event);
   }
 }

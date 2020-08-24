@@ -16,6 +16,7 @@ import {
 import { CommandHandlers } from './command-handlers';
 import { CommandMessage } from './command-message';
 import { CommandHandler } from './command-handler';
+import { withFailure, withSuccess } from './command-handler-reply-builder';
 
 export class ConvoyCommandDispatcher implements Dispatcher {
   private readonly logger = new Logger(this.constructor.name, true);
@@ -40,9 +41,12 @@ export class ConvoyCommandDispatcher implements Dispatcher {
     commandMessage: CommandMessage,
   ): Promise<Message[]> {
     // TODO: Figure out whether or not it should sendReplies or handleException
-    const reply = await commandHandler.invoke(commandMessage);
-
-    return [reply];
+    try {
+      const reply = await commandHandler.invoke(commandMessage);
+      return reply instanceof Message ? [reply] : [withSuccess(reply)];
+    } catch (err) {
+      return [withFailure(err)];
+    }
   }
 
   async handleMessage(message: Message): Promise<void> {
@@ -73,7 +77,7 @@ export class ConvoyCommandDispatcher implements Dispatcher {
       this.logger.debug(
         `Generated replies ${this.commandDispatcherId} ${
           message.constructor.name
-        } ${JSON.stringify(replies)}`,
+        } ${replies.map(reply => reply.toString())}`,
       );
     } catch (err) {
       this.logger.error(

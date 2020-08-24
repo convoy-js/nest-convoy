@@ -15,6 +15,7 @@ import {
   ConvoyCommandProducer,
 } from '@nest-convoy/commands';
 import {
+  CannotClaimResourceLockException,
   LockTarget,
   SagaCommandHeaders,
   SagaLockManager,
@@ -25,13 +26,7 @@ import {
 import { SagaInstance } from './saga-instance';
 import { SagaInstanceRepository } from './saga-instance-repository';
 import { SagaCommandProducer } from './saga-command-producer';
-import {
-  OnSagaCompletedSuccessfully,
-  OnSagaRolledBack,
-  OnStarting,
-  Saga,
-  SagaLifecycleHooks,
-} from './saga';
+import { OnStarting, Saga, SagaLifecycleHooks } from './saga';
 import { SagaDefinition } from './saga-definition';
 import { SagaActions } from './saga-actions';
 import { DestinationAndResource } from './destination-and-resource';
@@ -48,7 +43,7 @@ export interface SagaManager<Data> {
 }
 
 export class SagaManager<Data> implements SagaManager<Data> {
-  private readonly logger = new Logger(this.constructor.name, true);
+  private readonly logger = new Logger(SagaManager.name, true);
 
   private get sagaType(): string {
     return this.saga.constructor.name;
@@ -74,8 +69,8 @@ export class SagaManager<Data> implements SagaManager<Data> {
   private getSagaDefinition(): SagaDefinition<Data> {
     const sm = this.saga.sagaDefinition;
 
-    if (sm == null) {
-      throw new RuntimeException('state machine cannot be null');
+    if (!sm) {
+      throw new RuntimeException('State machine cannot be empty');
     }
 
     return sm;
@@ -226,9 +221,7 @@ export class SagaManager<Data> implements SagaManager<Data> {
   }
 
   async handleMessage(message: Message): Promise<void> {
-    // this.logger.debug('handleMessage invoked with: ');
-    // this.logger.debug(message.getPayload());
-    // this.logger.debug(message.getHeaders());
+    this.logger.debug(`handleMessage invoked with - ${message.toString()}`);
 
     if (message.hasHeader(SagaReplyHeaders.REPLY_SAGA_ID)) {
       await this.handleReply(message);
@@ -289,7 +282,7 @@ export class SagaManager<Data> implements SagaManager<Data> {
           resource,
         ))
       ) {
-        throw new RuntimeException('Cannot claim lock for resource');
+        throw new CannotClaimResourceLockException();
       }
     }
 

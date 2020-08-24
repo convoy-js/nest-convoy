@@ -9,6 +9,7 @@ nest_library(
     module_name = "@nest-convoy/sagas/participant",
     visibility = [
         "//packages/sagas:__pkg__",
+        "//packages/core:__pkg__",
     ],
     deps = [
         "//packages/common",

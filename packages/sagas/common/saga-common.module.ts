@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { NEST_CONVOY_SAGA_CONNECTION } from './tokens';
+import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { SagaLockEntity, SagaStashEntity } from './entities';
 import { SagaDatabaseLockManager, SagaLockManager } from './saga-lock-manager';
@@ -9,14 +9,13 @@ import { SagaDatabaseLockManager, SagaLockManager } from './saga-lock-manager';
   imports: [
     TypeOrmModule.forFeature(
       [SagaLockEntity, SagaStashEntity],
-      NEST_CONVOY_SAGA_CONNECTION,
+      NEST_CONVOY_CONNECTION,
     ),
   ],
   providers: [
-    SagaDatabaseLockManager,
     {
       provide: SagaLockManager,
-      useExisting: SagaDatabaseLockManager,
+      useClass: SagaDatabaseLockManager,
     },
   ],
   exports: [TypeOrmModule, SagaLockManager],

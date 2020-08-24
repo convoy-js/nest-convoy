@@ -62,12 +62,12 @@ export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
   }
 
   private makeEndStateSagaActions(
-    currentState: SagaExecutionState,
+    state: SagaExecutionState,
   ): SagaActions<Data> {
     return new SagaActionsBuilder<Data>()
       .withUpdatedState(encodeExecutionState(SagaExecutionState.makeEndState()))
       .withIsEndState(true)
-      .withIsCompensating(currentState.compensating)
+      .withIsCompensating(state.compensating)
       .build();
   }
 
@@ -81,7 +81,7 @@ export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
     await handleReply(data, reply);
   }
 
-  start(sagaData: Data): Promise<SagaActions<Data>> {
+  async start(sagaData: Data): Promise<SagaActions<Data>> {
     const currentState = new SagaExecutionState();
     return this.executeNextStep(sagaData, currentState);
   }

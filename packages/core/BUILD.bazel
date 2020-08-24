@@ -14,7 +14,9 @@ nest_library(
         "//packages/commands",
         "//packages/events",
         "//packages/sagas",
+        "//packages/sagas/participant",
         "//packages/messaging",
+        "//packages/common",
     ],
 )
 

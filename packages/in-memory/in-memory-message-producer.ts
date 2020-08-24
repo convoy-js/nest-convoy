@@ -10,7 +10,7 @@ export class InMemoryMessageProducer extends MessageProducer {
     super();
   }
 
-  async send(message: Message): Promise<void> {
-    await this.messageConsumer.dispatchMessage(message);
+  async send(destination: string, message: Message): Promise<void> {
+    await this.messageConsumer.dispatchMessage(destination, message);
   }
 }

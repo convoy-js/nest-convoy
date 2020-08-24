@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Customer } from '../entities';
-import { CustomerNotFound } from '../replies';
-import { Money } from '../../common';
+import { Customer } from './entities';
+import { CustomerNotFound } from './replies';
+import { Money } from '../common';
 
 @Injectable()
 export class CustomerService {

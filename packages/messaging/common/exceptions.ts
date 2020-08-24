@@ -10,6 +10,6 @@ export class MissingRequiredMessageHeaderException extends RuntimeException {
 
 export class MissingRequiredMessageIDException extends RuntimeException {
   constructor(message: Message) {
-    super('Message needs an ID');
+    super(`Message needs an ID - ${message.toString()}`);
   }
 }

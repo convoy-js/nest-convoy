@@ -19,6 +19,7 @@ nest_library(
         "//packages/sagas/common",
         "//packages/sagas/orchestration/entities",
         "@npm//@nestjs/typeorm",
+        "@npm//@nestjs/core",
         "@npm//typeorm",
     ],
 )

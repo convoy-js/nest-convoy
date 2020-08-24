@@ -11,7 +11,11 @@ import {
 
 @Injectable()
 export abstract class MessageProducer {
-  abstract send(message: Message): Promise<void>;
+  abstract send(
+    destination: string,
+    message: Message,
+    isEvent: boolean,
+  ): Promise<void>;
   generateMessageId(): string {
     return uuidv4();
   }
@@ -60,7 +64,11 @@ export class ConvoyMessageProducer {
     message.setHeader(Message.DATE, new Date().toJSON());
   }
 
-  async send(destination: string, message: Message): Promise<void> {
+  async send(
+    destination: string,
+    message: Message,
+    isEvent = false,
+  ): Promise<void> {
     this.prepareMessageHeaders(destination, message);
 
     await this.preSend(message);
@@ -68,7 +76,7 @@ export class ConvoyMessageProducer {
       this.logger.debug(
         `Sending message ${message.toString()} to channel ${destination}`,
       );
-      await this.target.send(message);
+      await this.target.send(destination, message, isEvent);
       await this.postSend(message);
     } catch (err) {
       this.logger.error(err.message);

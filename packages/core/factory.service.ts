@@ -1,9 +1,15 @@
 import { Injectable, OnModuleInit, Optional, Type } from '@nestjs/common';
+import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
+import {
+  COMMAND_HANDLER_METADATA,
+  EVENTS_HANDLER_METADATA,
+} from '@nestjs/cqrs/dist/decorators/constants';
+import { ModuleRef } from '@nestjs/core';
+
 import {
   SagaCommandDispatcherFactory,
   SagaCommandHandler,
-} from '@nest-convoy/sagas';
-import { ModuleRef } from '@nestjs/core';
+} from '@nest-convoy/sagas/participant';
 import {
   DomainEventDispatcherFactory,
   DomainEventHandler,
@@ -16,14 +22,14 @@ import {
   CommandHandlersBuilder,
   CommandType,
 } from '@nest-convoy/commands';
-import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
-import {
-  COMMAND_HANDLER_METADATA,
-  EVENTS_HANDLER_METADATA,
-} from '@nestjs/cqrs/dist/decorators/constants';
 
 import { ICommandHandler, IEventHandler } from './handlers';
-import { FOR_AGGREGATE_TYPE_METADATA, FROM_CHANNEL_METADATA } from './tokens';
+import {
+  FOR_AGGREGATE_TYPE_METADATA,
+  FROM_CHANNEL_METADATA,
+  HAS_COMMAND_HANDLER_METADATA,
+  SAGA_COMMAND_HANDLER_METADATA,
+} from './tokens';
 
 @Injectable()
 export class FactoryService implements OnModuleInit {
@@ -39,41 +45,6 @@ export class FactoryService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     const { commands, events, queries, sagas } = this.explorer.explore();
 
-    // const sagaInstances = sagas
-    //   .map(sagaType => Reflect.getMetadata(SAGA_METADATA, sagaType))
-    //   .map(
-    //     async ({
-    //       target,
-    //       data,
-    //     }: {
-    //       target: Type<Saga<any>>;
-    //       data: Type<any>;
-    //     }) => {
-    //       if (target && data) {
-    //         const saga = this.injector.get(target, {
-    //           strict: false,
-    //         }) as Saga<unknown>;
-    //
-    //         console.log(
-    //           await this.sagaInstanceFactory.create(saga, new data()),
-    //         );
-    //       }
-    //     },
-    //   );
-
-    /*
-
-
-  async onModuleInit(): Promise<void> {
-    const commandHandlers = CommandHandlersBuilder.fromChannel(REPLY_CHANNEL)
-      .onMessage(DoSomethingCommand, this.doSomething.bind(this))
-      .build();
-
-    await this.commandDispatcherFactory
-      .create(COMMAND_DISPATCHER_ID, commandHandlers)
-      .subscribe();
-     */
-
     const commandHandlers = commands.map(async commandHandlerType => {
       const commandType = Reflect.getMetadata(
         COMMAND_HANDLER_METADATA,
@@ -83,6 +54,14 @@ export class FactoryService implements OnModuleInit {
         FROM_CHANNEL_METADATA,
         commandHandlerType,
       ) as string;
+      const isSagaCommandHandler = Reflect.hasMetadata(
+        SAGA_COMMAND_HANDLER_METADATA,
+        commandHandlerType,
+      );
+      const hasCommandHandler = Reflect.hasMetadata(
+        HAS_COMMAND_HANDLER_METADATA,
+        commandHandlerType,
+      );
       const channel = commandHandlerChannel || commandType.name;
 
       const commandHandler = this.injector.get(commandHandlerType, {
@@ -90,21 +69,21 @@ export class FactoryService implements OnModuleInit {
       }) as ICommandHandler<unknown>;
       const handler = commandHandler.execute.bind(commandHandler);
 
-      const commandHandlers = CommandHandlersBuilder.fromChannel(channel)
-        .onMessage(commandType, handler)
-        .build();
+      if (hasCommandHandler) {
+        const commandHandlers = CommandHandlersBuilder.fromChannel(channel)
+          .onMessage(commandType, handler)
+          .build();
 
-      await this.commandDispatcherFactory
-        .create(commandType.name, commandHandlers)
-        .subscribe();
+        await this.commandDispatcherFactory
+          .create(commandType.name, commandHandlers)
+          .subscribe();
+      }
 
-      if (this.sagaCommandDispatcherFactory) {
-        // TODO: Move this
+      if (isSagaCommandHandler && this.sagaCommandDispatcherFactory) {
         const sagaCommandHandler = new SagaCommandHandler(
           channel,
           commandType,
           handler,
-          null,
         );
         const sagaCommandHandlers = new CommandHandlers([sagaCommandHandler]);
 
@@ -122,7 +101,7 @@ export class FactoryService implements OnModuleInit {
       const aggregateType = Reflect.getMetadata(
         FOR_AGGREGATE_TYPE_METADATA,
         eventHandlerType,
-      ) as (() => Type<any>) | undefined;
+      ) as (() => string) | undefined;
 
       const eventHandler = this.injector.get(eventHandlerType, {
         strict: false,
@@ -134,7 +113,7 @@ export class FactoryService implements OnModuleInit {
             new DomainEventHandler(
               eventType,
               eventHandler.handle.bind(eventHandler),
-              aggregateType?.()?.name,
+              aggregateType?.() || eventType.name,
             ),
         ),
       );
@@ -144,10 +123,6 @@ export class FactoryService implements OnModuleInit {
         .subscribe();
     });
 
-    await Promise.all([
-      ...commandHandlers,
-      ...eventHandlers,
-      // ...sagaInstances,
-    ] as Promise<any>[]);
+    await Promise.all([...commandHandlers, ...eventHandlers]);
   }
 }

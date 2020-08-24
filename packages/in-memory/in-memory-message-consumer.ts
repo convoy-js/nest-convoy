@@ -28,8 +28,7 @@ export class InMemoryMessageConsumer extends MessageConsumer {
     }
   }
 
-  async dispatchMessage(message: Message): Promise<void> {
-    const destination = message.getRequiredHeader(Message.DESTINATION);
+  async dispatchMessage(destination: string, message: Message): Promise<void> {
     const handlers = this.subscriptions.get(destination) || [];
     // this.logger.debug(
     //   `Sending message ${message.toString()} to channel ${destination} that has ${

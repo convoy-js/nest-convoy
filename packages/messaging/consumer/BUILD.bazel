@@ -3,11 +3,13 @@ load("//tools:defaults.bzl", "nest_library")
 nest_library(
     name = "consumer",
     srcs = glob(
-        ["*.ts"],
-        exclude = ["*.spec.ts"],
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
     ),
     module_name = "@nest-convoy/messaging/consumer",
     deps = [
+        "@npm//typeorm",
+        "@npm//@nestjs/typeorm",
         "//packages/common",
         "//packages/messaging/common",
     ],

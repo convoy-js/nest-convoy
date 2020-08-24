@@ -1,9 +1,6 @@
 import { NestSaga, Saga } from '@nest-convoy/sagas/orchestration/dsl';
 import { Injectable } from '@nestjs/common';
-import {
-  CommandWithDestination,
-  CommandWithDestinationBuilder,
-} from '@nest-convoy/commands';
+import { CommandWithDestination } from '@nest-convoy/commands';
 
 import { LocalSagaData } from './local-saga.data';
 import { Do2Command, Undo2Command } from './commands';

@@ -8,22 +8,6 @@ export abstract class Saga<Data> {
   abstract readonly sagaDefinition: SagaDefinition<Data>;
 }
 
-// export abstract class Saga<Data> {
-//   abstract sagaDefinition: SagaDefinition<Data>;
-//   abstract getSagaDefinition(): SagaDefinition<Data>;
-//
-//   async onStarting(sagaId: string, data: Data): Promise<void> {}
-//   async onSagaCompletedSuccessfully(
-//     sagaId: string,
-//     data: Data,
-//   ): Promise<void> {}
-//   async onSagaRolledBack(sagaId: string, data: Data): Promise<void> {}
-//
-//   getSagaType(): string {
-//     return this.constructor.name;
-//   }
-// }
-
 export interface OnSagaCompletedSuccessfully<Data> extends Saga<Data> {
   onSagaCompletedSuccessfully(sagaId: string, data: Data): Promise<void> | void;
 }

@@ -33,7 +33,6 @@ export class DomainEventDispatcher implements Dispatcher {
     const handler = this.domainEventHandlers.findTargetMethod(message);
     if (!handler) return;
 
-    // TODO: Provide a list of registered events and find it by event type
     const event = Object.assign(
       new handler.event(),
       message.parsePayload<DomainEvent>(),

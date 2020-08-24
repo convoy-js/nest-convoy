@@ -1,5 +1,5 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { NEST_CONVOY_SAGA_CONNECTION } from '@nest-convoy/sagas';
+import { NEST_CONVOY_CONNECTION } from '@nest-convoy/core';
 import { Module } from '@nestjs/common';
 
 import {
@@ -11,10 +11,10 @@ import {
   imports: [
     TypeOrmModule.forRoot({
       ...defaultOptions,
-      name: NEST_CONVOY_SAGA_CONNECTION,
-      host: 'sagas-db',
-      port: 5434,
-      database: 'sagasdb',
+      name: NEST_CONVOY_CONNECTION,
+      host: '0.0.0.0',
+      port: 5432,
+      schema: 'sagas',
     } as TypeOrmModuleOptions),
   ],
   exports: [TypeOrmModule],
