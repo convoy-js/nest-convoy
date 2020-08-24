@@ -1,9 +1,13 @@
-import { Message, MessageBuilder } from '@nest-convoy/messaging';
+import {
+  Message,
+  MessageBuilder,
+  MessageRecordHeaders,
+} from '@nest-convoy/messaging';
 
 export interface MicroserviceMessage {
   key: string;
   value: string;
-  headers: Record<string, string>;
+  headers: MessageRecordHeaders;
 }
 
 export function createMicroserviceMessage(
@@ -12,7 +16,7 @@ export function createMicroserviceMessage(
   return {
     key: message.id,
     value: message.getPayload(),
-    headers: Object.fromEntries(message.getHeaders().entries()),
+    headers: message.getHeadersAsRecord(),
   };
 }
 

@@ -1,6 +1,7 @@
 import { MissingRequiredMessageHeaderException } from './exceptions';
 
 export type MessageHeaders = Map<string, string>;
+export type MessageRecordHeaders = Record<string, string>;
 
 export type MessageHandler = (message: Message) => Promise<void> | void;
 
@@ -19,7 +20,7 @@ export class Message {
   toString(): string {
     return JSON.stringify({
       payload: this.payload,
-      headers: Object.fromEntries(this.headers.entries()),
+      headers: this.getHeadersAsRecord(),
     });
   }
 
@@ -48,6 +49,10 @@ export class Message {
 
   removeHeader(name: string): boolean {
     return this.headers.delete(name);
+  }
+
+  getHeadersAsRecord(): MessageRecordHeaders {
+    return Object.fromEntries(this.getHeaders().entries());
   }
 
   getHeaders(): MessageHeaders {

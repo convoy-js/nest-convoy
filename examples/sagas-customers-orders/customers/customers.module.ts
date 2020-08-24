@@ -20,29 +20,25 @@ import { CustomersController } from './customers.controller';
     ConvoyCommonModule,
     TypeOrmModule.forRoot({
       ...defaultOptions,
-      // host: 'customers-db',
       port: 5432,
       schema: 'customers',
     } as TypeOrmModuleOptions),
     ConvoySagaTypeOrmModule,
     TypeOrmModule.forFeature([CreditReservation, Customer]),
-    ConvoyMessagingBrokerModule.register(
-      {
-        // @ts-ignore
-        transport: Transport.TCP,
+    ConvoyMessagingBrokerModule.register({
+      server: {
+        transport: Transport.REDIS,
         options: {
-          port: '4030',
-          // url: 'redis://localhost:6379',
+          url: 'redis://localhost:6379',
         },
       },
-      {
-        transport: Transport.TCP,
+      client: {
+        transport: Transport.REDIS,
         options: {
-          port: '4031',
-          // url: 'redis://localhost:6379',
+          url: 'redis://localhost:6379',
         },
       },
-    ),
+    }),
     // ConvoyMessagingBrokerModule.register(
     //   {
     //     transport: Transport.KAFKA,

@@ -9,7 +9,7 @@ import {
   MessageSubscription,
 } from '@nest-convoy/messaging';
 
-import { MicroserviceProxy } from './microservice-proxy';
+import { ConvoyMicroserviceProxy } from './microservice-proxy';
 import {
   createMicroserviceMessage,
   fromMicroserviceMessage,
@@ -20,7 +20,7 @@ import {
 export class MicroserviceMessageConsumer extends MessageConsumer {
   id: string = null;
 
-  constructor(private readonly proxy: MicroserviceProxy) {
+  constructor(private readonly proxy: ConvoyMicroserviceProxy) {
     super();
   }
 

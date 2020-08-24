@@ -2,7 +2,9 @@
 
 import { Handler } from './types';
 
-export class Handlers<H extends Handler<Function>> {
+export type AsyncFn = (...args: any[]) => Promise<any>;
+
+export class Handlers<H extends Handler<AsyncFn>> {
   constructor(protected readonly handlers: H[]) {}
 
   findTargetMethod(message: any): H {

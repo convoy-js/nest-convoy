@@ -9,16 +9,18 @@ import {
 
 import { MicroserviceMessageConsumer } from './microservice-message-consumer';
 import { MicroserviceMessageProducer } from './microservice-message-producer';
-import { MicroserviceProxy } from './microservice-proxy';
+import { ConvoyMicroserviceProxy } from './microservice-proxy';
 import { CLIENT_OPTIONS, SERVER_OPTIONS } from './tokens';
+
+export interface ConvoyMessagingBrokerModuleOptions {
+  server?: MicroserviceOptions;
+  client?: MicroserviceOptions;
+}
 
 @Global()
 @Module({})
 export class ConvoyMessagingBrokerModule {
-  static register(
-    serverOptions: MicroserviceOptions = {},
-    clientOptions: ClientOptions = {},
-  ): DynamicModule {
+  static register(options: ConvoyMessagingBrokerModuleOptions): DynamicModule {
     return {
       module: ConvoyMessagingBrokerModule,
       imports: [
@@ -33,14 +35,14 @@ export class ConvoyMessagingBrokerModule {
       providers: [
         MicroserviceMessageConsumer,
         MicroserviceMessageProducer,
-        MicroserviceProxy,
+        ConvoyMicroserviceProxy,
         {
           provide: SERVER_OPTIONS,
-          useValue: serverOptions,
+          useValue: options.server,
         },
         {
           provide: CLIENT_OPTIONS,
-          useValue: clientOptions,
+          useValue: options.client,
         },
       ],
       exports: [

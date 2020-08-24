@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Message, MessageProducer } from '@nest-convoy/messaging';
 
-import { MicroserviceProxy } from './microservice-proxy';
+import { ConvoyMicroserviceProxy } from './microservice-proxy';
 import { createMicroserviceMessage } from './microservice-message';
 
 @Injectable()
 export class MicroserviceMessageProducer extends MessageProducer {
-  constructor(private readonly proxy: MicroserviceProxy) {
+  constructor(private readonly proxy: ConvoyMicroserviceProxy) {
     super();
   }
 

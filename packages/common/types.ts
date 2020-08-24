@@ -14,6 +14,10 @@ export type Consumer<T, S = any> = (data: T, ...args: any[]) => Promise<S> | S;
 
 export type Predicate<T> = (...args: any[]) => Promise<boolean> | boolean;
 
+export interface Reply {}
+
+export type ReplyType = Type<Reply>;
+
 export interface Builder<T> {
   build(): T;
 }

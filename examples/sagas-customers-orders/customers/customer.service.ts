@@ -10,7 +10,7 @@ import { Money } from '../common';
 export class CustomerService {
   constructor(
     @InjectRepository(Customer)
-    private customerRepository: Repository<Customer>,
+    private readonly customerRepository: Repository<Customer>,
   ) {}
 
   async find(id: Customer['id']): Promise<Customer> {

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { MessageProducer } from '@nest-convoy/messaging/producer';
 import { Message } from '@nest-convoy/messaging/common';
 

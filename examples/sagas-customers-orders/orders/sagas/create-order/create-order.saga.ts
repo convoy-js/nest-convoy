@@ -1,4 +1,4 @@
-import { Saga, NestSaga, CommandWithDestination } from '@nest-convoy/core';
+import { Saga, NestSaga } from '@nest-convoy/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -13,7 +13,6 @@ import { CustomerServiceProxy } from '../participants';
 import { Order } from '../../entities';
 
 import { CreateOrderSagaData } from './create-order-saga.data';
-import { Channel } from '../../../common';
 
 @Saga(CreateOrderSagaData)
 export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {

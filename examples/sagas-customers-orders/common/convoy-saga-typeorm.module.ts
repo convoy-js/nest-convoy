@@ -14,7 +14,7 @@ import {
       name: NEST_CONVOY_CONNECTION,
       host: '0.0.0.0',
       port: 5432,
-      schema: 'sagas',
+      schema: 'nest-convoy',
     } as TypeOrmModuleOptions),
   ],
   exports: [TypeOrmModule],

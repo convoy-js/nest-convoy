@@ -1,8 +1,6 @@
 import { Column } from 'typeorm';
 
 export class Money {
-  static ZERO = new Money();
-
   @Column({ default: 0.0, type: 'float' })
   amount: number;
 

@@ -1,5 +1,6 @@
-import { Message, MessageHandler } from '@nest-convoy/messaging/common';
 import { Injectable, Logger } from '@nestjs/common';
+
+import { Message, MessageHandler } from '@nest-convoy/messaging/common';
 import {
   MessageSubscription,
   MessageConsumer,

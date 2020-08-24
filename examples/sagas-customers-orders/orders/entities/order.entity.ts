@@ -26,13 +26,4 @@ export class Order {
 
   @VersionColumn()
   version: string;
-
-  // approve(): void {
-  //   this.state = OrderState.APPROVED;
-  // }
-  //
-  // reject(reason: RejectionReason): void {
-  //   this.state = OrderState.REJECTED;
-  //   this.rejectionReason = reason;
-  // }
 }

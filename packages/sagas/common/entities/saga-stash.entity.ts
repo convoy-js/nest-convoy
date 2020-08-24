@@ -1,4 +1,7 @@
-import { MessageHeaders } from '@nest-convoy/messaging/common';
+import {
+  MessageHeaders,
+  MessageRecordHeaders,
+} from '@nest-convoy/messaging/common';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('saga_stash')
@@ -19,10 +22,10 @@ export class SagaStashEntity<P = Record<string, unknown>> {
     name: 'message_headers',
     type: 'simple-json',
     transformer: {
-      to(value: Record<string, string>): MessageHeaders {
+      to(value: MessageRecordHeaders): MessageHeaders {
         return new Map(Object.entries(value));
       },
-      from(value: MessageHeaders): Record<string, string> {
+      from(value: MessageHeaders): MessageRecordHeaders {
         return Object.fromEntries(value);
       },
     },

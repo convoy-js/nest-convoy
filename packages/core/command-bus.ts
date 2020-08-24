@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ICommandBus } from '@nestjs/cqrs';
-import { ConvoyMessageConsumer, Message } from '@nest-convoy/messaging';
 import { v4 as uuidv4 } from 'uuid';
+
+import { ConvoyMessageConsumer, Message } from '@nest-convoy/messaging';
 import {
   Command,
   CommandReplyOutcome,

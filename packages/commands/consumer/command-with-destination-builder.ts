@@ -1,6 +1,9 @@
 import { Builder } from '@nest-convoy/common';
 import { Command, ResourcePathPattern } from '@nest-convoy/commands/common';
-import { MessageHeaders } from '@nest-convoy/messaging/common';
+import {
+  MessageHeaders,
+  MessageRecordHeaders,
+} from '@nest-convoy/messaging/common';
 
 import { CommandWithDestination } from './command-with-destination';
 
@@ -30,7 +33,7 @@ export class CommandWithDestinationBuilder
   }
 
   withExtraHeaders(
-    headers: MessageHeaders | Record<string, string>,
+    headers: MessageHeaders | MessageRecordHeaders,
   ): CommandWithDestinationBuilder {
     this.extraHeaders =
       headers instanceof Map ? headers : new Map(Object.entries(headers));

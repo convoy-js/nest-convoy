@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import {
-  SubscriberIdAndMessage,
+  Message,
   ReceivedMessagesEntity,
   MessageHandler,
 } from '@nest-convoy/messaging/common';
@@ -36,7 +36,8 @@ export class DatabaseDuplicateMessageDetector extends DuplicateMessageDetector {
   }
 
   async doWithMessage(
-    { subscriberId, message }: SubscriberIdAndMessage,
+    subscriberId: string,
+    message: Message,
     handleMessage: MessageHandler,
   ): Promise<void> {
     if (!(await this.isDuplicate(subscriberId, message.id))) {

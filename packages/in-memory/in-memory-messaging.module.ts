@@ -1,7 +1,8 @@
+import { DynamicModule, Global, Module } from '@nestjs/common';
+
 import { ConvoyMessagingConsumerModule } from '@nest-convoy/messaging/consumer';
 // import { DuplicateMessageDetector } from '@nest-convoy/messaging/consumer/duplicate-message-detectors';
 import { ConvoyMessagingProducerModule } from '@nest-convoy/messaging/producer';
-import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ConvoyCoreModule } from '@nest-convoy/core/core.module';
 
 import { InMemoryMessageProducer } from './in-memory-message-producer';

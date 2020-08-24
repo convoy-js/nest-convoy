@@ -4,7 +4,6 @@ import {
   ConvoyChannelMapping,
   Message,
   MessageHandler,
-  SubscriberIdAndMessage,
 } from '@nest-convoy/messaging/common';
 
 import { MessageSubscription } from './message-subscription';
@@ -53,7 +52,8 @@ export class ConvoyMessageConsumer
       transformedChannels,
       (message: Message) =>
         this.duplicateMessageDetector.doWithMessage(
-          new SubscriberIdAndMessage(subscriberId, message),
+          subscriberId,
+          message,
           handler,
         ),
       isEventHandler,
