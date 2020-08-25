@@ -64,7 +64,7 @@ jobs:
       - name: Initializing Bazel
         run: ./scripts/setup_bazel.sh
 
-      - name: Lint
+      - name: Lint project
         run: yarn lint
 
       - name: Build packages
@@ -75,6 +75,6 @@ jobs:
 
       - name: Publish packages
         if: steps.extract_branch.outputs.branch == 'master' && github.pull_request.merged == 'true'
-        run: ./scripts/publish.sh
+        run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

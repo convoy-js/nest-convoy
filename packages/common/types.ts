@@ -15,7 +15,11 @@ export type Consumer<T, S = any, A extends unknown[] = unknown[]> = (
   ...args: A
 ) => Promise<S> | S;
 
-export type Predicate<T extends any> = (arg1: T) => Promise<boolean> | boolean;
+export type AsyncFn<T extends any[] = any[], R = unknown> = (
+  ...args: T
+) => Promise<R> | R;
+
+export type Predicate<T extends any> = AsyncFn<[T], boolean>;
 
 export interface Reply {}
 
@@ -36,9 +40,9 @@ export interface Dispatcher {
   handleMessage(message: unknown): Promise<void>;
 }
 
-export interface Handler<I> {
+export interface Handler<H extends AsyncFn> {
   handles(message: unknown): boolean;
-  invoke: I;
+  invoke: H;
 }
 
 // export interface EventHandler<I = any, T = any> extends BaseHandler<I> {
