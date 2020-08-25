@@ -9,8 +9,8 @@ nest_library(
     ),
     module_name = "@nest-convoy/messaging",
     deps = [
-        "//packages/messaging/consumer",
         "//packages/messaging/common",
+        "//packages/messaging/consumer",
         "//packages/messaging/producer",
     ],
 )

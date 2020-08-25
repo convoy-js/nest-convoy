@@ -9,7 +9,7 @@ nest_library(
     ),
     module_name = "@nest-convoy/common",
     deps = [
-#        "//packages/messaging/common",
+        #        "//packages/messaging/common",
         "@npm//@nestjs/core",
     ],
 )

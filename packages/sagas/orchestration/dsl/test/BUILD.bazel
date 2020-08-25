@@ -4,9 +4,8 @@ nest_test(
     name = "test",
     srcs = glob(["*.ts"]),
     deps = [
-        "//packages/sagas/orchestration/dsl",
         "//packages/commands",
+        "//packages/sagas/orchestration/dsl",
         "//packages/testing",
     ],
 )
-

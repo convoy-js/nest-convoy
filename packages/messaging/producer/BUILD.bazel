@@ -4,13 +4,16 @@ nest_library(
     name = "producer",
     srcs = glob(
         ["*.ts"],
-        exclude = ["*.spec.ts", "database-message-producer.ts"],
+        exclude = [
+            "*.spec.ts",
+            "database-message-producer.ts",
+        ],
     ),
     module_name = "@nest-convoy/messaging/producer",
     deps = [
-        "@npm//uuid",
-        "@npm//@types/uuid",
         "//packages/common",
         "//packages/messaging/common",
+        "@npm//@types/uuid",
+        "@npm//uuid",
     ],
 )

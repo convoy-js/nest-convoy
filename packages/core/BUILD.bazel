@@ -9,16 +9,16 @@ nest_library(
     ),
     module_name = "@nest-convoy/core",
     deps = [
-        "@npm//@nestjs/cqrs",
-        "@npm//@nestjs/core",
-        "@npm//@types/uuid",
-        "@npm//uuid",
         "//packages/commands",
+        "//packages/common",
         "//packages/events",
+        "//packages/messaging",
         "//packages/sagas",
         "//packages/sagas/participant",
-        "//packages/messaging",
-        "//packages/common",
+        "@npm//@nestjs/core",
+        "@npm//@nestjs/cqrs",
+        "@npm//@types/uuid",
+        "@npm//uuid",
     ],
 )
 

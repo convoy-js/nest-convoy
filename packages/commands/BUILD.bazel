@@ -9,8 +9,8 @@ nest_library(
     ),
     module_name = "@nest-convoy/commands",
     deps = [
-        "//packages/commands/consumer",
         "//packages/commands/common",
+        "//packages/commands/consumer",
         "//packages/commands/producer",
     ],
 )

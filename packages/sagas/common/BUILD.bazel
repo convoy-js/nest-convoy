@@ -12,8 +12,8 @@ nest_library(
         "//packages/common",
         "//packages/messaging/common",
         "//packages/sagas/common/entities",
-        "@npm//@nestjs/typeorm",
         "@npm//@nestjs/cqrs",
+        "@npm//@nestjs/typeorm",
         "@npm//typeorm",
     ],
 )

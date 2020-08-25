@@ -50,11 +50,14 @@ jobs:
       - name: Initializing Bazel
         run: ./scripts/setup_bazel.sh
 
+      - name: Lint
+        run: yarn lint
+
       - name: Build packages
-        run: bazel build //packages/...
+        run: yarn build
 
       - name: Test packages
-        run: bazel test //packages/...
+        run: yarn test
 
       - name: Publish packages
         if: steps.extract_branch.outputs.branch == 'master' && github.pull_request.merged == 'true'

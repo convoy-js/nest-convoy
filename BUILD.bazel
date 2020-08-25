@@ -6,5 +6,6 @@ package(default_visibility = [
 
 exports_files([
     "tsconfig.json",
+    ".eslintrc",
     "jest.config.js",
 ])

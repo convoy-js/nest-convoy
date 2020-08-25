@@ -9,8 +9,8 @@ nest_library(
     ),
     module_name = "@nest-convoy/in-memory",
     deps = [
-        "//packages/core",
         "//packages/commands/common",
+        "//packages/core",
         "//packages/messaging/common",
         "//packages/messaging/consumer",
         "//packages/messaging/producer",

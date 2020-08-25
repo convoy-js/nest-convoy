@@ -7,10 +7,10 @@ nest_library(
         exclude = ["*.spec.ts"],
     ),
     module_name = "@nest-convoy/sagas/orchestration",
-#    visibility = [
-#        "//packages/sagas/orchestration/dsl:__pkg__",
-#        "//packages/sagas:__pkg__",
-#    ],
+    #    visibility = [
+    #        "//packages/sagas/orchestration/dsl:__pkg__",
+    #        "//packages/sagas:__pkg__",
+    #    ],
     deps = [
         "//packages/commands",
         "//packages/common",
@@ -18,8 +18,8 @@ nest_library(
         "//packages/messaging",
         "//packages/sagas/common",
         "//packages/sagas/orchestration/entities",
-        "@npm//@nestjs/typeorm",
         "@npm//@nestjs/core",
+        "@npm//@nestjs/typeorm",
         "@npm//typeorm",
     ],
 )

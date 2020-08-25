@@ -7,15 +7,15 @@ nest_library(
         exclude = ["*.spec.ts"],
     ),
     module_name = "@nest-convoy/sagas/orchestration/dsl",
-#    visibility = [
-#        "//packages/sagas:__pkg__",
-#    ],
+    #    visibility = [
+    #        "//packages/sagas:__pkg__",
+    #    ],
     deps = [
-        "@npm//@nestjs/cqrs",
         "//packages/commands/common",
         "//packages/commands/consumer",
         "//packages/common",
         "//packages/messaging/common",
         "//packages/sagas/orchestration",
+        "@npm//@nestjs/cqrs",
     ],
 )

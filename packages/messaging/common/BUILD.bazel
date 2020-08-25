@@ -7,5 +7,10 @@ nest_library(
         exclude = ["**/*.spec.ts"],
     ),
     module_name = "@nest-convoy/messaging/common",
-    deps = ["//packages/common", "@npm//@nestjs/core", "@npm//typeorm", "@npm//@nestjs/typeorm"],
+    deps = [
+        "//packages/common",
+        "@npm//@nestjs/core",
+        "@npm//@nestjs/typeorm",
+        "@npm//typeorm",
+    ],
 )

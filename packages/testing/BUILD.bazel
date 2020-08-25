@@ -9,13 +9,13 @@ nest_library(
     ),
     module_name = "@nest-convoy/testing",
     deps = [
-        "@npm//@types/jest",
-        "@npm//@nestjs/testing",
-        "//packages/testing/sagas",
-        "//packages/testing/common",
         "//packages/commands",
         "//packages/in-memory",
         "//packages/messaging",
+        "//packages/testing/common",
+        "//packages/testing/sagas",
+        "@npm//@nestjs/testing",
+        "@npm//@types/jest",
     ],
 )
 

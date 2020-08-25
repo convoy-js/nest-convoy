@@ -1,17 +1,40 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:eslint.bzl", "eslint_test")
 load("//tools:jest.bzl", "jest_test")
 
-def nest_library(deps = [], visibility = ["//:__subpackages__"], **kwargs):
+def eslint(tags = ["lint"], **kwargs):
+    eslint_test(
+        config = "//:.eslintrc",
+        deps = [
+            "@npm//eslint-plugin-import",
+            "@npm//@typescript-eslint/eslint-plugin",
+            "@npm//@typescript-eslint/parser",
+            "@npm//eslint-config-prettier",
+            "@npm//eslint-plugin-prettier",
+            "//:tsconfig.json",
+        ],
+        tags = tags,
+        **kwargs
+    )
+
+def nest_library(name, srcs, deps = [], visibility = ["//:__subpackages__"], **kwargs):
     deps = [
         "@npm//@nestjs/common",
         "@npm//@types/node",
         "@npm//tslib",
     ] + deps
 
+    eslint(
+        name = "%s.lint" % name,
+        srcs = srcs,
+    )
+
     ts_library(
+        name = name,
         supports_workers = True,
         deps = deps,
+        srcs = srcs,
         visibility = visibility,
         **kwargs
     )
