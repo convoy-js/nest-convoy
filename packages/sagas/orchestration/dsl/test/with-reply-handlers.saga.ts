@@ -1,5 +1,6 @@
-import { NestSaga, Saga } from '@nest-convoy/sagas/orchestration/dsl';
 import { Injectable } from '@nestjs/common';
+
+import { NestSaga, Saga } from '@nest-convoy/sagas/orchestration/dsl';
 import { Failure, Success } from '@nest-convoy/commands';
 
 import { ConditionalSagaData } from './conditional-saga.data';

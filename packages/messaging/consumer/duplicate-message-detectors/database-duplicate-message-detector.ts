@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
+import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 import {
   Message,
   ReceivedMessagesEntity,

@@ -1,14 +1,14 @@
 import { Message } from '@nest-convoy/messaging/common';
 import { MessageBuilder } from '@nest-convoy/messaging/producer';
+import { Reply } from '@nest-convoy/common';
 import {
   ReplyMessageHeaders,
   CommandReplyOutcome,
   Failure,
-  Outcome,
   Success,
 } from '@nest-convoy/commands/common';
 
-export function withReply<T extends Outcome>(
+export function withReply<T extends Reply>(
   reply: T,
   outcome: CommandReplyOutcome,
 ): Message {
@@ -18,10 +18,10 @@ export function withReply<T extends Outcome>(
     .build();
 }
 
-export function withSuccess<T extends Outcome>(reply?: T): Message {
+export function withSuccess<T>(reply?: T): Message {
   return withReply(reply ?? new Success(), CommandReplyOutcome.SUCCESS);
 }
 
-export function withFailure<T extends Outcome>(reply?: T): Message {
+export function withFailure<T>(reply?: T): Message {
   return withReply(reply ?? new Failure(), CommandReplyOutcome.FAILURE);
 }

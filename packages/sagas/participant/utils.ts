@@ -40,7 +40,7 @@ export function addLockedHeader(
   );
 }
 
-export function getLock(messages: Message[]): LockTarget | null {
+export function getLock(messages: Message[]): LockTarget | undefined {
   return (messages.find(
     message =>
       message instanceof SagaReplyMessage && message.lockTarget != null,

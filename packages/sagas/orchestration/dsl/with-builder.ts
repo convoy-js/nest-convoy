@@ -13,29 +13,29 @@ export interface WithActionBuilder<Data> {
   withAction(
     action: CommandProvider<Data, CommandWithDestination>,
     participantInvocationPredicate?: Predicate<Data>,
-  ): any;
+  ): unknown;
   withAction<C extends Command>(
     commandEndpoint: CommandEndpoint<C>,
     commandProvider: CommandProvider<Data, C>,
     participantInvocationPredicate?: Predicate<Data>,
-  ): any;
+  ): unknown;
 }
 
 export interface WithCompensationBuilder<Data> {
   withCompensation(
     compensation: Compensation<Data, CommandWithDestination>,
-  ): any;
+  ): unknown;
   withCompensation(
     compensation: Compensation<Data, CommandWithDestination>,
     compensationPredicate: Predicate<Data>,
-  ): any;
+  ): unknown;
   withCompensation<C extends Command>(
     commandEndpoint: CommandEndpoint<C>,
     commandProvider: Compensation<Data, C>,
-  ): any;
+  ): unknown;
   withCompensation<C extends Command>(
     commandEndpoint: CommandEndpoint<C>,
     commandProvider: Compensation<Data, C>,
     compensationPredicate: Predicate<Data>,
-  ): any;
+  ): unknown;
 }

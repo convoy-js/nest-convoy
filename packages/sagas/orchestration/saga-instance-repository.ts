@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
+
 import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { SagaInstance } from './saga-instance';
@@ -12,7 +13,7 @@ export class SagaInstanceRepository {
   private readonly store = new Map<string, SagaInstance>();
 
   async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
-    return this.store.get(`${sagaType}-${sagaId}`);
+    return this.store.get(`${sagaType}-${sagaId}`)!;
   }
 
   async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
@@ -118,7 +119,7 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     sagaId,
     destinationsAndResources,
     ...sagaInstance
-  }: SagaInstance): Promise<void> {
+  }: NonNullable<SagaInstance>): Promise<void> {
     const result = await this.sagaInstanceRepository.update(
       {
         sagaType,
@@ -127,6 +128,7 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
       sagaInstance,
     );
 
+    // eslint-disable-next-line prefer-rest-params
     await this.createDestinationsAndResources(arguments[0] as SagaInstance);
   }
 }

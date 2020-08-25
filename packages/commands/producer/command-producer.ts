@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 import { Command, CommandMessageHeaders } from '@nest-convoy/commands/common';
 import {
@@ -38,7 +39,7 @@ export class ConvoyCommandProducer extends CommandProducer {
     resource?: string,
   ): Message {
     const builder = MessageBuilder.withPayload(command)
-      .withExtraHeaders('', headers)
+      .withExtraHeaders(headers)
       .withHeader(CommandMessageHeaders.DESTINATION, channel)
       .withHeader(CommandMessageHeaders.COMMAND_TYPE, command.constructor.name)
       .withHeader(CommandMessageHeaders.REPLY_TO, replyTo);

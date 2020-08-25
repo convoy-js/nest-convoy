@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { DispatcherFactory } from '@nest-convoy/common';
 import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { ConvoyMessageProducer } from '@nest-convoy/messaging/producer';

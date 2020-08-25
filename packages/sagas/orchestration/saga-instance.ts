@@ -1,3 +1,5 @@
+import { Instance } from '@nest-convoy/common';
+
 import { DestinationAndResource } from './destination-and-resource';
 
 export class SagaInstance<Data = any> {
@@ -6,7 +8,7 @@ export class SagaInstance<Data = any> {
     // TODO: This is auto generated
     public sagaId: string,
     public stateName: string,
-    public lastRequestId: string,
+    public lastRequestId: string | null,
     public sagaDataType: string,
     public sagaData: Data,
     public destinationsAndResources: DestinationAndResource[] = [],

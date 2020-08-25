@@ -16,6 +16,6 @@ export class NestSagaDefinitionBuilder<Data>
   }
 
   build(): SagaDefinition<Data> {
-    return new NestSagaDefinition(this.sagaSteps, this.saga);
+    return new NestSagaDefinition(this.sagaSteps);
   }
 }

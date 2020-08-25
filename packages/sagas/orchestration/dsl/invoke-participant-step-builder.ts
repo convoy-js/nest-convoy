@@ -1,12 +1,13 @@
+import { Type } from '@nestjs/common';
+
 import { Command, CommandProvider } from '@nest-convoy/commands/common';
 import { CommandWithDestination } from '@nest-convoy/commands/consumer';
-import { Builder, Predicate } from '@nest-convoy/common';
-import { Type } from '@nestjs/common';
+import { Builder, Instance, Predicate } from '@nest-convoy/common';
 
 import { SagaDefinition } from '../saga-definition';
 import { NestSagaDefinitionBuilder } from './nest-saga-definition-builder';
 import { BaseStepBuilder, StepBuilder } from './step-builder';
-import { SagaStepReplyHandler } from './saga-step';
+import { SagaStepReply, SagaStepReplyHandler } from './saga-step';
 import { CommandEndpoint } from './command-endpoint';
 import {
   BaseParticipantInvocation,
@@ -56,6 +57,7 @@ export class InvokeParticipantStepBuilder<Data>
     participantInvocationPredicate?: Predicate<Data>,
   ): this;
   withAction(...args: any[]): this {
+    // eslint-disable-next-line prefer-rest-params
     if (arguments[0] instanceof CommandEndpoint) {
       this.action = new ParticipantEndpointInvocation(
         args[0],
@@ -86,6 +88,7 @@ export class InvokeParticipantStepBuilder<Data>
     compensationPredicate: Predicate<Data>,
   ): this;
   withCompensation(...args: any[]): this {
+    // eslint-disable-next-line prefer-rest-params
     if (arguments[0] instanceof CommandEndpoint) {
       this.compensation = new ParticipantEndpointInvocation(
         args[0],
@@ -101,10 +104,13 @@ export class InvokeParticipantStepBuilder<Data>
 
   onReply<T>(
     replyType: Type<T>,
-    replyHandler: SagaStepReplyHandler<Data, T>,
+    replyHandler: SagaStepReplyHandler<Data>,
   ): this {
     replyHandler = replyHandler.bind(this.parent.saga);
-    const store = { type: replyType, handler: replyHandler };
+    const store: SagaStepReply<Data> = {
+      type: replyType,
+      handler: replyHandler,
+    };
 
     if (this.compensation) {
       this.compensationReplyHandlers.set(replyType.name, store);

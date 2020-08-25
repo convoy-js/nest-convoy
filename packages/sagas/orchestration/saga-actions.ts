@@ -17,7 +17,7 @@ export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
   private readonly commands: CommandWithDestination[] = [];
   private compensating = false;
   private local = false;
-  private endState?: boolean;
+  private endState = false;
   private updatedSagaData?: Data;
   private updatedState?: string;
   private localException?: RuntimeException;

@@ -4,7 +4,7 @@ export type SagaLifecycleHooks<Data> = Partial<
   OnSagaRolledBack<Data> & OnSagaCompletedSuccessfully<Data> & OnStarting<Data>
 >;
 
-export abstract class Saga<Data> {
+export abstract class Saga<Data> implements SagaLifecycleHooks<Data> {
   abstract readonly sagaDefinition: SagaDefinition<Data>;
 }
 

@@ -1,6 +1,7 @@
+import { Injectable } from '@nestjs/common';
+
 import { DispatcherFactory } from '@nest-convoy/common';
 import { CommandHandlers } from '@nest-convoy/commands/consumer';
-import { Injectable } from '@nestjs/common';
 import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { ConvoyMessageProducer } from '@nest-convoy/messaging/producer';
 import { SagaLockManager } from '@nest-convoy/sagas/common';

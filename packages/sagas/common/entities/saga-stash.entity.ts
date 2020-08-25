@@ -1,8 +1,9 @@
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+
 import {
   MessageHeaders,
   MessageRecordHeaders,
 } from '@nest-convoy/messaging/common';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('saga_stash')
 export class SagaStashEntity<P = Record<string, unknown>> {

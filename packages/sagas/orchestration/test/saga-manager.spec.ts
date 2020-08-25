@@ -40,7 +40,8 @@ class TestSagaData {
 }
 
 @Saga(TestSagaData)
-class TestSaga extends NestSaga<TestSagaData>
+class TestSaga
+  extends NestSaga<TestSagaData>
   implements
     OnStarting<TestSagaData>,
     OnSagaCompletedSuccessfully<TestSagaData>,
@@ -235,7 +236,7 @@ describe('SagaManager', () => {
 
     sagaSteps = [];
     testSaga = module.get(TestSaga);
-    sagaDefinition = new NestSagaDefinition(sagaSteps, testSaga);
+    sagaDefinition = new NestSagaDefinition(sagaSteps);
     sagaManager = await module.get(SagaManagerFactory).create(testSaga);
     sagaCommandProducer = module.get(SagaCommandProducer);
     sagaInstanceRepository = module.get(SagaInstanceRepository);

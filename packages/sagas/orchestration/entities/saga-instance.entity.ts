@@ -27,5 +27,5 @@ export class SagaInstanceEntity<Data = any> {
   sagaData: Data;
 
   @Column({ name: 'last_request_id', nullable: true })
-  lastRequestId?: string;
+  lastRequestId: string | null;
 }

@@ -23,6 +23,6 @@ export function createMicroserviceMessage(
 export function fromMicroserviceMessage(data: MicroserviceMessage): Message {
   return MessageBuilder.withPayload(data.value)
     .withHeader(Message.ID, data.key)
-    .withExtraHeaders('', new Map(Object.entries(data.headers)))
+    .withExtraHeaders(new Map(Object.entries(data.headers)))
     .build();
 }

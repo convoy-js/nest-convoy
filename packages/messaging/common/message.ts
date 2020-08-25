@@ -59,8 +59,8 @@ export class Message {
     return this.headers;
   }
 
-  getHeader(name: string): string {
-    return this.headers.get(name);
+  getHeader(name: string, defaultValue = ''): string {
+    return this.headers.get(name) ?? defaultValue;
   }
 
   getRequiredHeader(name: string): string {

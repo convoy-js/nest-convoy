@@ -4,7 +4,7 @@ import { Column, PrimaryColumn, Index, Entity } from 'typeorm';
 @Index('events_published_idx', ['published', 'eventId'])
 @Index('entities_idx', ['entityType', 'entityId'])
 @Entity('events')
-export class EventsEntity<Data, Metadata = any> {
+export class EventsEntity<Data, Metadata = unknown> {
   @PrimaryColumn('event_id')
   eventId: string;
 

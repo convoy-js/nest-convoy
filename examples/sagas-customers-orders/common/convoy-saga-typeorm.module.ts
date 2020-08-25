@@ -1,6 +1,7 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/core';
 import { Module } from '@nestjs/common';
+
+import { NEST_CONVOY_CONNECTION } from '@nest-convoy/core';
 
 import {
   TypeOrmModuleOptions,

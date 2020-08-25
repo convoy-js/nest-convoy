@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { ConvoyInMemoryMessagingModule } from '@nest-convoy/in-memory';
 import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
 

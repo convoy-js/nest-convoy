@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { Message, MessageProducer } from '@nest-convoy/messaging';
 
 import { ConvoyMicroserviceProxy } from './microservice-proxy';
@@ -18,9 +19,9 @@ export class MicroserviceMessageProducer extends MessageProducer {
     const data = createMicroserviceMessage(message);
 
     if (isEvent) {
-      this.proxy.client.emit(destination, data).subscribe();
+      this.proxy.client!.emit(destination, data).subscribe();
     } else {
-      this.proxy.client.send(destination, data).subscribe();
+      this.proxy.client!.send(destination, data).subscribe();
     }
   }
 }

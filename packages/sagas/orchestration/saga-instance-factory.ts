@@ -1,6 +1,8 @@
 import { Injectable, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
+import { Instance } from '@nest-convoy/common';
+
 import { Saga } from './saga';
 import { SagaManager } from './saga-manager';
 import { SagaManagerFactory } from './saga-manager-factory';
@@ -9,7 +11,7 @@ import { SagaInstance } from './saga-instance';
 @Injectable()
 export class SagaInstanceFactory {
   private readonly sagaManagers = new WeakMap<
-    Type<Saga<any>>,
+    Type<Saga<unknown>>,
     SagaManager<any>
   >();
 
@@ -36,6 +38,6 @@ export class SagaInstanceFactory {
       this.sagaManagers.set(sagaType, sagaManager);
     }
 
-    return this.sagaManagers.get(sagaType).create(data);
+    return this.sagaManagers.get(sagaType)!.create(data);
   }
 }

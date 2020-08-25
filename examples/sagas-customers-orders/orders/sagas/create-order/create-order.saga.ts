@@ -1,17 +1,16 @@
-import { Saga, NestSaga } from '@nest-convoy/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { Saga, NestSaga } from '@nest-convoy/core';
 
 import { ReserveCreditCommand } from '../../../customers/commands';
 import {
   CustomerCreditLimitExceeded,
   CustomerNotFound,
 } from '../../../customers/replies';
-
 import { OrderState, RejectionReason } from '../../common';
 import { CustomerServiceProxy } from '../participants';
 import { Order } from '../../entities';
-
 import { CreateOrderSagaData } from './create-order-saga.data';
 
 @Saga(CreateOrderSagaData)
@@ -59,7 +58,7 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
     orderDetails: { customerId, orderTotal },
     orderId,
   }: CreateOrderSagaData): ReserveCreditCommand {
-    return new ReserveCreditCommand(customerId, orderId, orderTotal);
+    return new ReserveCreditCommand(customerId, orderId!, orderTotal);
   }
 
   private async create(data: CreateOrderSagaData): Promise<void> {
@@ -71,13 +70,13 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
   }
 
   private async approve(data: CreateOrderSagaData): Promise<void> {
-    await this.orderRepository.update(data.orderId, {
+    await this.orderRepository.update(data.orderId!, {
       state: OrderState.APPROVED,
     });
   }
 
   private async reject(data: CreateOrderSagaData): Promise<void> {
-    await this.orderRepository.update(data.orderId, {
+    await this.orderRepository.update(data.orderId!, {
       state: OrderState.REJECTED,
       rejectionReason: data.rejectionReason,
     });

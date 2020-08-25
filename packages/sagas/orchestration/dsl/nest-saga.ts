@@ -2,7 +2,6 @@ import { CommandWithDestinationBuilder } from '@nest-convoy/commands/consumer';
 import { Command } from '@nest-convoy/commands/common';
 
 import { Saga } from '../saga';
-
 import { StepBuilder } from './step-builder';
 import { NestSagaDefinitionBuilder } from './nest-saga-definition-builder';
 

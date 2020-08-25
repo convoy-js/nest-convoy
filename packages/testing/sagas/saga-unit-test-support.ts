@@ -1,10 +1,15 @@
 import { forwardRef, Inject, Injectable, Module } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+import { ModuleRef } from '@nestjs/core';
+
+import { Instance } from '@nest-convoy/common';
+import { SagaManager, NestSaga } from '@nest-convoy/sagas';
+import { SagaReplyHeaders } from '@nest-convoy/sagas/common';
 import {
   SagaCommandProducer,
   SagaInstance,
   SagaInstanceRepository,
 } from '@nest-convoy/sagas/orchestration';
-import { v4 as uuidv4 } from 'uuid';
 import {
   Command,
   CommandMessageHeaders,
@@ -14,16 +19,15 @@ import {
   ReplyMessageHeaders,
   Success,
 } from '@nest-convoy/commands';
-import { SagaManager, NestSaga } from '@nest-convoy/sagas';
-import { SagaReplyHeaders } from '@nest-convoy/sagas/common';
-import { ModuleRef } from '@nestjs/core';
 import {
+  ConvoyMessageConsumer,
   ConvoyMessageProducer,
   Message,
   MessageBuilder,
   MessageHeaders,
 } from '@nest-convoy/messaging';
 
+import { mockProvider } from '../common';
 import { MessageWithDestination } from './message-with-destination';
 
 @Injectable()
@@ -32,7 +36,7 @@ export class SagaTestInstanceRepository extends SagaInstanceRepository {
     super();
   }
 
-  private get sagaUnitTestSupport(): SagaUnitTestSupport<any> {
+  private get sagaUnitTestSupport(): SagaUnitTestSupport<unknown> {
     return this.moduleRef.get(SagaUnitTestSupport);
   }
 
@@ -71,7 +75,7 @@ export class SagaExpectCommandTest<Data> {
     private readonly sagaInstance: SagaInstance<Data>,
   ) {}
 
-  private async sendReply<T extends object>(
+  private async sendReply<T extends Instance>(
     reply: T,
     outcome: CommandReplyOutcome,
   ): Promise<void> {
@@ -142,13 +146,14 @@ export class SagaUnitTestSupport<Data> {
   static readonly SAGA_ID = '1';
 
   private readonly expectations: SagaExpectationTest[][] = [];
-  public readonly sentCommands: MessageWithDestination[] = [];
-  private sagaManager: SagaManager<any>;
-  public sagaInstance: SagaInstance;
+  private sagaManager: SagaManager<Data>;
   private createException?: Error;
   private counter = 2;
+  public readonly sentCommands: MessageWithDestination[] = [];
+  public sagaInstance: SagaInstance;
 
   constructor(
+    private readonly messageConsumer: ConvoyMessageConsumer,
     private readonly commandProducer: ConvoyCommandProducer,
     private readonly sagaCommandProducer: SagaCommandProducer,
     private readonly moduleRef: ModuleRef,
@@ -189,7 +194,7 @@ export class SagaUnitTestSupport<Data> {
     return String(this.counter++);
   }
 
-  expect<Data = any>(): SagaExpectCommandTest<Data> {
+  expect(): SagaExpectCommandTest<Data> {
     if (this.createException) {
       throw this.createException;
     }
@@ -197,7 +202,7 @@ export class SagaUnitTestSupport<Data> {
     const expects: SagaExpectationTest[] = [];
     const idx = this.expectations.push(expects) - 1;
 
-    return new SagaExpectCommandTest(
+    return new SagaExpectCommandTest<Data>(
       idx,
       expects,
       this.sagaManager,
@@ -205,12 +210,12 @@ export class SagaUnitTestSupport<Data> {
     );
   }
 
-  async create<Data>(saga: NestSaga<Data>, sagaData: Data): Promise<this> {
+  async create(saga: NestSaga<Data>, sagaData: Data): Promise<this> {
     this.sagaManager = new SagaManager(
       saga,
       this.sagaInstanceRepository,
       this.commandProducer,
-      undefined,
+      this.messageConsumer,
       // @ts-ignore
       {
         claimLock: jest.fn().mockReturnValue(true),
@@ -251,7 +256,7 @@ export class SagaUnitTestSupport<Data> {
 export class TestMessageProducer {
   constructor(
     @Inject(forwardRef(() => SagaUnitTestSupport))
-    private readonly sagaUnitTestSupport: SagaUnitTestSupport<any>,
+    private readonly sagaUnitTestSupport: SagaUnitTestSupport<Instance>,
   ) {}
 
   async send(destination: string, message: Message): Promise<void> {
@@ -278,6 +283,7 @@ export class TestMessageProducer {
       useExisting: SagaTestInstanceRepository,
     },
     SagaUnitTestSupport,
+    mockProvider(ConvoyMessageConsumer),
   ],
   exports: [SagaUnitTestSupport],
 })

@@ -1,4 +1,5 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+
 import { CommandBus } from '@nest-convoy/core';
 
 import { DoSomethingCommand } from './do-something.command';

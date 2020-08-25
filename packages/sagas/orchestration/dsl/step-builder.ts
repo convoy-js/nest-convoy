@@ -8,7 +8,6 @@ import { InvokeParticipantStepBuilder } from './invoke-participant-step-builder'
 import { CommandEndpoint } from './command-endpoint';
 import { LocalStepBuilder } from './local-step-builder';
 import { Compensation, WithCompensationBuilder } from './with-builder';
-import { NestSaga } from './nest-saga';
 
 export interface BaseStepBuilder<Data> {
   step(): StepBuilder<Data>;
@@ -32,9 +31,9 @@ export class StepBuilder<Data> implements WithCompensationBuilder<Data> {
     participantInvocationPredicate?: Predicate<Data>,
   ): InvokeParticipantStepBuilder<Data>;
   invokeParticipant(
-    actionOrCommandEndpoint,
-    commandProviderOrPredicate,
-    invocationPredicate?,
+    actionOrCommandEndpoint: any,
+    commandProviderOrPredicate: any,
+    invocationPredicate?: any,
   ): InvokeParticipantStepBuilder<Data> {
     return new InvokeParticipantStepBuilder<Data>(this.parent).withAction(
       actionOrCommandEndpoint,
@@ -60,9 +59,9 @@ export class StepBuilder<Data> implements WithCompensationBuilder<Data> {
     commandProvider: Compensation<Data, C>,
   ): InvokeParticipantStepBuilder<Data>;
   withCompensation(
-    compensationPredicate,
-    compensation?,
-    commandProvider?,
+    compensationPredicate: any,
+    compensation?: any,
+    commandProvider?: any,
   ): InvokeParticipantStepBuilder<Data> {
     return new InvokeParticipantStepBuilder<Data>(this.parent).withCompensation(
       compensationPredicate,

@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
 import { Transport } from '@nestjs/microservices';
+
+import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
+import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
 
 import {
   ConvoySagaTypeOrmModule,
   defaultOptions,
   TypeOrmModuleOptions,
 } from '../common';
-
 import { CreditReservation, Customer } from './entities';
 import { ReserveCreditCommandHandler } from './commands';
 import { CustomerService } from './customer.service';

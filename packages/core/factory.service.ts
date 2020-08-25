@@ -45,7 +45,7 @@ export class FactoryService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     const { commands, events, queries, sagas } = this.explorer.explore();
 
-    const commandHandlers = commands.map(async commandHandlerType => {
+    const commandHandlers = (commands || []).map(async commandHandlerType => {
       const commandType = Reflect.getMetadata(
         COMMAND_HANDLER_METADATA,
         commandHandlerType,
@@ -66,7 +66,7 @@ export class FactoryService implements OnModuleInit {
 
       const commandHandler = this.injector.get(commandHandlerType, {
         strict: false,
-      }) as ICommandHandler<unknown>;
+      }) as ICommandHandler<any>;
       const handler = commandHandler.execute.bind(commandHandler);
 
       if (hasCommandHandler) {
@@ -93,7 +93,7 @@ export class FactoryService implements OnModuleInit {
       }
     });
 
-    const eventHandlers = events.map(async eventHandlerType => {
+    const eventHandlers = (events || []).map(async eventHandlerType => {
       const eventTypes = Reflect.getMetadata(
         EVENTS_HANDLER_METADATA,
         eventHandlerType,
@@ -105,7 +105,7 @@ export class FactoryService implements OnModuleInit {
 
       const eventHandler = this.injector.get(eventHandlerType, {
         strict: false,
-      }) as IEventHandler<unknown>;
+      }) as IEventHandler<any>;
 
       const domainEventHandlers = new DomainEventHandlers(
         eventTypes.map(

@@ -1,10 +1,11 @@
-import { Command } from '@nest-convoy/commands/common';
 import { Type } from '@nestjs/common';
 
-export class CommandEndpoint<C extends Command = object> {
+import { Command } from '@nest-convoy/commands/common';
+
+export class CommandEndpoint<C extends Command = Command> {
   constructor(
     readonly commandChannel: string,
     readonly command: Type<C>,
-    readonly replies: Type<any>[],
+    readonly replies: Type<unknown>[],
   ) {}
 }

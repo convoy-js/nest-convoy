@@ -1,19 +1,14 @@
 '**/BUILD':
   - yarn bazel:lint-fix
-  - git add
 
 '*.bzl':
   - yarn bazel:lint-fix
-  - git add
 
 'WORKSPACE':
   - yarn bazel:lint-fix
-  - git add
 
 '*.{js,ts}':
   - eslint --fix
-  - git add
 
 '*.{json,scss,html,yaml,yml}':
   - prettier --write
-  - git add

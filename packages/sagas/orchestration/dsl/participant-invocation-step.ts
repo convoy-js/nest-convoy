@@ -17,7 +17,7 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
 
   private getParticipantInvocation(
     compensation: boolean,
-  ): BaseParticipantInvocation<Data> {
+  ): BaseParticipantInvocation<Data> | undefined {
     return compensation ? this.compensation : this.participantInvocation;
   }
 
@@ -46,7 +46,7 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
   }
 
   isSuccessfulReply(compensating: boolean, message: Message): boolean {
-    return !!this.getParticipantInvocation(compensating).isSuccessfulReply(
+    return !!this.getParticipantInvocation(compensating)?.isSuccessfulReply(
       message,
     );
   }
@@ -56,6 +56,9 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
     compensating: boolean,
   ): Promise<StepOutcome> {
     const invocation = this.getParticipantInvocation(compensating);
+    if (!invocation) {
+      throw new Error('Invocation missing');
+    }
     const command = await invocation.createCommandToSend(data);
 
     return new RemoteStepOutcome([command]);

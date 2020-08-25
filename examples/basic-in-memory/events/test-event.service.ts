@@ -1,4 +1,5 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+
 import { EventBus } from '@nest-convoy/core';
 
 import { AccountDebited } from './account-debited';

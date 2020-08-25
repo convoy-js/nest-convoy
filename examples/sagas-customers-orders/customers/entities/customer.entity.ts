@@ -8,7 +8,6 @@ import {
 
 import { Money } from '../../common';
 import { CustomerCreditLimitExceeded } from '../replies';
-
 import { CreditReservation } from './credit-reservation.entity';
 
 @Entity()

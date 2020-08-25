@@ -1,4 +1,5 @@
 import { DynamicModule, Global, Module, Provider, Type } from '@nestjs/common';
+
 import { ConvoyMessagingCommonModule } from '@nest-convoy/messaging/common';
 
 import { ConvoyMessageConsumer, MessageConsumer } from './message-consumer';

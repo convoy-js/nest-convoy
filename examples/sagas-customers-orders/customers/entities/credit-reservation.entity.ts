@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 
 import { Money } from '../../common';
-
 import { Customer } from './customer.entity';
 
 @Entity()

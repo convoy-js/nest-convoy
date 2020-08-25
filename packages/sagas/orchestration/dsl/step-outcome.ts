@@ -11,7 +11,7 @@ export interface StepOutcome {
     commandsConsumer: (
       commands: CommandWithDestination[],
     ) => SagaActionsBuilder<Data>,
-  ): any;
+  ): unknown;
 }
 
 export class LocalStepOutcome implements StepOutcome {

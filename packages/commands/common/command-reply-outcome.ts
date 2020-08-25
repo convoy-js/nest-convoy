@@ -1,8 +1,8 @@
-export interface Outcome {}
+import { Reply } from '@nest-convoy/common';
 
-export class Success implements Outcome {}
+export class Success implements Reply {}
 
-export class Failure implements Outcome {}
+export class Failure implements Reply {}
 
 export enum CommandReplyOutcome {
   SUCCESS = 'SUCCESS',

@@ -1,4 +1,5 @@
 import { Injectable, Type } from '@nestjs/common';
+
 import { Message } from '@nest-convoy/messaging/common';
 import {
   MessageBuilder,
@@ -23,7 +24,7 @@ export class DomainEventPublisher {
     event: DomainEvent,
   ): Message {
     return MessageBuilder.withPayload(event)
-      .withExtraHeaders('', headers)
+      .withExtraHeaders(headers)
       .withHeader(Message.PARTITION_ID, aggregateId)
       .withHeader(EventMessageHeaders.AGGREGATE_ID, aggregateId)
       .withHeader(EventMessageHeaders.AGGREGATE_TYPE, aggregateType)
@@ -32,8 +33,8 @@ export class DomainEventPublisher {
   }
 
   async publish(
-    aggregateType: string | undefined,
-    aggregateId: string | undefined,
+    aggregateType: string,
+    aggregateId: string,
     domainEvents: DomainEvent[],
     headers: Map<string, string> = new Map(),
   ): Promise<void> {

@@ -1,5 +1,6 @@
-import { Injectable, Logger, Type } from '@nestjs/common';
-import { RuntimeException } from '@nest-convoy/common';
+import { Logger } from '@nestjs/common';
+
+import { Instance, RuntimeException } from '@nest-convoy/common';
 import {
   Message,
   MessageBuilder,
@@ -31,18 +32,18 @@ import { SagaDefinition } from './saga-definition';
 import { SagaActions } from './saga-actions';
 import { DestinationAndResource } from './destination-and-resource';
 
-export interface SagaManager<Data> {
-  subscribeToReplyChannel(): Promise<void>;
-  create(sagaData: Data): Promise<SagaInstance<Data>>;
-  create(sagaData: Data, lockTarget?: string): Promise<SagaInstance<Data>>;
-  create(
-    data: Data,
-    targetType: Type<any>,
-    targetId: string,
-  ): Promise<SagaInstance<Data>>;
-}
+// export interface SagaManager<Data extends any> {
+//   subscribeToReplyChannel(): Promise<void>;
+//   create(sagaData: Data): Promise<SagaInstance<Data>>;
+//   create(sagaData: Data, lockTarget?: string): Promise<SagaInstance<Data>>;
+//   create(
+//     data: Data,
+//     targetType: Type<Instance>,
+//     targetId: string,
+//   ): Promise<SagaInstance<Data>>;
+// }
 
-export class SagaManager<Data> implements SagaManager<Data> {
+export class SagaManager<Data> /* implements SagaManager<Data>*/ {
   private readonly logger = new Logger(SagaManager.name, true);
 
   private get sagaType(): string {
@@ -144,8 +145,8 @@ export class SagaManager<Data> implements SagaManager<Data> {
     while (true) {
       if (actions.localException) {
         actions = await this.getSagaDefinition().handleReply(
-          actions.updatedState,
-          actions.updatedSagaData,
+          actions.updatedState!,
+          actions.updatedSagaData!,
           this.createFailureMessage(),
         );
       } else {
@@ -175,8 +176,8 @@ export class SagaManager<Data> implements SagaManager<Data> {
         if (!actions.local) break;
 
         actions = await this.getSagaDefinition().handleReply(
-          actions.updatedState,
-          actions.updatedSagaData,
+          actions.updatedState!,
+          actions.updatedSagaData!,
           this.createSuccessMessage(),
         );
       }
@@ -247,12 +248,12 @@ export class SagaManager<Data> implements SagaManager<Data> {
   create(sagaData: Data, lockTarget?: string): Promise<SagaInstance<Data>>;
   create(
     data: Data,
-    targetType: Type<any>,
+    targetType: Instance,
     targetId: string,
   ): Promise<SagaInstance<Data>>;
   async create(
     sagaData: Data,
-    target?: string | Type<any>,
+    target?: string | Instance,
     targetId?: string,
   ): Promise<SagaInstance<Data>> {
     const lockTarget = new LockTarget(target, targetId);
@@ -260,10 +261,10 @@ export class SagaManager<Data> implements SagaManager<Data> {
 
     let sagaInstance = new SagaInstance<Data>(
       this.sagaType,
-      null,
+      null as never,
       '????',
       null,
-      sagaData.constructor.name,
+      ((sagaData as unknown) as Instance).constructor.name,
       sagaData,
     );
 

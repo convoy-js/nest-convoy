@@ -11,6 +11,8 @@ nest_library(
     deps = [
         "@npm//@nestjs/cqrs",
         "@npm//@nestjs/core",
+        "@npm//@types/uuid",
+        "@npm//uuid",
         "//packages/commands",
         "//packages/events",
         "//packages/sagas",

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { ConvoyChannelMapping } from './channel-mapping';
 import { MessageEntity, ReceivedMessagesEntity } from './entities';

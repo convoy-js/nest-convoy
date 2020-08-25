@@ -6,17 +6,26 @@ import { Handlers } from './handlers';
 export function isType<T>(value: any): value is Type<T> {
   return (
     (typeof value === 'object' || typeof value === 'function') &&
-    value.prototype?.constructor === value
+    value?.prototype?.constructor === value
   );
 }
 
-export type Consumer<T, S = any> = (data: T, ...args: any[]) => Promise<S> | S;
+export type Consumer<T, S = any, A extends unknown[] = unknown[]> = (
+  data: T,
+  ...args: A
+) => Promise<S> | S;
 
-export type Predicate<T> = (...args: any[]) => Promise<boolean> | boolean;
+export type Predicate<T extends any> = (arg1: T) => Promise<boolean> | boolean;
 
 export interface Reply {}
 
 export type ReplyType = Type<Reply>;
+
+export interface Instance {}
+
+// export interface Instance<T extends Function = Function> extends Object {
+//   constructor:
+// }
 
 export interface Builder<T> {
   build(): T;
@@ -24,11 +33,11 @@ export interface Builder<T> {
 
 export interface Dispatcher {
   subscribe(): Promise<void>;
-  handleMessage(message: any): Promise<void>;
+  handleMessage(message: unknown): Promise<void>;
 }
 
 export interface Handler<I> {
-  handles(message: any): boolean;
+  handles(message: unknown): boolean;
   invoke: I;
 }
 

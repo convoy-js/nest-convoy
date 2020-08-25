@@ -8,7 +8,6 @@ import {
 import { Channel } from '../../common';
 import { CustomerCreditReserved } from '../replies';
 import { CustomerService } from '../customer.service';
-
 import { ReserveCreditCommand } from './reserve-credit.command';
 
 @SagaCommandHandler(ReserveCreditCommand)

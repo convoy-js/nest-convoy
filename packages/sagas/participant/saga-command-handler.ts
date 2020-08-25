@@ -1,14 +1,14 @@
-import { CommandType } from '@nest-convoy/commands/common';
+import { Command, CommandType } from '@nest-convoy/commands/common';
 import { LockTarget } from '@nest-convoy/sagas/common';
 import {
   CommandHandler,
-  CommandHandlerInvoke,
+  CommandMessageHandler,
   CommandMessage,
 } from '@nest-convoy/commands/consumer';
 
 import { PostLock } from './post-lock';
 
-export type SagaCommandHandlerPostLock<C = object> = (
+export type SagaCommandHandlerPostLock<C = Command> = (
   postLock: PostLock<C>,
 ) => void;
 export type SagaCommandHandlerPreLock = (
@@ -19,7 +19,7 @@ export class SagaCommandHandler extends CommandHandler {
   constructor(
     channel: string,
     command: CommandType,
-    invoke: CommandHandlerInvoke,
+    invoke: CommandMessageHandler,
     resource?: string,
     readonly preLock?: SagaCommandHandlerPreLock,
     readonly postLock?: SagaCommandHandlerPostLock,

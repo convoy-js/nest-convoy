@@ -12,13 +12,13 @@ import {
 } from './tokens';
 
 export function FromChannel(channel: string) {
-  return (target: Type<ICommandHandler<any>>) => {
+  return (target: Type<ICommandHandler<any>>): void => {
     Reflect.defineMetadata(FROM_CHANNEL_METADATA, channel, target);
   };
 }
 
 export function SagaCommandHandler(command: CommandType) {
-  return (target: Type<ICommandHandler<any>>) => {
+  return (target: Type<ICommandHandler<any>>): void => {
     if (Reflect.hasMetadata(COMMAND_HANDLER_METADATA, target)) {
       Reflect.defineMetadata(HAS_COMMAND_HANDLER_METADATA, true, target);
     } else {
@@ -30,7 +30,7 @@ export function SagaCommandHandler(command: CommandType) {
 }
 
 export function ForAggregateType<T>(aggregateType: string | (() => Type<T>)) {
-  return (target: Type<IEventHandler<any>>) => {
+  return (target: Type<IEventHandler<any>>): void => {
     Reflect.defineMetadata(
       FOR_AGGREGATE_TYPE_METADATA,
       () => {

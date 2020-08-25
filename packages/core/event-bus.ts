@@ -11,10 +11,12 @@ export class EventBus implements IEventBus {
     event: T,
     aggregateId?: string,
   ): Promise<void> {
+    // @ts-ignore
     return this.domainEventPublisher.publish(undefined, aggregateId, [event]);
   }
 
   publishAll(events: DomainEvent[], aggregateId?: string): Promise<void> {
+    // @ts-ignore
     return this.domainEventPublisher.publish(undefined, aggregateId, events);
   }
 }

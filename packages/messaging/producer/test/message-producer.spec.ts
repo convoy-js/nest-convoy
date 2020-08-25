@@ -14,7 +14,11 @@ import { ConvoyMessageProducer, MessageProducer } from '../message-producer';
 
 @Injectable()
 class TestMessageProducer extends MessageProducer {
-  async send(message: Message): Promise<void> {}
+  async send(
+    destination: string,
+    message: Message,
+    isEvent: boolean,
+  ): Promise<void> {}
 }
 
 @Injectable()
@@ -66,7 +70,7 @@ describe('ConvoyMessageProducer', () => {
   describe('prepareMessageHeaders', () => {
     it('should throw "MissingRequiredMessageIDException" if message is missing ID and implementation cannot generate it', () => {
       jest
-        .spyOn(mockedMessageProducer, 'generateMessageId')
+        .spyOn<any, any>(mockedMessageProducer, 'generateMessageId')
         .mockReturnValue(undefined);
 
       expect(() =>

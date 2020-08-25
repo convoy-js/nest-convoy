@@ -12,7 +12,7 @@ export class InMemoryMessageConsumer extends MessageConsumer {
   private subscriptions = new Map<string, MessageHandler[]>();
   private wildcardSubscriptions = new Set<MessageHandler>();
 
-  readonly id = null;
+  readonly id = this.constructor.name;
 
   private addHandlerToChannel(channel: string, handler: MessageHandler): void {
     const storedHandlers = this.subscriptions.get(channel) || [];

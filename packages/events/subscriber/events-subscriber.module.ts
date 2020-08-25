@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { ConvoyEventsCommonModule } from '@nest-convoy/events/common';
 
 import { DomainEventDispatcherFactory } from './domain-event-dispatcher-factory';

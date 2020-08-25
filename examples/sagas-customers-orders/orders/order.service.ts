@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { SagaInstanceFactory } from '@nest-convoy/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { SagaInstanceFactory } from '@nest-convoy/core';
 
 import { Order } from './entities';
 import { OrderDetails } from './common';
@@ -15,7 +16,7 @@ export class OrderService {
     private readonly orderRepository: Repository<Order>,
   ) {}
 
-  async find(id: number): Promise<Order> {
+  async find(id: number): Promise<Order | undefined> {
     return this.orderRepository.findOne(id);
   }
 
@@ -23,6 +24,6 @@ export class OrderService {
     const data = new CreateOrderSagaData(details);
     await this.sagaInstanceFactory.create(CreateOrderSaga, data);
 
-    return this.find(data.orderId);
+    return (await this.find(data.orderId!))!;
   }
 }

@@ -1,5 +1,4 @@
 import { SagaActions, SagaActionsBuilder } from '../saga-actions';
-
 import { SagaStep } from './saga-step';
 import { SagaExecutionState } from './saga-execution-state';
 import { encodeExecutionState } from './saga-execution-state-json-serde';
@@ -29,7 +28,7 @@ export class StepToExecute<Data> {
     const withIsLocal = builder.withIsLocal.bind(builder);
     const withCommands = builder.withCommands.bind(builder);
 
-    (await this.step?.createStepOutcome(data, this.compensating)).visit(
+    (await this.step?.createStepOutcome(data, this.compensating))?.visit(
       withIsLocal,
       withCommands,
     );

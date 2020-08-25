@@ -1,4 +1,4 @@
-import { Handler } from '@nest-convoy/common';
+import { Handler, Instance } from '@nest-convoy/common';
 import { Message } from '@nest-convoy/messaging/common';
 import {
   Command,
@@ -9,16 +9,16 @@ import {
 
 import { CommandMessage } from './command-message';
 
-export type CommandHandlerInvoke<C extends Command = any> = (
-  cm: CommandMessage<C>,
-  pvs?: Map<string, string>,
-) => Promise<Message>;
+export type CommandMessageHandler<
+  C extends Command = Command,
+  T = Instance | undefined | Message
+> = (cm: CommandMessage<C>, pvs?: Map<string, string>) => Promise<T>;
 
-export class CommandHandler implements Handler<CommandHandlerInvoke> {
+export class CommandHandler implements Handler<CommandMessageHandler> {
   constructor(
     readonly channel: string,
     readonly command: CommandType,
-    readonly invoke: CommandHandlerInvoke,
+    readonly invoke: CommandMessageHandler,
     readonly resource?: string,
   ) {}
 

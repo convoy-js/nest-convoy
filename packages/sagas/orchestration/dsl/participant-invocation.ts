@@ -11,8 +11,8 @@ import {
 import { CommandEndpoint } from './command-endpoint';
 
 export abstract class BaseParticipantInvocation<Data> {
-  abstract createCommandToSend(data: Data): Promise<CommandWithDestination>;
   readonly isInvocable?: Predicate<Data>;
+  abstract createCommandToSend(data: Data): Promise<CommandWithDestination>;
   isSuccessfulReply(message: Message): boolean {
     return (
       CommandReplyOutcome.SUCCESS ===

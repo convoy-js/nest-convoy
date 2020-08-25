@@ -1,5 +1,7 @@
 import { FactoryProvider, Type } from '@nestjs/common';
 
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types, @typescript-eslint/explicit-module-boundary-types */
+
 type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
 /**

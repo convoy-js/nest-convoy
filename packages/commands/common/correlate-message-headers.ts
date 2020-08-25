@@ -16,7 +16,7 @@ export function correlateMessageHeaders(
 
   correlationHeaders.set(
     ReplyMessageHeaders.IN_REPLY_TO,
-    headers.get(Message.ID),
+    headers.get(Message.ID)!,
   );
 
   return correlationHeaders;

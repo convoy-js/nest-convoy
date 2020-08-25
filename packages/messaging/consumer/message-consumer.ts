@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
-import { Consumer } from '@nest-convoy/common';
+
+import { AsyncFn, Consumer } from '@nest-convoy/common';
 import {
   ConvoyChannelMapping,
   Message,
@@ -15,16 +16,17 @@ export abstract class MessageConsumer {
   abstract subscribe(
     subscriberId: string,
     channels: string[],
-    handler: Consumer<Partial<Message>>,
+    handler: Consumer<Message>,
     isEventHandler?: boolean,
   ): MessageSubscription;
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   close(): Promise<void> | void {}
 }
 
 @Injectable()
 export class ConvoyMessageConsumer
   implements MessageConsumer, OnApplicationShutdown {
-  private readonly subs = new Map<string, any>();
+  private readonly subs = new Map<string, AsyncFn>();
   private readonly logger = new Logger(this.constructor.name, true);
 
   get id(): string {
@@ -69,7 +71,7 @@ export class ConvoyMessageConsumer
     await this.target.close();
   }
 
-  async onApplicationShutdown(signal?: string): Promise<void> {
+  async onApplicationShutdown(): Promise<void> {
     await this.close();
   }
 }

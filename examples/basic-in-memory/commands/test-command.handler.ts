@@ -18,6 +18,10 @@ export class DoSomethingCommandHandler
     command,
   }: CommandMessage<DoSomethingCommand>): Promise<void> {
     const event = new AccountDebited(uniqueId);
-    await this.domainEventPublisher.publish(AccountDebited.name, event);
+    await this.domainEventPublisher.publish(
+      AccountDebited.name,
+      `${uniqueId}`,
+      [event],
+    );
   }
 }

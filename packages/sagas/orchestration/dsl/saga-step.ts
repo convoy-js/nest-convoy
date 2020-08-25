@@ -1,13 +1,11 @@
+import { Type } from '@nestjs/common';
+
 import { Message } from '@nest-convoy/messaging/common';
 
 import { StepOutcome } from './step-outcome';
-import { Type } from '@nestjs/common';
 
 // T should be a registered Event?
-export type SagaStepReplyHandler<Data, T = any> = (
-  data: Data,
-  reply: T,
-) => void;
+export type SagaStepReplyHandler<Data> = (data: Data, reply: any) => void;
 
 export interface SagaStepReply<Data> {
   type: Type<any>;

@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
 import { Transport } from '@nestjs/microservices';
-import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
+import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
 
 import {
   ConvoySagaTypeOrmModule,
   defaultOptions,
   TypeOrmModuleOptions,
 } from '../common';
-
 import { CreateOrderSaga } from './sagas/create-order';
 import { CustomerServiceProxy } from './sagas/participants';
 import { Order } from './entities';

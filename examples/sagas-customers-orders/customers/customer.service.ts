@@ -13,7 +13,7 @@ export class CustomerService {
     private readonly customerRepository: Repository<Customer>,
   ) {}
 
-  async find(id: Customer['id']): Promise<Customer> {
+  async find(id: Customer['id']): Promise<Customer | undefined> {
     return this.customerRepository.findOne(id);
   }
 

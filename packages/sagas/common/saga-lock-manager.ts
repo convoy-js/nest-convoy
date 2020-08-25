@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Message } from '@nest-convoy/messaging/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { Message } from '@nest-convoy/messaging/common';
 import { RuntimeException, NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { SagaStashEntity, SagaLockEntity } from './entities';
@@ -39,7 +40,7 @@ export class SagaDatabaseLockManager extends SagaLockManager {
 
   private async getLockedSagaIdByTarget(
     target: string,
-  ): Promise<string | null> {
+  ): Promise<string | undefined> {
     const entity = await this.sagaLockRepository
       .createQueryBuilder()
       .setLock('pessimistic_write')

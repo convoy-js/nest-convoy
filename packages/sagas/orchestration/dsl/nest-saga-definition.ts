@@ -7,21 +7,16 @@ import {
 
 import { SagaActions, SagaActionsBuilder } from '../saga-actions';
 import { SagaDefinition } from '../saga-definition';
-
 import { SagaStep, SagaStepReplyHandler } from './saga-step';
 import { SagaExecutionState } from './saga-execution-state';
 import { StepToExecute } from './step-to-execute';
-import { NestSaga } from './nest-saga';
 import {
   decodeExecutionState,
   encodeExecutionState,
 } from './saga-execution-state-json-serde';
 
 export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
-  constructor(
-    private readonly sagaSteps: SagaStep<Data>[],
-    private readonly saga: NestSaga<Data>,
-  ) {}
+  constructor(private readonly sagaSteps: SagaStep<Data>[]) {}
 
   private async nextStepToExecute(
     { compensating, currentlyExecuting }: SagaExecutionState,

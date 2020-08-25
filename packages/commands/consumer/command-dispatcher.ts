@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+
 import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 import { Dispatcher } from '@nest-convoy/common';
@@ -28,12 +29,29 @@ export class ConvoyCommandDispatcher implements Dispatcher {
     protected readonly messageProducer: ConvoyMessageProducer,
   ) {}
 
-  async subscribe(): Promise<void> {
-    await this.messageConsumer.subscribe(
-      this.commandDispatcherId,
-      this.commandHandlers.getChannels(),
-      this.handleMessage.bind(this),
-    );
+  private async handleException(
+    message: Message,
+    // commandHandler: CommandHandler,
+    defaultReplyChannel: string,
+    // error: Error,
+  ): Promise<void> {
+    const reply = MessageBuilder.withPayload(new Failure()).build();
+    const correlationHeaders = correlateMessageHeaders(message.getHeaders());
+    await this.sendReplies(correlationHeaders, [reply], defaultReplyChannel);
+  }
+
+  private async sendReplies(
+    correlationHeaders: MessageHeaders,
+    replies: Message[],
+    defaultReplyChannel: string,
+  ): Promise<void> {
+    for (const reply of replies) {
+      const message = MessageBuilder.withMessage(reply)
+        .withExtraHeaders(correlationHeaders)
+        .build();
+
+      await this.messageProducer.send(defaultReplyChannel, message);
+    }
   }
 
   protected async invoke(
@@ -47,6 +65,14 @@ export class ConvoyCommandDispatcher implements Dispatcher {
     } catch (err) {
       return [withFailure(err)];
     }
+  }
+
+  async subscribe(): Promise<void> {
+    await this.messageConsumer.subscribe(
+      this.commandDispatcherId,
+      this.commandHandlers.getChannels(),
+      this.handleMessage.bind(this),
+    );
   }
 
   async handleMessage(message: Message): Promise<void> {
@@ -91,31 +117,6 @@ export class ConvoyCommandDispatcher implements Dispatcher {
       await this.sendReplies(correlationHeaders, replies, defaultReplyChannel);
     } else {
       this.logger.debug('Null replies - not publishing');
-    }
-  }
-
-  private async handleException(
-    message: Message,
-    // commandHandler: CommandHandler,
-    defaultReplyChannel: string,
-    // error: Error,
-  ): Promise<void> {
-    const reply = MessageBuilder.withPayload(new Failure()).build();
-    const correlationHeaders = correlateMessageHeaders(message.getHeaders());
-    await this.sendReplies(correlationHeaders, [reply], defaultReplyChannel);
-  }
-
-  private async sendReplies(
-    correlationHeaders: MessageHeaders,
-    replies: Message[],
-    defaultReplyChannel?: string,
-  ): Promise<void> {
-    for (const reply of replies) {
-      const message = MessageBuilder.withMessage(reply)
-        .withExtraHeaders('', correlationHeaders)
-        .build();
-
-      await this.messageProducer.send(defaultReplyChannel, message);
     }
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
+import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 import { MessageEntity } from '@nest-convoy/messaging/common/entities';
 import { Message } from '@nest-convoy/messaging/common';
 
@@ -11,7 +11,7 @@ import { MessageProducer } from './message-producer';
 export class DatabaseMessageProducer extends MessageProducer {
   constructor(
     @InjectRepository(MessageEntity, NEST_CONVOY_CONNECTION)
-    private readonly messageRepository: Repository<MessageEntity<any>>,
+    private readonly messageRepository: Repository<MessageEntity<unknown>>,
   ) {
     super();
   }

@@ -1,33 +1,35 @@
+import { Type } from '@nestjs/common';
+
 import { DomainEvent } from '@nest-convoy/events/common';
 import { Builder } from '@nest-convoy/common';
-import { Type } from '@nestjs/common';
 
 import { DomainEventHandlers } from './domain-event-handlers';
 import {
   DomainEventHandler,
-  DomainEventHandlerInvoke,
+  DomainEventMessageHandler,
 } from './domain-event-handler';
 
 export class DomainEventHandlersBuilder
   implements Builder<DomainEventHandlers> {
-  private readonly handlers: DomainEventHandler[] = [];
-
-  constructor(private aggregateType?: string) {}
-
   static forAggregateType(aggregateType: string): DomainEventHandlersBuilder {
     return new DomainEventHandlersBuilder(aggregateType);
   }
 
+  private readonly handlers: DomainEventHandler[] = [];
+
+  constructor(private aggregateType: string) {}
+
   onEvent<E extends DomainEvent>(
     event: Type<E>,
-    handler: DomainEventHandlerInvoke<E>,
+    handler: DomainEventMessageHandler<E>,
   ): this {
-    const eventHandler = new DomainEventHandler(
+    const eventHandler = new DomainEventHandler<E>(
       event,
       handler,
       this.aggregateType,
     );
     this.handlers.push(eventHandler);
+
     return this;
   }
 
