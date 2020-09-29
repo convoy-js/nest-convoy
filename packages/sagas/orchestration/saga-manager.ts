@@ -14,10 +14,10 @@ import {
   ReplyMessageHeaders,
   Success,
   ConvoyCommandProducer,
+  LockTarget,
 } from '@nest-convoy/commands';
 import {
   CannotClaimResourceLockException,
-  LockTarget,
   SagaCommandHeaders,
   SagaLockManager,
   SagaReplyHeaders,

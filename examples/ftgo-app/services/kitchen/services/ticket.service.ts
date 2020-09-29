@@ -43,18 +43,21 @@ export class TicketService {
   async accept(ticketId: number, readyBy: Date): Promise<void> {
     const ticket = await this.findOrFail(ticketId);
     const events = ticket.accept(readyBy);
+    await this.repository.save(ticket);
     await this.domainEventPublisher.publish(ticket, events);
   }
 
   async confirmCreate(id: Ticket['id']): Promise<void> {
     const ticket = await this.findOrFail(id);
     const events = ticket.confirmCreate();
+    await this.repository.save(ticket);
     await this.domainEventPublisher.publish(ticket, events);
   }
 
   async cancelCreate(id: Ticket['id']): Promise<void> {
     const ticket = await this.findOrFail(id);
     const events = ticket.cancelCreate();
+    await this.repository.save(ticket);
     await this.domainEventPublisher.publish(ticket, events);
   }
 
@@ -62,6 +65,7 @@ export class TicketService {
     const ticket = await this.findOrFail(ticketId);
     // TODO: Verify restaurant id
     const events = ticket.cancel();
+    await this.repository.save(ticket);
     await this.domainEventPublisher.publish(ticket, events);
   }
 
@@ -72,6 +76,7 @@ export class TicketService {
     const ticket = await this.findOrFail(ticketId);
     // TODO: Verify restaurant id
     const events = ticket.confirmCancel();
+    await this.repository.save(ticket);
     await this.domainEventPublisher.publish(ticket, events);
   }
 
@@ -82,6 +87,7 @@ export class TicketService {
     const ticket = await this.findOrFail(ticketId);
     // TODO: Verify restaurant id
     const events = ticket.undoCancel();
+    await this.repository.save(ticket);
     await this.domainEventPublisher.publish(ticket, events);
   }
 
@@ -93,6 +99,7 @@ export class TicketService {
     const ticket = await this.findOrFail(ticketId);
     // TODO: Verify restaurant id
     const events = ticket.beginReviseOrder(revisedOrderLineItems);
+    await this.repository.save(ticket);
     await this.domainEventPublisher.publish(ticket, events);
   }
 
@@ -103,6 +110,7 @@ export class TicketService {
     const ticket = await this.findOrFail(ticketId);
     // TODO: Verify restaurant id
     const events = ticket.undoBeginReviseOrder();
+    await this.repository.save(ticket);
     await this.domainEventPublisher.publish(ticket, events);
   }
 
@@ -114,6 +122,7 @@ export class TicketService {
     const ticket = await this.findOrFail(ticketId);
     // TODO: Verify restaurant id
     const events = ticket.confirmReviseTicket(revisedOrderLineItems);
+    await this.repository.save(ticket);
     await this.domainEventPublisher.publish(ticket, events);
   }
 }

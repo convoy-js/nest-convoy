@@ -1,13 +1,12 @@
 import { Message } from '@nest-convoy/messaging/common';
 import { CommandMessageHeaders } from '@nest-convoy/commands/common';
+import { LockTarget, SagaReplyMessage } from '@nest-convoy/commands/consumer';
 import { MessageBuilder } from '@nest-convoy/messaging/producer';
 import {
-  LockTarget,
   SagaCommandHeaders,
   SagaReplyHeaders,
   SagaUnlockCommand,
 } from '@nest-convoy/sagas/common';
-import { SagaReplyMessage } from '@nest-convoy/sagas/participant/saga-reply-message';
 
 export function isUnlockMessage(message: Message): boolean {
   return (
@@ -43,7 +42,7 @@ export function addLockedHeader(
 export function getLock(messages: Message[]): LockTarget | undefined {
   return (messages.find(
     message => message instanceof SagaReplyMessage && !!message.lockTarget,
-  ) as SagaReplyMessage | null)?.lockTarget;
+  ) as SagaReplyMessage | undefined)?.lockTarget;
 }
 
 // export function getLock(List<Message> messages) {

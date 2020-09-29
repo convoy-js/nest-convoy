@@ -1,16 +1,9 @@
-import {
-  AggregateDomainEventPublisher,
-  DomainEventPublisher,
-} from '@nest-convoy/core';
+import { AggregateDomainEventPublisher } from '@nest-convoy/core';
 import { Injectable } from '@nestjs/common';
 
-import { Ticket } from '../entities';
+import { KitchenServiceChannel } from '../api';
 
 @Injectable()
-export class TicketDomainEventPublisher extends AggregateDomainEventPublisher<
-  Ticket
-> {
-  constructor(domainEventPublisher: DomainEventPublisher) {
-    super(domainEventPublisher, Ticket);
-  }
-}
+export class TicketDomainEventPublisher extends AggregateDomainEventPublisher(
+  KitchenServiceChannel.TICKET_EVENT,
+) {}

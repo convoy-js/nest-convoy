@@ -1,6 +1,6 @@
 import { Command, CommandType } from '@nest-convoy/commands/common';
-import { LockTarget } from '@nest-convoy/sagas/common';
 import {
+  LockTarget,
   CommandHandler,
   CommandMessageHandler,
   CommandMessage,

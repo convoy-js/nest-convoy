@@ -11,12 +11,9 @@ export class KitchenService {
     private readonly restaurantRepository: Repository<Restaurant>,
   ) {}
 
-  createMenu(id: string | number, menu: RestaurantMenu): Promise<Restaurant> {
-    return this.restaurantRepository.save({
-      id,
-      menu,
-    });
+  createMenu(id: number, menu: RestaurantMenu): Promise<Restaurant> {
+    return this.restaurantRepository.save(new Restaurant(id, menu.items));
   }
 
-  async reviseMenu(id: string | number, menu: RestaurantMenu): Promise<void> {}
+  async reviseMenu(id: number, menu: RestaurantMenu): Promise<void> {}
 }

@@ -1,23 +1,15 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("//tools:defaults.bzl", "nest_library")
 
 nest_library(
-    name = "events",
+    name = "aggregate",
     srcs = glob(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
-    module_name = "@nest-convoy/events",
+    module_name = "@nest-convoy/events/aggregate",
     deps = [
-        "//packages/events/aggregate",
         "//packages/events/common",
         "//packages/events/publisher",
         "//packages/events/subscriber",
     ],
-)
-
-pkg_npm(
-    name = "package",
-    srcs = ["package.json"],
-    deps = [":events"],
 )

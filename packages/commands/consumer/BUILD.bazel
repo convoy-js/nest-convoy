@@ -3,13 +3,14 @@ load("//tools:defaults.bzl", "nest_library")
 nest_library(
     name = "consumer",
     srcs = glob(
-        ["*.ts"],
-        exclude = ["*.spec.ts"],
+        ["**/*.ts"],
+        exclude = ["test/*.ts"],
     ),
     module_name = "@nest-convoy/commands/consumer",
     deps = [
-        "//packages/commands/common",
         "//packages/common",
+        "//packages/events/aggregate",
+        "//packages/commands/common",
         "//packages/messaging/common",
         "//packages/messaging/consumer",
         "//packages/messaging/producer",

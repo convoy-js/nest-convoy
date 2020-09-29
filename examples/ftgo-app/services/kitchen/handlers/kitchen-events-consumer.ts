@@ -5,15 +5,14 @@ import {
 } from '@nest-convoy/core';
 
 import {
-  RestaurantMenu,
   RestaurantCreated,
-  Restaurant,
+  RestaurantServiceChannel,
   RestaurantMenuRevised,
 } from '@ftgo-app/api/restaurant';
 
 import { KitchenService } from '../services';
 
-@DomainEventsConsumer(() => Restaurant)
+@DomainEventsConsumer(RestaurantServiceChannel.AGGREGATE_TYPE)
 export class KitchenServiceEventsConsumer {
   constructor(private readonly kitchen: KitchenService) {}
 
@@ -22,7 +21,7 @@ export class KitchenServiceEventsConsumer {
     event,
     aggregateId,
   }: DomainEventEnvelope<RestaurantCreated>): Promise<void> {
-    await this.kitchen.createMenu(aggregateId, event.menu);
+    await this.kitchen.createMenu(+aggregateId, event.menu);
   }
 
   @OnEvent(RestaurantMenuRevised)
@@ -30,6 +29,6 @@ export class KitchenServiceEventsConsumer {
     event,
     aggregateId,
   }: DomainEventEnvelope<RestaurantMenuRevised>): Promise<void> {
-    await this.kitchen.reviseMenu(aggregateId, event.menu);
+    await this.kitchen.reviseMenu(+aggregateId, event.menu);
   }
 }

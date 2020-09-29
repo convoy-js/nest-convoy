@@ -1,9 +1,20 @@
+import { Column } from 'typeorm';
+
 import { Money } from '@ftgo-app/libs/common';
 
 export class MenuItem {
-  constructor(
-    readonly id: string,
-    readonly name: string,
-    readonly money: Money,
-  ) {}
+  @Column()
+  id: string;
+
+  @Column()
+  name: string;
+
+  @Column(() => Money)
+  money: Money;
+
+  constructor(id: string, name: string, money: Money) {
+    this.id = id;
+    this.name = name;
+    this.money = money;
+  }
 }

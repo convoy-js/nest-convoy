@@ -1,2 +1,3 @@
 export * from './events';
-export * from '../entities';
+export * from './channel';
+export * from './dto/create-restaurant-request.dto';

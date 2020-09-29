@@ -10,3 +10,4 @@ export * from './commands-consumer.module';
 export * from './destination-root-object';
 export * from './reply-destination';
 export * from './command-with-destination-builder';
+export * from './saga-reply-lock';

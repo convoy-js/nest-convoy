@@ -40,14 +40,19 @@ export enum TicketState {
 
 @Entity()
 export class Ticket implements AggregateRoot {
-  private previousState: TicketState;
-
   @Column({
     type: 'enum',
     enum: TicketState,
     nullable: true,
   })
   state: TicketState;
+
+  @Column({
+    type: 'enum',
+    enum: TicketState,
+    nullable: true,
+  })
+  previousState: TicketState;
 
   // @OneToMany(() => TicketLineItem, lineItem => lineItem.customer, {
   //   cascade: true,
@@ -86,14 +91,6 @@ export class Ticket implements AggregateRoot {
   })
   readyForPickupTime: Date;
 
-  static create(
-    restaurantId: number,
-    id: string,
-    details: TicketDetails,
-  ): ResultWithDomainEvents<Ticket> {
-    return new ResultWithDomainEvents(new Ticket(restaurantId, id, details));
-  }
-
   constructor(
     readonly restaurantId: number,
     readonly id: number,
@@ -121,6 +118,7 @@ export class Ticket implements AggregateRoot {
           );
         }
         this.readyBy = readyBy;
+        this.state = TicketState.ACCEPTED;
 
         return [new TicketAccepted(readyBy)];
       default:

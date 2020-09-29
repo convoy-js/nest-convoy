@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { TicketService, KitchenService } from './services';
+import {
+  TicketService,
+  KitchenService,
+  TicketDomainEventPublisher,
+} from './services';
 
 @Module({
-  providers: [KitchenService, TicketService],
+  providers: [KitchenService, TicketService, TicketDomainEventPublisher],
 })
 export class KitchenModule {}

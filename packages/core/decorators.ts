@@ -42,6 +42,7 @@ export function OnMessage<M>(
   return (target: any, propertyKey: string): void => {};
 }
 
+// TODO: Rename decorator to DomainEventHandlers
 export function DomainEventsConsumer<T extends AggregateRoot>(
   aggregateType: string | (() => Type<T>),
 ): ClassDecorator {

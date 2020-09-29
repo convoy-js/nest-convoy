@@ -18,7 +18,7 @@ import { CommandHandlers } from './command-handlers';
 import { CommandMessage } from './command-message';
 import { CommandHandler } from './command-handler';
 import { withFailure, withSuccess } from './command-handler-reply-builder';
-import { withLock } from '@nest-convoy/sagas';
+import { withLock } from './saga-reply-lock';
 
 export class ConvoyCommandDispatcher implements Dispatcher {
   private readonly logger = new Logger(this.constructor.name, true);
