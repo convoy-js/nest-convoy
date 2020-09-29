@@ -1,4 +1,10 @@
-import { PrimaryGeneratedColumn, Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  PrimaryColumn,
+  VersionColumn,
+} from 'typeorm';
 
 @Entity('saga_instance')
 export class SagaInstanceEntity<Data = any> {
@@ -27,5 +33,8 @@ export class SagaInstanceEntity<Data = any> {
   sagaData: Data;
 
   @Column({ name: 'last_request_id', nullable: true })
-  lastRequestId: string | null;
+  lastRequestId?: string;
+
+  @VersionColumn()
+  version: string;
 }

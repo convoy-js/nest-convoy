@@ -4,6 +4,7 @@ import {
   Column,
   Entity,
   Index,
+  VersionColumn,
 } from 'typeorm';
 
 import { MessageHeaders, MessageRecordHeaders } from '../message';
@@ -42,4 +43,7 @@ export class MessageEntity<Payload> {
     default: () => 'LOCALTIMESTAMP',
   })
   creationTime: string;
+
+  @VersionColumn()
+  version: string;
 }

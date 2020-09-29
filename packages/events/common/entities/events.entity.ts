@@ -1,4 +1,4 @@
-import { Column, PrimaryColumn, Index, Entity } from 'typeorm';
+import { Column, PrimaryColumn, Index, Entity, VersionColumn } from 'typeorm';
 
 @Index('events_idx', ['entityType', 'entityId', 'eventId'])
 @Index('events_published_idx', ['published', 'eventId'])
@@ -31,4 +31,7 @@ export class EventsEntity<Data, Metadata = unknown> {
 
   @Column()
   published: boolean;
+
+  @VersionColumn()
+  version: string;
 }

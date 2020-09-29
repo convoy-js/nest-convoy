@@ -1,8 +1,8 @@
 // import { Message } from '@nest-convoy/messaging/common';
 
-import { AsyncFn, Handler } from './types';
+import { AsyncLikeFn, Handler } from './types';
 
-export class Handlers<H extends Handler<AsyncFn>> {
+export class Handlers<H extends Handler<AsyncLikeFn>> {
   constructor(protected readonly handlers: H[]) {}
 
   findTargetMethod(message: unknown): H | undefined {

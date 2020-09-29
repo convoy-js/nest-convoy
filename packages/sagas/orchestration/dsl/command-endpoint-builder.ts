@@ -12,7 +12,7 @@ export class CommandEndpointBuilder<C> implements Builder<CommandEndpoint<C>> {
     return new CommandEndpointBuilder(command);
   }
 
-  private replies: Type<any>[] = [];
+  private readonly replies: Type<any>[] = [];
   private channel: string;
 
   constructor(private readonly command: Type<C>) {}

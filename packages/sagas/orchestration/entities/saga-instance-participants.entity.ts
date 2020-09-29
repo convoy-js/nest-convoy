@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryColumn, VersionColumn } from 'typeorm';
 
 @Entity('saga_instance_participants')
 export class SagaInstanceParticipantsEntity {
@@ -13,4 +13,7 @@ export class SagaInstanceParticipantsEntity {
 
   @PrimaryColumn({ name: 'resource' })
   resource: string;
+
+  @VersionColumn()
+  version: string;
 }

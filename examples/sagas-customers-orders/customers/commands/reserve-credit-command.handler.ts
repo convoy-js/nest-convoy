@@ -1,6 +1,5 @@
 import {
   CommandMessage,
-  FromChannel,
   ICommandHandler,
   SagaCommandHandler,
 } from '@nest-convoy/core';
@@ -10,8 +9,7 @@ import { CustomerCreditReserved } from '../replies';
 import { CustomerService } from '../customer.service';
 import { ReserveCreditCommand } from './reserve-credit.command';
 
-@SagaCommandHandler(ReserveCreditCommand)
-@FromChannel(Channel.CUSTOMER)
+@SagaCommandHandler(ReserveCreditCommand, Channel.CUSTOMER)
 export class ReserveCreditCommandHandler
   implements ICommandHandler<ReserveCreditCommand> {
   constructor(private readonly customer: CustomerService) {}

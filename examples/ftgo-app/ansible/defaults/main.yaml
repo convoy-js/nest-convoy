@@ -1,0 +1,4 @@
+confluent:
+  version:
+    operator: 1.6.0
+    platform: 6.0.0

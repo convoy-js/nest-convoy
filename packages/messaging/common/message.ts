@@ -1,4 +1,4 @@
-import { MissingRequiredMessageHeaderException } from './exceptions';
+import { MissingMessageHeaderException } from './exceptions';
 
 export type MessageHeaders = Map<string, string>;
 export type MessageRecordHeaders = Record<string, string>;
@@ -66,7 +66,7 @@ export class Message {
   getRequiredHeader(name: string): string {
     const value = this.getHeader(name);
     if (!value) {
-      throw new MissingRequiredMessageHeaderException(name, this);
+      throw new MissingMessageHeaderException(name, this);
     }
     return value;
   }

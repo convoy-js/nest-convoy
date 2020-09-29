@@ -14,6 +14,8 @@
     "lib": ["esnext"],
     "baseUrl": ".",
     "paths": {
+      "@ftgo-app/api/*": ["examples/ftgo-app/services/*/api"],
+      "@ftgo-app/*": ["examples/ftgo-app/*"],
       "@nest-convoy/*": ["packages/*"],
       "nest_convoy/*": ["dist/bin/*"]
     },

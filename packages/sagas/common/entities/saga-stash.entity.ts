@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn, VersionColumn } from 'typeorm';
 
 import {
   MessageHeaders,
@@ -35,4 +35,7 @@ export class SagaStashEntity<P = Record<string, unknown>> {
 
   @Column({ name: 'message_payload' })
   messagePayload: string;
+
+  @VersionColumn()
+  version: string;
 }

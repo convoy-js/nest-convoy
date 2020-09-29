@@ -1,4 +1,4 @@
-import { AsyncFn, Handler, Instance } from '@nest-convoy/common';
+import { AsyncLikeFn, Handler, Instance } from '@nest-convoy/common';
 import { Message } from '@nest-convoy/messaging/common';
 import {
   Command,
@@ -11,8 +11,8 @@ import { CommandMessage } from './command-message';
 
 export type CommandMessageHandler<
   C extends Command = Command,
-  T = Instance | undefined | Message
-> = AsyncFn<[cm: CommandMessage<C> /*, pvs?: Map<string, string>*/], T>;
+  T = Instance | Message | undefined
+> = AsyncLikeFn<[cm: CommandMessage<C> /*, pvs?: Map<string, string>*/], T>;
 
 export class CommandHandler implements Handler<CommandMessageHandler> {
   constructor(

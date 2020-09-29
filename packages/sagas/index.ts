@@ -14,5 +14,7 @@ export {
   OnStarting,
   SagaDefinition,
 } from './orchestration';
+export { LockTarget } from './common';
+export { withLock } from './participant';
 
 export * from './sagas.module';

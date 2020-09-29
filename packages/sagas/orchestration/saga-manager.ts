@@ -244,8 +244,8 @@ export class SagaManager<Data> /* implements SagaManager<Data>*/ {
     );
   }
 
-  create(sagaData: Data): Promise<SagaInstance<Data>>;
-  create(sagaData: Data, lockTarget?: string): Promise<SagaInstance<Data>>;
+  create(data: Data): Promise<SagaInstance<Data>>;
+  create(data: Data, lockTarget?: string): Promise<SagaInstance<Data>>;
   create(
     data: Data,
     targetType: Instance,
@@ -263,7 +263,7 @@ export class SagaManager<Data> /* implements SagaManager<Data>*/ {
       this.sagaType,
       null as never,
       '????',
-      null,
+      undefined,
       ((sagaData as unknown) as Instance).constructor.name,
       sagaData,
     );

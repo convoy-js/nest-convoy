@@ -8,7 +8,7 @@ export class SagaInstance<Data = any> {
     // TODO: This is auto generated
     public sagaId: string,
     public stateName: string,
-    public lastRequestId: string | null,
+    public lastRequestId: string | undefined,
     public sagaDataType: string,
     public sagaData: Data,
     public destinationsAndResources: DestinationAndResource[] = [],

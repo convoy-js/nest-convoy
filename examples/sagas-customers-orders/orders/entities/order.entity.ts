@@ -23,7 +23,4 @@ export class Order {
     nullable: true,
   })
   rejectionReason?: RejectionReason;
-
-  @VersionColumn()
-  version: string;
 }

@@ -3,10 +3,10 @@ import { LockTarget } from '@nest-convoy/sagas/common';
 
 export class SagaReplyMessage extends Message {
   constructor(
-    body: string,
+    payload: string,
     headers: MessageHeaders,
     readonly lockTarget?: LockTarget,
   ) {
-    super(body, headers);
+    super(payload, headers);
   }
 }

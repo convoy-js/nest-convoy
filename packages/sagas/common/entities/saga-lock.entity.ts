@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn, VersionColumn } from 'typeorm';
 
 @Entity('saga_lock')
 export class SagaLockEntity {
@@ -10,4 +10,7 @@ export class SagaLockEntity {
 
   @Column({ name: 'saga_type' })
   sagaType: string;
+
+  @VersionColumn()
+  version: string;
 }

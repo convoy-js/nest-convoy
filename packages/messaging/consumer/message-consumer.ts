@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 
-import { AsyncFn, Consumer } from '@nest-convoy/common';
+import { AsyncLikeFn, Consumer } from '@nest-convoy/common';
 import {
   ConvoyChannelMapping,
   Message,
@@ -26,7 +26,7 @@ export abstract class MessageConsumer {
 @Injectable()
 export class ConvoyMessageConsumer
   implements MessageConsumer, OnApplicationShutdown {
-  private readonly subs = new Map<string, AsyncFn>();
+  private readonly subs = new Map<string, AsyncLikeFn>();
   private readonly logger = new Logger(this.constructor.name, true);
 
   get id(): string {
@@ -38,6 +38,18 @@ export class ConvoyMessageConsumer
     private readonly channelMapping: ConvoyChannelMapping,
     private readonly target: MessageConsumer,
   ) {}
+
+  async handleMessage(
+    subscriberId: string,
+    message: Message,
+    handler: MessageHandler,
+  ): Promise<void> {
+    await this.duplicateMessageDetector.doWithMessage(
+      subscriberId,
+      message,
+      handler,
+    );
+  }
 
   async subscribe(
     subscriberId: string,
@@ -52,12 +64,7 @@ export class ConvoyMessageConsumer
     const sub = await this.target.subscribe(
       subscriberId,
       transformedChannels,
-      (message: Message) =>
-        this.duplicateMessageDetector.doWithMessage(
-          subscriberId,
-          message,
-          handler,
-        ),
+      (message: Message) => this.handleMessage(subscriberId, message, handler),
       isEventHandler,
     );
     this.subs.set(subscriberId, sub);

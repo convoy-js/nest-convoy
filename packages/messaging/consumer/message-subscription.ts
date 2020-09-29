@@ -1,3 +1,3 @@
-import { AsyncFn } from '@nest-convoy/common';
+import { AsyncLikeFn } from '@nest-convoy/common';
 
-export type MessageSubscription = Promise<AsyncFn>;
+export type MessageSubscription = Promise<AsyncLikeFn>;

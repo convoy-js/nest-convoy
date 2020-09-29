@@ -23,7 +23,7 @@ export class OrdersController {
   @Post('')
   createOrder(
     @Body() { customerId, orderTotal }: CreateOrderDto,
-  ): Promise<Order> {
+  ): Promise<Order | undefined> {
     return this.order.create({
       orderTotal,
       customerId,

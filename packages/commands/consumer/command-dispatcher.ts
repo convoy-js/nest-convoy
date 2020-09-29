@@ -18,6 +18,7 @@ import { CommandHandlers } from './command-handlers';
 import { CommandMessage } from './command-message';
 import { CommandHandler } from './command-handler';
 import { withFailure, withSuccess } from './command-handler-reply-builder';
+import { withLock } from '@nest-convoy/sagas';
 
 export class ConvoyCommandDispatcher implements Dispatcher {
   private readonly logger = new Logger(this.constructor.name, true);
@@ -58,10 +59,21 @@ export class ConvoyCommandDispatcher implements Dispatcher {
     commandHandler: CommandHandler,
     commandMessage: CommandMessage,
   ): Promise<Message[]> {
+    const hasLock = false;
     // TODO: Figure out whether or not it should sendReplies or handleException
     try {
+      // Check if command handler has lock enabled
       const reply = await commandHandler.invoke(commandMessage);
-      return reply instanceof Message ? [reply] : [withSuccess(reply)];
+      return Array.isArray(reply)
+        ? reply.map(r => (r instanceof Message ? r : withSuccess(r)))
+        : reply instanceof Message
+        ? [reply]
+        : [
+            // TODO: Refactor modules so that "withLock" can be imported
+            hasLock
+              ? withLock(commandMessage.command).withSuccess(reply)
+              : withSuccess(reply),
+          ];
     } catch (err) {
       return [withFailure(err)];
     }

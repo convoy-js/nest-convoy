@@ -29,12 +29,16 @@ import { CustomersController } from './customers.controller';
       server: {
         transport: Transport.REDIS,
         options: {
+          retryAttempts: 2,
+          retryDelay: 100,
           url: 'redis://localhost:6379',
         },
       },
       client: {
         transport: Transport.REDIS,
         options: {
+          retryAttempts: 2,
+          retryDelay: 100,
           url: 'redis://localhost:6379',
         },
       },

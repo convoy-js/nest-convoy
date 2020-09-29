@@ -1,27 +1,15 @@
 import { LockTarget } from '@nest-convoy/sagas/common';
-import { CommandReplyOutcome } from '@nest-convoy/commands/common';
-import { withReply } from '@nest-convoy/commands/consumer';
-import { Instance, Reply } from '@nest-convoy/common';
+import { AggregateRoot } from '@nest-convoy/events';
+import { Message } from '@nest-convoy/messaging';
+import { withFailure, withSuccess } from '@nest-convoy/commands';
 
 import { SagaReplyMessage } from './saga-reply-message';
 
-export class SagaReplyMessageBuilder /*extends CommandHandlerReplyBuilder*/ {
-  static withLock(type: Instance, id: Instance): SagaReplyMessageBuilder {
-    return new SagaReplyMessageBuilder(new LockTarget(type, id));
-  }
+export class SagaReplyMessageBuilder {
+  constructor(private readonly lockTarget: LockTarget) {}
 
-  constructor(private readonly lockTarget: LockTarget) {
-    // super();
-  }
-
-  with<T extends Reply>(
-    reply: T,
-    outcome: CommandReplyOutcome,
-  ): SagaReplyMessage {
-    const message = withReply(reply, outcome);
-    // this.body = JSON.stringify(reply);
-    // message.withHeader(ReplyMessageHeaders.REPLY_OUTCOME, outcome);
-    // message.withHeader(ReplyMessageHeaders.REPLY_TYPE, reply.constructor.name);
+  withSuccess<T>(reply?: T): Message {
+    const message = withSuccess(reply);
 
     return new SagaReplyMessage(
       message.getPayload(),
@@ -29,4 +17,21 @@ export class SagaReplyMessageBuilder /*extends CommandHandlerReplyBuilder*/ {
       this.lockTarget,
     );
   }
+
+  withFailure<T>(reply?: T): Message {
+    const message = withFailure(reply);
+
+    return new SagaReplyMessage(
+      message.getPayload(),
+      message.getHeaders(),
+      this.lockTarget,
+    );
+  }
+}
+
+export function withLock<T extends AggregateRoot>(
+  aggregate: T,
+): SagaReplyMessageBuilder {
+  const lockTarget = new LockTarget(aggregate.constructor, aggregate.id);
+  return new SagaReplyMessageBuilder(lockTarget);
 }

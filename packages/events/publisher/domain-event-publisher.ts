@@ -34,28 +34,23 @@ export class DomainEventPublisher {
 
   async publish(
     aggregateType: string,
-    aggregateId: string,
+    aggregateId: string | number,
     domainEvents: DomainEvent[],
     headers: Map<string, string> = new Map(),
   ): Promise<void> {
     for (const event of domainEvents) {
-      const eventName = event.constructor.name;
       // const eventType = this.domainEventNameMapping.eventToExternalEventType(
       //   aggregateType?.name,
       //   event,
       // );
       const domainEventMessage = this.createMessageForDomainEvent(
-        aggregateType || eventName,
-        aggregateId,
+        aggregateType,
+        String(aggregateId),
         headers,
         event,
       );
 
-      await this.messageProducer.send(
-        aggregateType || eventName,
-        domainEventMessage,
-        true,
-      );
+      await this.messageProducer.send(aggregateType, domainEventMessage, true);
     }
   }
 }

@@ -1,4 +1,9 @@
-import { CreateDateColumn, PrimaryColumn, Entity } from 'typeorm';
+import {
+  CreateDateColumn,
+  PrimaryColumn,
+  Entity,
+  VersionColumn,
+} from 'typeorm';
 
 @Entity('received_messages')
 export class ReceivedMessagesEntity {
@@ -14,4 +19,7 @@ export class ReceivedMessagesEntity {
     default: () => 'LOCALTIMESTAMP',
   })
   creationTime: string;
+
+  @VersionColumn()
+  version: string;
 }

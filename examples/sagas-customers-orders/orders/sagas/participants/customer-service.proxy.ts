@@ -7,9 +7,7 @@ import { Channel } from '../../../common';
 
 @Injectable()
 export class CustomerServiceProxy {
-  readonly reserveCredit = CommandEndpointBuilder.forCommand(
-    ReserveCreditCommand,
-  )
+  readonly reserveCredit = new CommandEndpointBuilder(ReserveCreditCommand)
     .withChannel(Channel.CUSTOMER)
     .withReply(Success)
     .build();

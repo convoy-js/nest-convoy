@@ -7,6 +7,7 @@ import { MessageEntity } from '@nest-convoy/messaging/common/entities';
 import { Message } from '@nest-convoy/messaging/common';
 
 import { MessageProducer } from './message-producer';
+
 @Injectable()
 export class DatabaseMessageProducer extends MessageProducer {
   constructor(

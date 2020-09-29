@@ -2,7 +2,7 @@ import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.excepti
 
 import { Message } from './message';
 
-export class MissingRequiredMessageHeaderException extends RuntimeException {
+export class MissingMessageHeaderException extends RuntimeException {
   constructor(header: string, message: Message) {
     super(`No such header "${header}" in message - ${message.toString()}`);
   }

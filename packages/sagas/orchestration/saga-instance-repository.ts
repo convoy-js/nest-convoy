@@ -50,8 +50,8 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     sagaId,
     sagaType,
   }: SagaInstance): Promise<void> {
-    await this.connection.transaction(async manager => {
-      await Promise.all(
+    await this.connection.transaction(manager =>
+      Promise.all(
         destinationsAndResources.map(dr =>
           manager.create(SagaInstanceParticipantsEntity, {
             sagaId,
@@ -59,8 +59,8 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
             ...dr,
           }),
         ),
-      );
-    });
+      ),
+    );
   }
 
   private async findDestinationsAndResources(

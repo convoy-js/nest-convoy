@@ -20,10 +20,10 @@ export class OrderService {
     return this.orderRepository.findOne(id);
   }
 
-  async create(details: OrderDetails): Promise<Order> {
+  async create(details: OrderDetails): Promise<Order | undefined> {
     const data = new CreateOrderSagaData(details);
     await this.sagaInstanceFactory.create(CreateOrderSaga, data);
 
-    return (await this.find(data.orderId!))!;
+    return this.find(data.orderId!);
   }
 }

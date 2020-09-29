@@ -1,0 +1,10 @@
+- name: Download and unarchive Confluent Operator
+  unarchive:
+    src: "https://platform-ops-bin.s3-us-west-1.amazonaws.com/operator/confluent-operator-{{ confluent.version.operator }}-for-confluent-platform-{{ confluent.version.platform }}.tar.gz"
+    dest: ~/confluent
+    remote_src: yes
+
+- name: Install Confluent Operator using Helm
+  community.kubernetes.helm:
+    wait: true
+    timeout: 600s

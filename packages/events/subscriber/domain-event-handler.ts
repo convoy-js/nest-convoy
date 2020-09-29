@@ -1,5 +1,5 @@
 import { Message } from '@nest-convoy/messaging/common';
-import { AsyncFn, Handler } from '@nest-convoy/common';
+import { AsyncLikeFn, Handler } from '@nest-convoy/common';
 import {
   DomainEvent,
   DomainEventType,
@@ -8,14 +8,10 @@ import {
 
 import { DomainEventEnvelope } from './domain-event-envelope';
 
-export type DomainEventMessageHandler<E extends DomainEvent> = AsyncFn<
+export type DomainEventMessageHandler<E extends DomainEvent> = AsyncLikeFn<
   [dee: DomainEventEnvelope<E>],
   void
 >;
-
-// export type DomainEventHandlerInvoke<E = DomainEvent> = (
-//   dee: DomainEventEnvelope<E>,
-// ) => Promise<void> | void;
 
 export class DomainEventHandler<E = any>
   implements Handler<DomainEventMessageHandler<E>> {

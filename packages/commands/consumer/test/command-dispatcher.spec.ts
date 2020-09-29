@@ -5,7 +5,7 @@ import {
   Message,
   ConvoyMessageConsumer,
   ConvoyMessageProducer,
-  MissingRequiredMessageHeaderException,
+  MissingMessageHeaderException,
 } from '@nest-convoy/messaging';
 import {
   CommandMessageHeaders,
@@ -170,7 +170,7 @@ describe('CommandDispatcher', () => {
         await expect(() =>
           commandDispatcher.handleMessage(message),
         ).rejects.toThrowError(
-          new MissingRequiredMessageHeaderException(
+          new MissingMessageHeaderException(
             CommandMessageHeaders.REPLY_TO,
             message,
           ),

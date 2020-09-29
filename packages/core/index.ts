@@ -1,4 +1,9 @@
-export { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
+export {
+  RuntimeException,
+  IllegalArgumentException,
+  UnsupportedOperationException,
+  NEST_CONVOY_CONNECTION,
+} from '@nest-convoy/common';
 export {
   Message,
   ConvoyChannelMapping,

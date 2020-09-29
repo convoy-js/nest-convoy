@@ -16,8 +16,8 @@ export class SagaCommandProducer {
     sagaId: string,
     commands: CommandWithDestination[],
     sagaReplyChannel: string,
-  ): Promise<string | null> {
-    let messageId = null;
+  ): Promise<string | undefined> {
+    let messageId: string | undefined;
 
     for (const command of commands) {
       const headers: MessageHeaders = new Map(command.extraHeaders);

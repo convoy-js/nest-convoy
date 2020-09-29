@@ -25,7 +25,7 @@ import {
 
 import { ICommandHandler, IEventHandler } from './handlers';
 import {
-  FOR_AGGREGATE_TYPE_METADATA,
+  AGGREGATE_TYPE_METADATA,
   FROM_CHANNEL_METADATA,
   HAS_COMMAND_HANDLER_METADATA,
   SAGA_COMMAND_HANDLER_METADATA,
@@ -99,7 +99,7 @@ export class FactoryService implements OnModuleInit {
         eventHandlerType,
       ) as DomainEventType[];
       const aggregateType = Reflect.getMetadata(
-        FOR_AGGREGATE_TYPE_METADATA,
+        AGGREGATE_TYPE_METADATA,
         eventHandlerType,
       ) as (() => string) | undefined;
 
