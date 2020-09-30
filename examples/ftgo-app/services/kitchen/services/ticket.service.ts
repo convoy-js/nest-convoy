@@ -29,12 +29,14 @@ export class TicketService {
 
   async create(
     restaurantId: number,
-    ticketId: Ticket['id'],
-    ticketDetails: TicketDetails,
+    orderId: number,
+    { lineItems }: TicketDetails,
   ): Promise<Ticket> {
-    const ticket = new Ticket(restaurantId, ticketId, ticketDetails);
-
-    await this.repository.save(ticket);
+    const ticket = await this.repository.save({
+      restaurantId,
+      orderId,
+      lineItems,
+    });
     await this.domainEventPublisher.publish(ticket, []);
 
     return ticket;

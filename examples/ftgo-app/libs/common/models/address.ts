@@ -1,9 +1,22 @@
+import { Column } from 'typeorm/index';
+
 export class Address {
-  constructor(
-    readonly street1: string,
-    readonly street2: string,
-    readonly city: string,
-    readonly state: string,
-    readonly zip: string,
-  ) {}
+  @Column()
+  street1: string;
+
+  @Column()
+  street2: string;
+
+  @Column()
+  city: string;
+
+  @Column()
+  state: string;
+
+  @Column()
+  zip: string;
+
+  constructor(values: typeof Address) {
+    Object.assign(this, values);
+  }
 }

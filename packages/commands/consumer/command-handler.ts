@@ -11,8 +11,8 @@ import { CommandMessage } from './command-message';
 
 export type CommandMessageHandler<
   C extends Command = Command,
-  T = Instance | Message | undefined
-> = AsyncLikeFn<[cm: CommandMessage<C> /*, pvs?: Map<string, string>*/], T>;
+  R = Instance | Message | undefined
+> = AsyncLikeFn<[cm: CommandMessage<C> /*, pvs?: Map<string, string>*/], R>;
 
 export class CommandHandler implements Handler<CommandMessageHandler> {
   constructor(

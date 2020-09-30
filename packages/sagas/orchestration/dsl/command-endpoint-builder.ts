@@ -5,7 +5,8 @@ import { Command } from '@nest-convoy/commands/common';
 
 import { CommandEndpoint } from './command-endpoint';
 
-export class CommandEndpointBuilder<C> implements Builder<CommandEndpoint<C>> {
+export class CommandEndpointBuilder<C extends Command>
+  implements Builder<CommandEndpoint<C>> {
   static forCommand<C extends Command>(
     command: Type<C>,
   ): CommandEndpointBuilder<C> {

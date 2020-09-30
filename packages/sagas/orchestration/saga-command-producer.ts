@@ -25,7 +25,7 @@ export class SagaCommandProducer {
       headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
 
       messageId = await this.commandProducer.send(
-        command.destinationChannel,
+        command.channel,
         command.command,
         sagaReplyChannel,
         headers,

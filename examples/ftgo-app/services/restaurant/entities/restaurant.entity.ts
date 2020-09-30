@@ -25,9 +25,13 @@ export class Restaurant implements AggregateRoot {
   @Column(() => Address)
   address: Address;
 
-  constructor(name: string, address: Address, menu: RestaurantMenu) {
-    this.name = name;
-    this.address = address;
-    this.menu = menu;
+  constructor(values: typeof Restaurant) {
+    Object.assign(this, values);
   }
+
+  // constructor(name: string, address: Address, menu: RestaurantMenu) {
+  //   this.name = name;
+  //   this.address = address;
+  //   this.menu = menu;
+  // }
 }

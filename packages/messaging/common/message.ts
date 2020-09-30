@@ -1,9 +1,5 @@
 import { MissingMessageHeaderException } from './exceptions';
-
-export type MessageHeaders = Map<string, string>;
-export type MessageRecordHeaders = Record<string, string>;
-
-export type MessageHandler = (message: Message) => Promise<void> | void;
+import type { MessageRecordHeaders, MessageHeaders } from './types';
 
 export class Message {
   static ID = 'id';

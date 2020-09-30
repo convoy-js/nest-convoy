@@ -1,5 +1,6 @@
 import {
   CommandMessage,
+  CommandWithDestination,
   OnMessage,
   SagaCommandHandlers,
 } from '@nest-convoy/core';
@@ -25,14 +26,19 @@ export class TicketHandlers {
   @OnMessage(CreateTicketCommand, { withLock: true })
   async createTicket({
     command,
-  }: CommandMessage<CreateTicketCommand>): Promise<CreateTicketReply> {
+  }: CommandMessage<CreateTicketCommand>): Promise<
+    CommandWithDestination<CreateTicketReply>
+  > {
     const ticket = await this.ticket.create(
       command.restaurantId,
-      command.restaurantId,
+      command.orderId,
       command.ticketDetails,
     );
 
-    return new CreateTicketReply(ticket.id);
+    return new CommandWithDestination(
+      'restaurant',
+      new CreateTicketReply(ticket.id),
+    );
   }
 
   @OnMessage(ConfirmCreateTicketCommand)

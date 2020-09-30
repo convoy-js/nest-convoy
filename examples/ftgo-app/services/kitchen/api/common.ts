@@ -1,5 +1,5 @@
 import { TicketLineItem } from '../entities';
 
 export class TicketDetails {
-  constructor(readonly lineItems: TicketLineItem[]) {}
+  constructor(readonly lineItems: TicketLineItem[] = []) {}
 }

@@ -1,30 +1,28 @@
+import { IllegalArgumentException, AggregateRoot } from '@nest-convoy/core';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinTable,
   OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm/index';
-import {
-  IllegalArgumentException,
-  AggregateRoot,
-  ResultWithDomainEvents,
-} from '@nest-convoy/core';
 
-import { TicketDetails } from '../api/common';
-import { TicketLineItem } from './ticket-line-item.entity';
+import { UnsupportedStateTransitionException } from '@ftgo-app/libs/common';
+import { RevisedOrderLineItem } from '@ftgo-app/api/order';
+
 import {
-  RevisedOrderLineItem,
-  UnsupportedStateTransitionException,
-} from '@ftgo-app/libs/common';
-import {
+  TicketDetails,
   TicketAccepted,
   TicketCancelled,
   TicketCreated,
   TicketPickedUp,
   TicketPreparationCompleted,
+  TicketPreparationStarted,
   TicketRevised,
-} from '@ftgo-app/api/kitchen';
+} from '../api';
+import { TicketLineItem } from './ticket-line-item.entity';
 
 export enum TicketState {
   CREATE_PENDING = 'CREATE_PENDING',
@@ -40,10 +38,19 @@ export enum TicketState {
 
 @Entity()
 export class Ticket implements AggregateRoot {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @PrimaryColumn()
+  restaurantId: number;
+
+  @PrimaryColumn()
+  orderId: number;
+
   @Column({
     type: 'enum',
     enum: TicketState,
-    nullable: true,
+    default: TicketState.CREATE_PENDING,
   })
   state: TicketState;
 
@@ -54,11 +61,11 @@ export class Ticket implements AggregateRoot {
   })
   previousState: TicketState;
 
-  // @OneToMany(() => TicketLineItem, lineItem => lineItem.customer, {
-  //   cascade: true,
-  //   eager: true,
-  // })
-  // @JoinTable()
+  @OneToMany(() => TicketLineItem, lineItem => lineItem.ticket, {
+    cascade: true,
+    eager: true,
+  })
+  @JoinTable()
   lineItems: TicketLineItem[];
 
   @CreateDateColumn({
@@ -91,20 +98,26 @@ export class Ticket implements AggregateRoot {
   })
   readyForPickupTime: Date;
 
-  constructor(
-    readonly restaurantId: number,
-    readonly id: number,
-    readonly details: TicketDetails,
-  ) {}
+  // constructor(restaurantId: number, orderId: number, details: TicketDetails) {
+  //   this.restaurantId = restaurantId;
+  //   this.orderId = orderId;
+  //   this.lineItems = details.lineItems;
+  // }
 
   confirmCreate(): [TicketCreated] {
     switch (this.state) {
       case TicketState.CREATE_PENDING:
         this.state = TicketState.AWAITING_ACCEPTANCE;
-        return [new TicketCreated(this.id, new TicketDetails([]))];
+
+        return [new TicketCreated(this.id, new TicketDetails())];
       default:
         throw new UnsupportedStateTransitionException(this.state);
     }
+  }
+
+  cancelCreate(): [] {
+    // TODO
+    return [];
   }
 
   accept(readyBy: Date): [TicketAccepted] {
@@ -126,14 +139,25 @@ export class Ticket implements AggregateRoot {
     }
   }
 
-  cancelCreate(): [] {
-    // TODO
-    return [];
+  // TODO: reject()
+
+  // TODO: cancel()
+
+  preparing(): [TicketPreparationStarted] {
+    switch (this.state) {
+      case TicketState.ACCEPTED:
+        this.state = TicketState.PREPARING;
+        this.preparingTime = new Date();
+
+        return [new TicketPreparationStarted()];
+      default:
+        throw new UnsupportedStateTransitionException(this.state);
+    }
   }
 
-  preparing(): [TicketPreparationCompleted] {
+  readyForPickup(): [TicketPreparationCompleted] {
     switch (this.state) {
-      case TicketState.READY_FOR_PICKUP:
+      case TicketState.PREPARING:
         this.state = TicketState.READY_FOR_PICKUP;
         this.readyForPickupTime = new Date();
 
@@ -185,6 +209,7 @@ export class Ticket implements AggregateRoot {
     switch (this.state) {
       case TicketState.CANCEL_PENDING:
         this.state = TicketState.CANCELLED;
+
         return [new TicketCancelled()];
       default:
         throw new UnsupportedStateTransitionException(this.state);

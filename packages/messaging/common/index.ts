@@ -5,3 +5,4 @@ export * from './exceptions';
 export * from './messaging-common.module';
 export * from './channel-mapping';
 export * from './entities';
+export * from './types';

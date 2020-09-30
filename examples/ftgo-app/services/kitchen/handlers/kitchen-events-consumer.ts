@@ -12,7 +12,7 @@ import {
 
 import { KitchenService } from '../services';
 
-@DomainEventsConsumer(RestaurantServiceChannel.AGGREGATE_TYPE)
+@DomainEventsConsumer(RestaurantServiceChannel.RESTAURANT_EVENT)
 export class KitchenServiceEventsConsumer {
   constructor(private readonly kitchen: KitchenService) {}
 

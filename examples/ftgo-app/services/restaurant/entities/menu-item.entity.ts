@@ -12,9 +12,13 @@ export class MenuItem {
   @Column(() => Money)
   money: Money;
 
-  constructor(id: string, name: string, money: Money) {
-    this.id = id;
-    this.name = name;
-    this.money = money;
+  constructor(values: typeof MenuItem) {
+    Object.assign(this, values);
   }
+
+  // constructor(id: string, name: string, money: Money) {
+  //   this.id = id;
+  //   this.name = name;
+  //   this.money = money;
+  // }
 }

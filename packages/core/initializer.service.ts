@@ -1,4 +1,10 @@
-import { Injectable, OnModuleInit, Optional, Type } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  OnModuleInit,
+  Optional,
+  Type,
+} from '@nestjs/common';
 import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
 import {
   COMMAND_HANDLER_METADATA,
@@ -32,7 +38,7 @@ import {
 } from './tokens';
 
 @Injectable()
-export class FactoryService implements OnModuleInit {
+export class InitializerService implements OnModuleInit {
   constructor(
     private readonly domainEventDispatcherFactory: DomainEventDispatcherFactory,
     private readonly commandDispatcherFactory: CommandDispatcherFactory,

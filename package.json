@@ -12,10 +12,13 @@
     "eslint:check": "eslint {examples,packages}/**/*.ts",
     "eslint:fix": "yarn eslint:check --fix",
     "postinstall": "patch-package",
+    "release:stable": "yarn -s dripip stable",
+    "release:preview": "yarn -s dripip preview",
+    "release:pr": "yarn -s  dripip pr",
     "build": "bazel build //packages/...",
     "test": "bazel test //packages/... --test_tag_filters=unit ",
     "lint": "bazel test //... --test_tag_filters=lint",
-    "publish": "./scripts/publish.sh"
+    "release": "sh scripts/release.sh"
   },
   "config": {
     "commitizen": {

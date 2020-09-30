@@ -13,8 +13,9 @@ import { ConvoyMicroserviceProxy } from './microservice-proxy';
 import { CLIENT_OPTIONS, SERVER_OPTIONS } from './tokens';
 
 export interface ConvoyMessagingBrokerModuleOptions {
+  appName: string;
   server?: MicroserviceOptions;
-  client?: MicroserviceOptions;
+  client?: ClientOptions;
 }
 
 @Global()

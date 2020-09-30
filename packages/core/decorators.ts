@@ -2,8 +2,9 @@ import { COMMAND_HANDLER_METADATA } from '@nestjs/cqrs/dist/decorators/constants
 import { EventsHandler } from '@nestjs/cqrs';
 
 import { Type } from '@nest-convoy/common';
-import { CommandType } from '@nest-convoy/commands';
+import { CommandMessageHandler, CommandType } from '@nest-convoy/commands';
 import { AggregateRoot } from '@nest-convoy/events';
+import { MessageHandlerReplyOptions } from '@nest-convoy/messaging';
 
 import { ICommandHandler, IEventHandler } from './handlers';
 import {
@@ -20,6 +21,13 @@ export function FromChannel(channel: string) {
   };
 }
 
+// type CommandHandlerMethodDecorator = <T, K extends keyof T, C, V>(
+//   target: T,
+//   propertyKey: K,
+// ) => { [K in keyof T]: CommandMessageHandler<C, V> };
+//
+// type EventMethod = <T, K extends keyof T>(target: T, propertyKey: K) => T[K];
+
 export function OnEvent<E, T>(event: Type<E>) {
   return (target: T, propertyKey: string): void => {
     Reflect.defineMetadata(DOMAIN_EVENT_HANDLER, target, propertyKey);
@@ -27,17 +35,12 @@ export function OnEvent<E, T>(event: Type<E>) {
 }
 
 export function CommandDestination(channel: string): ClassDecorator {
-  return () => {};
-}
-
-interface MessageHandlerOptions {
-  withLock?: boolean;
-  destination?: string;
+  return (target: any) => {};
 }
 
 export function OnMessage<M>(
   message: Type<M>,
-  replyOptions: MessageHandlerOptions = {},
+  options: MessageHandlerReplyOptions = {},
 ) {
   return (target: any, propertyKey: string): void => {};
 }
@@ -60,7 +63,7 @@ export function DomainEventsConsumer<T extends AggregateRoot>(
   };
 }
 
-export function SagaCommandHandlers(channel: string) {
+export function SagaCommandHandlers(channel: string): ClassDecorator {
   return (target: any) =>
     SagaCommandHandler(undefined as never, channel)(target);
 }
