@@ -12,7 +12,7 @@ export class MenuItem {
   @Column(() => Money)
   money: Money;
 
-  constructor(values: typeof MenuItem) {
+  constructor(values: MenuItem) {
     Object.assign(this, values);
   }
 

@@ -7,9 +7,9 @@ import {
 
 import { CommandWithDestination } from './command-with-destination';
 
-export class CommandWithDestinationBuilder
+export class CommandWithDestinationBuilder<C extends Command>
   implements Builder<CommandWithDestination> {
-  static send(command: Command): CommandWithDestinationBuilder {
+  static send<C extends Command>(command: C): CommandWithDestinationBuilder<C> {
     return new CommandWithDestinationBuilder(command);
   }
 
@@ -17,7 +17,7 @@ export class CommandWithDestinationBuilder
   private resource?: string;
   private destinationChannel?: string;
 
-  constructor(private readonly command: Command) {}
+  constructor(private readonly command: C) {}
 
   to(destinationChannel: string): this {
     this.destinationChannel = destinationChannel;
@@ -39,7 +39,7 @@ export class CommandWithDestinationBuilder
     return this;
   }
 
-  build(): CommandWithDestination {
+  build(): CommandWithDestination<C> {
     if (!this.destinationChannel) {
       throw new Error('Destination is required');
     }

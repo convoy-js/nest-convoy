@@ -16,7 +16,7 @@ export class Address {
   @Column()
   zip: string;
 
-  constructor(values: typeof Address) {
+  constructor(values: Address) {
     Object.assign(this, values);
   }
 }

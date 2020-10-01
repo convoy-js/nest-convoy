@@ -21,8 +21,8 @@ export class StepBuilder<Data> implements WithCompensationBuilder<Data> {
     return new LocalStepBuilder<Data>(this.parent, handler);
   }
 
-  invokeParticipant(
-    action: CommandProvider<Data, CommandWithDestination>,
+  invokeParticipant<C extends Command>(
+    action: CommandProvider<Data, CommandWithDestination<C>> | C,
     participantInvocationPredicate?: Predicate<Data>,
   ): InvokeParticipantStepBuilder<Data>;
   invokeParticipant<C extends Command>(

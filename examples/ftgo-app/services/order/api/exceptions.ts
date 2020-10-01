@@ -11,3 +11,11 @@ export class RestaurantNotFoundException extends RuntimeException {
     super(`Restaurant with ID ${restaurantId} not found`);
   }
 }
+
+export class OrderMinimumNotMet extends RuntimeException {}
+
+export class OrderNotFoundException extends RuntimeException {
+  constructor(orderId: number) {
+    super(`Order with ID ${orderId} not found`);
+  }
+}

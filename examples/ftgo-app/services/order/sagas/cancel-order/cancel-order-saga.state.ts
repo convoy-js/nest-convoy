@@ -1,0 +1,5 @@
+export enum CancelOrderSagaState {
+  WAITING_TO_AUTHORIZE = 'WAITING_TO_AUTHORIZE',
+  COMPLETED = 'COMPLETED',
+  REVERSING = 'REVERSING',
+}

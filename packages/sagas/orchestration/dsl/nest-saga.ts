@@ -10,7 +10,9 @@ export abstract class NestSaga<Data> extends Saga<Data> {
     return new StepBuilder<Data>(new NestSagaDefinitionBuilder<Data>(this));
   }
 
-  protected send<C extends Command>(command: C): CommandWithDestinationBuilder {
-    return new CommandWithDestinationBuilder(command);
+  protected send<C extends Command>(
+    command: C,
+  ): CommandWithDestinationBuilder<C> {
+    return new CommandWithDestinationBuilder<C>(command);
   }
 }

@@ -5,11 +5,14 @@ import { Message } from '@nest-convoy/messaging/common';
 import { StepOutcome } from './step-outcome';
 
 // T should be a registered Event?
-export type SagaStepReplyHandler<Data> = (data: Data, reply: any) => void;
+export type SagaStepReplyHandler<Data, R = unknown> = (
+  data: Data,
+  reply: R,
+) => void;
 
-export interface SagaStepReply<Data> {
+export interface SagaStepReply<Data, R = unknown> {
   type: Type<any>;
-  handler: SagaStepReplyHandler<Data>;
+  handler: SagaStepReplyHandler<Data, R>;
 }
 
 export interface SagaStep<Data> {

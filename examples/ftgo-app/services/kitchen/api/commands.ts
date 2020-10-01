@@ -1,6 +1,7 @@
 import { CommandDestination } from '@nest-convoy/core';
 
 import { RevisedOrderLineItem } from '@ftgo-app/libs/common';
+import { RestaurantServiceChannel } from '@ftgo-app/api/restaurant';
 
 import { TicketDetails } from './common';
 
@@ -32,7 +33,8 @@ export class ConfirmCreateTicketCommand {
   constructor(readonly ticketId: number) {}
 }
 
-@CommandDestination('restaurant')
+// TODO: Implement this
+@CommandDestination(RestaurantServiceChannel.COMMAND)
 export class CreateTicketCommand extends RestaurantAndOrderIds {
   constructor(
     restaurantId: number,

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ICommandBus } from '@nestjs/cqrs';
+// import { ICommandBus } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ConvoyMessageConsumer, Message } from '@nest-convoy/messaging';
@@ -11,15 +11,15 @@ import {
 } from '@nest-convoy/commands';
 
 @Injectable()
-export class CommandBus implements ICommandBus {
+export class CommandBus /*implements ICommandBus*/ {
   constructor(
     private readonly commandProducer: ConvoyCommandProducer,
     private readonly messageConsumer: ConvoyMessageConsumer,
   ) {}
 
   execute<T extends Command>(
+    channel: string,
     command: T,
-    commandChannel?: string,
     subscriberId = uuidv4(),
     replyChannel = uuidv4(),
   ): Promise<Message> {
@@ -33,14 +33,16 @@ export class CommandBus implements ICommandBus {
               return reject(message);
 
             case CommandReplyOutcome.SUCCESS:
-            default:
               return resolve(message);
+
+            default:
+              throw new Error('Invalid CommandReplyOutcome');
           }
         },
       );
 
       const commandId = await this.commandProducer.send(
-        commandChannel ?? command.constructor.name,
+        channel,
         command,
         replyChannel,
       );

@@ -49,15 +49,15 @@ export class SagaCommandDispatcher extends ConvoyCommandDispatcher {
 
     if (commandHandler instanceof SagaCommandHandler) {
       if (typeof commandHandler.preLock === 'function') {
-        lockedTarget = commandHandler.preLock(commandMessage).target;
+        lockedTarget = (await commandHandler.preLock(commandMessage)).target;
         if (
           !(await this.sagaLockManager.claimLock(
             sagaType,
             sagaId,
-            lockedTarget,
+            lockedTarget!,
           ))
         ) {
-          throw new StashMessageRequiredException(lockedTarget);
+          throw new StashMessageRequiredException(lockedTarget!);
         }
       }
     }

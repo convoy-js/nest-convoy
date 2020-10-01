@@ -5,7 +5,7 @@ import { SagaStep, SagaStepReply } from './saga-step';
 import { BaseParticipantInvocation } from './participant-invocation';
 import { RemoteStepOutcome, StepOutcome } from './step-outcome';
 
-export type ReplyHandlers<Data> = Map<string, SagaStepReply<Data>>;
+export type ReplyHandlers<Data> = Map<string, SagaStepReply<Data, any>>;
 
 export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
   constructor(

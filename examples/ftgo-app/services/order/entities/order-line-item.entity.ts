@@ -1,13 +1,30 @@
-import { Column, Entity, ManyToOne } from 'typeorm/index';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm/index';
 
 import { LineItem, Money } from '@ftgo-app/libs/common';
-import { Order } from './order.entity';
+
+import { OrderLineItems } from './order-line-items.entity';
 
 @Entity()
 export class OrderLineItem extends LineItem {
-  @ManyToOne(() => Order, order => order.lineItems)
-  order: Order;
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @ManyToOne(() => OrderLineItems, lineItems => lineItems.lineItems)
+  parent: OrderLineItems;
 
   @Column(() => Money)
-  money: Money;
+  price: Money;
+
+  total(): Money {
+    return this.price.multiply(this.quantity);
+  }
+
+  deltaForChangedQuantity(newQuantity: number): Money {
+    return this.price.multiply(newQuantity - this.quantity);
+  }
 }

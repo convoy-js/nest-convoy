@@ -1,9 +1,12 @@
 import {
+  CommandDestination,
   CommandMessage,
   CommandWithDestination,
   OnMessage,
   SagaCommandHandlers,
 } from '@nest-convoy/core';
+
+import { RestaurantServiceChannel } from '@ftgo-app/api/restaurant';
 
 import { TicketService } from '../services';
 import {
@@ -23,22 +26,18 @@ import {
 export class TicketHandlers {
   constructor(private readonly ticket: TicketService) {}
 
+  // @CommandDestination(RestaurantServiceChannel.COMMAND)
   @OnMessage(CreateTicketCommand, { withLock: true })
   async createTicket({
     command,
-  }: CommandMessage<CreateTicketCommand>): Promise<
-    CommandWithDestination<CreateTicketReply>
-  > {
+  }: CommandMessage<CreateTicketCommand>): Promise<CreateTicketReply> {
     const ticket = await this.ticket.create(
       command.restaurantId,
       command.orderId,
       command.ticketDetails,
     );
 
-    return new CommandWithDestination(
-      'restaurant',
-      new CreateTicketReply(ticket.id),
-    );
+    return new CreateTicketReply(ticket.id);
   }
 
   @OnMessage(ConfirmCreateTicketCommand)

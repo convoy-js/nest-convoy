@@ -28,7 +28,7 @@ export class ReviseOrderUpdateCommand {
   constructor(readonly orderId: number) {}
 }
 
-export class UndoBeginCancelCommand {
+export class UndoBeginCancelOrderCommand {
   constructor(readonly orderId: number) {}
 }
 

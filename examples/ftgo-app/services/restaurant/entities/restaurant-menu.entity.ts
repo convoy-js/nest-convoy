@@ -6,7 +6,7 @@ export class RestaurantMenu {
   @OneToMany(() => MenuItem, item => item.id)
   items: MenuItem[];
 
-  constructor(values: typeof RestaurantMenu) {
+  constructor(values: RestaurantMenu) {
     Object.assign(this, values);
   }
 

@@ -59,18 +59,15 @@ export class ConvoyCommandDispatcher implements Dispatcher {
     commandHandler: CommandHandler,
     commandMessage: CommandMessage,
   ): Promise<Message[]> {
-    const hasLock = false;
     // TODO: Figure out whether or not it should sendReplies or handleException
     try {
-      // Check if command handler has lock enabled
       const reply = await commandHandler.invoke(commandMessage);
       return Array.isArray(reply)
         ? reply.map(r => (r instanceof Message ? r : withSuccess(r)))
         : reply instanceof Message
         ? [reply]
         : [
-            // TODO: Refactor modules so that "withLock" can be imported
-            hasLock
+            commandHandler.options.withLock
               ? withLock(commandMessage.command).withSuccess(reply)
               : withSuccess(reply),
           ];

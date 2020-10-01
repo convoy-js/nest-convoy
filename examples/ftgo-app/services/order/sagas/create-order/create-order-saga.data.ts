@@ -1,11 +1,9 @@
 import { Order } from '../../entities';
 
-import { OrderDetails } from '../../entities';
-
 export class CreateOrderSagaData {
   constructor(
     public orderId: Order['id'],
-    public orderDetails: Order,
+    public orderDetails: Order['details'],
     public ticketId: number,
   ) {}
 }

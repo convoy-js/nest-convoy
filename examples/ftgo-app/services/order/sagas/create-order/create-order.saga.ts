@@ -1,11 +1,18 @@
-import { CommandWithDestination, NestSaga, Saga } from '@nest-convoy/core';
+import { NestSaga, Saga } from '@nest-convoy/core';
 
+import { AuthorizeCommand } from '@ftgo-app/api/accounting';
 import { ValidateOrderByCustomerCommand } from '@ftgo-app/api/customer';
-import { RestaurantServiceChannel } from '@ftgo-app/api/restaurant';
-import { CreateTicketCommand, TicketDetails } from '@ftgo-app/api/kitchen';
-
-import { RejectOrderCommand } from '../../api';
 import {
+  CancelCreateTicketCommand,
+  ConfirmCreateTicketCommand,
+  CreateTicketCommand,
+  CreateTicketReply,
+  TicketDetails,
+} from '@ftgo-app/api/kitchen';
+
+import { ApproveOrderCommand, RejectOrderCommand } from '../../api';
+import {
+  AccountingServiceProxy,
   CustomerServiceProxy,
   KitchenServiceProxy,
   OrderServiceProxy,
@@ -15,47 +22,83 @@ import { CreateOrderSagaData } from './create-order-saga.data';
 
 @Saga(CreateOrderSagaData)
 export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
+  readonly sagaDefinition = this.step()
+    .withCompensation(this.order.reject, this.rejectOrder)
+    .step()
+    .invokeParticipant(this.customer.validateOrder, this.validateOrder)
+    .step()
+    .invokeParticipant(this.kitchen.create, this.createTicket)
+    .onReply(CreateTicketReply, this.handleCreateTicketReply)
+    .withCompensation(this.kitchen.cancel, this.cancelCreateTicket)
+    .step()
+    .invokeParticipant(this.accounting.authorize, this.authorize)
+    .step()
+    .invokeParticipant(this.kitchen.confirmCreate, this.confirmCreateTicket)
+    .step()
+    // @ts-ignore
+    .invokeParticipant(this.order.approve, this.approveOrder)
+    .build();
+
   constructor(
     private readonly kitchen: KitchenServiceProxy,
+    private readonly accounting: AccountingServiceProxy,
     private readonly order: OrderServiceProxy,
     private readonly customer: CustomerServiceProxy,
   ) {
     super();
   }
 
-  readonly sagaDefinition = this.step()
-    .withCompensation(this.order.reject, this.createRejectOrderCommand)
-    .step()
-    .invokeParticipant(
-      this.customer.validateOrder,
-      this.createValidateOrderByCustomerCommand,
-    )
-    .step()
-    .invokeParticipant(this.kitchen.create, this.createCreateTicketCommand)
-    .build();
-
-  private createRejectOrderCommand(
-    data: CreateOrderSagaData,
-  ): RejectOrderCommand {
-    return new RejectOrderCommand(data.orderId);
+  private approveOrder({ orderId }: CreateOrderSagaData): ApproveOrderCommand {
+    return new ApproveOrderCommand(orderId);
   }
 
-  private createValidateOrderByCustomerCommand({
-    orderDetails: { customerId, orderTotal },
+  private authorize({
+    orderDetails: { customerId, total },
+    orderId,
+  }: CreateOrderSagaData): AuthorizeCommand {
+    return new AuthorizeCommand(customerId, orderId, total);
+  }
+
+  private confirmCreateTicket({
+    ticketId,
+  }: CreateOrderSagaData): ConfirmCreateTicketCommand {
+    return new ConfirmCreateTicketCommand(ticketId);
+  }
+
+  private rejectOrder({ orderId }: CreateOrderSagaData): RejectOrderCommand {
+    return new RejectOrderCommand(orderId);
+  }
+
+  private validateOrder({
+    orderDetails: { customerId, total },
     orderId,
   }: CreateOrderSagaData): ValidateOrderByCustomerCommand {
-    return new ValidateOrderByCustomerCommand(customerId, orderId, orderTotal);
+    return new ValidateOrderByCustomerCommand(customerId, orderId, total);
   }
 
-  private handleCreateTicketReply(data: CreateOrderSagaData) {}
+  private handleCreateTicketReply(
+    data: CreateOrderSagaData,
+    reply: CreateTicketReply,
+  ): void {
+    data.ticketId = reply.ticketId;
+  }
 
-  private createCreateTicketCommand({
-    orderDetails,
+  private cancelCreateTicket(
+    data: CreateOrderSagaData,
+  ): CancelCreateTicketCommand {
+    return new CancelCreateTicketCommand(data.ticketId);
+  }
+
+  // @CommandDestination(RestaurantServiceChannel.COMMAND)
+  private createTicket({
+    orderDetails: { restaurantId, lineItems },
     orderId,
-  }: CreateOrderSagaData): CommandWithDestination<CreateTicketCommand> {
-    return new CommandWithDestination(
-      RestaurantServiceChannel.COMMAND,
-      new CreateTicketCommand(orderDetails.restaurantId, orderId, new TicketDetails(orderDetails.)),
+  }: CreateOrderSagaData): CreateTicketCommand {
+    // TODO: Refactor this when @CommandDestination is implemented
+    return new CreateTicketCommand(
+      restaurantId,
+      orderId,
+      new TicketDetails(lineItems),
     );
   }
 }

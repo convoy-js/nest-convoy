@@ -10,8 +10,8 @@ export type Compensation<
 > = AsyncLikeFn<[data: T], C>;
 
 export interface WithActionBuilder<Data> {
-  withAction(
-    action: CommandProvider<Data, CommandWithDestination>,
+  withAction<C extends Command>(
+    action: CommandProvider<Data, CommandWithDestination<C> | C>,
     participantInvocationPredicate?: Predicate<Data>,
   ): unknown;
   withAction<C extends Command>(

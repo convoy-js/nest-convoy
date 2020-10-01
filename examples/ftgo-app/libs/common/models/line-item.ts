@@ -5,7 +5,7 @@ export class LineItem {
   id: number;
 
   @PrimaryColumn()
-  menuItemId: string;
+  menuItemId: number;
 
   @Column()
   name: string;
@@ -13,9 +13,7 @@ export class LineItem {
   @Column()
   quantity: number;
 
-  constructor(menuItemId: string, name: string, quantity: number) {
-    this.menuItemId = menuItemId;
-    this.name = name;
-    this.quantity = quantity;
+  constructor(values: LineItem) {
+    Object.assign(this, values);
   }
 }

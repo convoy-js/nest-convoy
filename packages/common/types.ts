@@ -13,7 +13,7 @@ export function isType<T>(value: any): value is Type<T> {
 export type Consumer<T, S = any, A extends unknown[] = unknown[]> = (
   data: T,
   ...args: A
-) => Promise<S> | S;
+) => AsyncLikeFn<[S]>;
 
 export type AsyncLikeFn<T extends any[] = any[], R = unknown> = (
   ...args: T

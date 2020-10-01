@@ -1,7 +1,17 @@
-import { Column, PrimaryColumn } from 'typeorm/index';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm/index';
 
 import { Money } from '@ftgo-app/libs/common';
 
+import { OrderLineItems } from './order-line-items.entity';
+import { Order } from './order.entity';
+
+@Entity()
 export class OrderDetails {
   @PrimaryColumn()
   customerId: number;
@@ -10,5 +20,16 @@ export class OrderDetails {
   restaurantId: number;
 
   @Column(() => Money)
-  orderTotal: Money;
+  total: Money;
+
+  @OneToOne(() => Order, order => order.details)
+  @JoinColumn()
+  order: Order;
+
+  @OneToOne(() => OrderLineItems, lineItems => lineItems.details, {
+    cascade: true,
+    eager: true,
+  })
+  @JoinColumn()
+  lineItems: OrderLineItems;
 }

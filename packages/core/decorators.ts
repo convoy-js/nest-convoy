@@ -1,10 +1,13 @@
 import { COMMAND_HANDLER_METADATA } from '@nestjs/cqrs/dist/decorators/constants';
-import { EventsHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventsHandler } from '@nestjs/cqrs';
 
 import { Type } from '@nest-convoy/common';
-import { CommandMessageHandler, CommandType } from '@nest-convoy/commands';
 import { AggregateRoot } from '@nest-convoy/events';
-import { MessageHandlerReplyOptions } from '@nest-convoy/messaging';
+import {
+  COMMAND_WITH_DESTINATION,
+  CommandType,
+  CommandMessageHandlerOptions,
+} from '@nest-convoy/commands';
 
 import { ICommandHandler, IEventHandler } from './handlers';
 import {
@@ -13,6 +16,8 @@ import {
   FROM_CHANNEL_METADATA,
   HAS_COMMAND_HANDLER_METADATA,
   DOMAIN_EVENT_HANDLER,
+  COMMAND_MESSAGE_HANDLER,
+  COMMAND_MESSAGE_HANDLER_OPTIONS,
 } from './tokens';
 
 export function FromChannel(channel: string) {
@@ -30,19 +35,41 @@ export function FromChannel(channel: string) {
 
 export function OnEvent<E, T>(event: Type<E>) {
   return (target: T, propertyKey: string): void => {
-    Reflect.defineMetadata(DOMAIN_EVENT_HANDLER, target, propertyKey);
+    Reflect.defineMetadata(DOMAIN_EVENT_HANDLER, event, target, propertyKey);
   };
 }
 
-export function CommandDestination(channel: string): ClassDecorator {
-  return (target: any) => {};
+export function CommandDestination(
+  channel: string,
+) /*: ClassDecorator | MethodDecorator*/ {
+  return (target: Function | object, propertyKey?: string) => {
+    Reflect.defineMetadata(
+      COMMAND_WITH_DESTINATION,
+      channel,
+      target,
+      propertyKey as never,
+    );
+  };
 }
 
-export function OnMessage<M>(
+export function OnMessage<M, T>(
   message: Type<M>,
-  options: MessageHandlerReplyOptions = {},
+  options: CommandMessageHandlerOptions<T> = {},
 ) {
-  return (target: any, propertyKey: string): void => {};
+  return (target: T, propertyKey: string): void => {
+    Reflect.defineMetadata(
+      COMMAND_MESSAGE_HANDLER,
+      message,
+      target,
+      propertyKey,
+    );
+    Reflect.defineMetadata(
+      COMMAND_MESSAGE_HANDLER_OPTIONS,
+      options,
+      target,
+      propertyKey,
+    );
+  };
 }
 
 // TODO: Rename decorator to DomainEventHandlers
@@ -60,6 +87,13 @@ export function DomainEventsConsumer<T extends AggregateRoot>(
       },
       target,
     );
+  };
+}
+
+export function CommandHandlers(channel: string): ClassDecorator {
+  return (target: any) => {
+    CommandHandler(target as never)(target);
+    Reflect.defineMetadata(FROM_CHANNEL_METADATA, channel, target);
   };
 }
 

@@ -1,15 +1,5 @@
-import {
-  Inject,
-  Injectable,
-  OnModuleInit,
-  Optional,
-  Type,
-} from '@nestjs/common';
+import { Injectable, OnModuleInit, Optional } from '@nestjs/common';
 import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
-import {
-  COMMAND_HANDLER_METADATA,
-  EVENTS_HANDLER_METADATA,
-} from '@nestjs/cqrs/dist/decorators/constants';
 import { ModuleRef } from '@nestjs/core';
 
 import {
@@ -18,24 +8,31 @@ import {
 } from '@nest-convoy/sagas/participant';
 import {
   DomainEventDispatcherFactory,
-  DomainEventHandler,
-  DomainEventHandlers,
-  DomainEventType,
+  DomainEventHandlersBuilder,
+  DomainEventMessageHandler,
 } from '@nest-convoy/events';
 import {
   CommandDispatcherFactory,
   CommandHandlers,
   CommandHandlersBuilder,
-  CommandType,
+  CommandMessageHandler,
+  CommandMessageHandlerOptions,
 } from '@nest-convoy/commands';
 
-import { ICommandHandler, IEventHandler } from './handlers';
 import {
   AGGREGATE_TYPE_METADATA,
+  COMMAND_MESSAGE_HANDLER,
+  COMMAND_MESSAGE_HANDLER_OPTIONS,
+  DOMAIN_EVENT_HANDLER,
   FROM_CHANNEL_METADATA,
   HAS_COMMAND_HANDLER_METADATA,
   SAGA_COMMAND_HANDLER_METADATA,
 } from './tokens';
+
+interface PropertyType<K> {
+  property: K;
+  type: any;
+}
 
 @Injectable()
 export class InitializerService implements OnModuleInit {
@@ -48,87 +45,115 @@ export class InitializerService implements OnModuleInit {
     private readonly sagaCommandDispatcherFactory: SagaCommandDispatcherFactory,
   ) {}
 
+  private getMethodTypes<I, K extends keyof I>(
+    token: string,
+    instance: I,
+  ): PropertyType<K>[] {
+    return Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
+      .filter(propertyKey => Reflect.hasMetadata(token, instance, propertyKey))
+      .map(propertyKey => {
+        const type = Reflect.hasMetadata(token, instance, propertyKey);
+        return {
+          property: propertyKey,
+          type,
+        };
+      }) as PropertyType<K>[];
+  }
+
   async onModuleInit(): Promise<void> {
     const { commands, events, queries, sagas } = this.explorer.explore();
 
-    const commandHandlers = (commands || []).map(async commandHandlerType => {
-      const commandType = Reflect.getMetadata(
-        COMMAND_HANDLER_METADATA,
-        commandHandlerType,
-      ) as CommandType;
-      const commandHandlerChannel = Reflect.getMetadata(
+    const commandHandlers = (commands || []).map(async instanceType => {
+      const channel = Reflect.getMetadata(
         FROM_CHANNEL_METADATA,
-        commandHandlerType,
-      ) as string;
+        instanceType,
+      ) as string | undefined;
+      if (!channel) return;
+
       const isSagaCommandHandler = Reflect.hasMetadata(
         SAGA_COMMAND_HANDLER_METADATA,
-        commandHandlerType,
+        instanceType,
       );
       const hasCommandHandler = Reflect.hasMetadata(
         HAS_COMMAND_HANDLER_METADATA,
-        commandHandlerType,
+        instanceType,
       );
-      const channel = commandHandlerChannel || commandType.name;
 
-      const commandHandler = this.injector.get(commandHandlerType, {
+      const instance = this.injector.get(instanceType, {
         strict: false,
-      }) as ICommandHandler<any>;
-      const handler = commandHandler.execute.bind(commandHandler);
+      }) as Record<string, CommandMessageHandler>;
 
       if (hasCommandHandler) {
-        const commandHandlers = CommandHandlersBuilder.fromChannel(channel)
-          .onMessage(commandType, handler)
+        const commandHandlers = this.getMethodTypes(
+          COMMAND_MESSAGE_HANDLER,
+          instance,
+        )
+          .reduce((builder, { property, type }) => {
+            const handler = instance[property].bind(instance);
+            const options = Reflect.getMetadata(
+              COMMAND_MESSAGE_HANDLER_OPTIONS,
+              instance,
+              property,
+            ) as CommandMessageHandlerOptions;
+
+            return builder.onMessage(type, handler, options);
+          }, new CommandHandlersBuilder(channel))
           .build();
 
         await this.commandDispatcherFactory
-          .create(commandType.name, commandHandlers)
+          .create(instanceType.name, commandHandlers)
           .subscribe();
       }
 
       if (isSagaCommandHandler && this.sagaCommandDispatcherFactory) {
-        const sagaCommandHandler = new SagaCommandHandler(
-          channel,
-          commandType,
-          handler,
-        );
-        const sagaCommandHandlers = new CommandHandlers([sagaCommandHandler]);
+        // TODO: SagaCommandHandlersBuilder
+        const sagaCommandHandlers = this.getMethodTypes(
+          COMMAND_MESSAGE_HANDLER,
+          instance,
+        ).map(({ property, type }) => {
+          const handler = instance[property].bind(instance);
+          const options = Reflect.getMetadata(
+            COMMAND_MESSAGE_HANDLER_OPTIONS,
+            instance,
+            property,
+          ) as CommandMessageHandlerOptions;
+
+          return new SagaCommandHandler(channel, type, handler, options);
+        });
 
         await this.sagaCommandDispatcherFactory
-          .create(commandType.name, sagaCommandHandlers)
+          .create(instanceType.name, new CommandHandlers(sagaCommandHandlers))
           .subscribe();
       }
     });
 
-    const eventHandlers = (events || []).map(async eventHandlerType => {
-      const eventTypes = Reflect.getMetadata(
-        EVENTS_HANDLER_METADATA,
-        eventHandlerType,
-      ) as DomainEventType[];
+    const domainEventHandlers = (events || []).map(async instanceType => {
       const aggregateType = Reflect.getMetadata(
         AGGREGATE_TYPE_METADATA,
-        eventHandlerType,
+        instanceType,
       ) as (() => string) | undefined;
+      if (!aggregateType) return;
 
-      const eventHandler = this.injector.get(eventHandlerType, {
+      const instance = this.injector.get(instanceType, {
         strict: false,
-      }) as IEventHandler<any>;
+      }) as Record<string, DomainEventMessageHandler<any>>;
 
-      const domainEventHandlers = new DomainEventHandlers(
-        eventTypes.map(
-          eventType =>
-            new DomainEventHandler(
-              eventType,
-              eventHandler.handle.bind(eventHandler),
-              aggregateType?.() || eventType.name,
-            ),
-        ),
-      );
+      const domainEventHandlers = this.getMethodTypes(
+        DOMAIN_EVENT_HANDLER,
+        instance,
+      )
+        .reduce(
+          (builder, { property, type }) =>
+            builder.onEvent(type, instance[property].bind(instance)),
+          new DomainEventHandlersBuilder(aggregateType()),
+        )
+        .build();
 
       await this.domainEventDispatcherFactory
-        .create(eventHandlerType.name, domainEventHandlers)
+        .create(instanceType.name, domainEventHandlers)
         .subscribe();
     });
 
-    await Promise.all([...commandHandlers, ...eventHandlers]);
+    await Promise.all([...commandHandlers, ...domainEventHandlers]);
   }
 }
