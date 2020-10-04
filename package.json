@@ -12,7 +12,7 @@
     "@nestjs/testing": "7.4.2",
     "@types/jest": "26.0.9",
     "@types/node": "14.0.27",
-    "@types/uuid": "^8.0.0",
+    "@types/uuid": "8.3.0",
     "jest-cli": "26.3.0",
     "patch-package": "6.2.2",
     "prettier": "2.0.5",
@@ -32,7 +32,7 @@
     "rxjs": "6.6.2",
     "tslib": "2.0.1",
     "typeorm": "0.2.25",
-    "uuid": "8.3.0"
+    "uuid": "8.3.1"
   },
   "scripts": {
     "postinstall": "patch-package",
