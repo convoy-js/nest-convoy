@@ -258,10 +258,10 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@bazel/bazelisk@1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazelisk/-/bazelisk-1.6.0.tgz#3742e9bd2ddaa43ac0c3b4ba167f95cfaf881400"
-  integrity sha512-lHFsZFR5ofj3yL2BtlbblbrglB/okocuY4T53M+tHLG/pV5H8LdzYPXrymzab/qXyyW4zKSPEpX20QITITsvtw==
+"@bazel/bazelisk@1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@bazel/bazelisk/-/bazelisk-1.7.2.tgz#80673d886ac46bf671f6b1908bf80a4eb84eb200"
+  integrity sha512-/cin20XIfSctNVh6veOVKFwUp6g6/oeEEvgPLSetgK6HFspReI3jI+2lO4haQX8yD2QFN20ndheXDuLYidoj6g==
 
 "@bazel/buildifier@3.4.0":
   version "3.4.0"
