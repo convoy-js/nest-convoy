@@ -1,0 +1,19 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "services",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "@npm//@nestjs/typeorm",
+        "@npm//typeorm",
+        "//examples/ftgo-app/services/restaurant/api",
+        "//examples/ftgo-app/services/restaurant/entities",
+        "//packages/core",
+    ],
+    visibility = [
+        "//examples/ftgo-app/services/restaurant:__pkg__"
+    ]
+)

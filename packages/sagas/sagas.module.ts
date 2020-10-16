@@ -4,7 +4,7 @@ import { SagaOrchestrationModule } from './orchestration';
 import { SagaParticipantModule } from './participant';
 import { SagaCommonModule } from './common';
 
-@Global()
+// @Global()
 @Module({
   imports: [SagaOrchestrationModule, SagaParticipantModule, SagaCommonModule],
   exports: [SagaOrchestrationModule, SagaParticipantModule, SagaCommonModule],

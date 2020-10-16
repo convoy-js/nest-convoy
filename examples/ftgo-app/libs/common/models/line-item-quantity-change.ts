@@ -1,4 +1,4 @@
-import { Money } from '@ftgo-app/libs/common';
+import { Money } from './money';
 
 export class LineItemQuantityChange {
   currentOrderTotal: Money;

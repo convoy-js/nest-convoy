@@ -1,24 +1,29 @@
-import { Column } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm/index';
 
 import { Money } from '@ftgo-app/libs/common';
 
+import { RestaurantMenu } from './restaurant-menu.entity';
+
+@Entity()
 export class MenuItem {
-  @Column()
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column()
   name: string;
 
   @Column(() => Money)
-  money: Money;
+  price: Money;
+
+  @ManyToOne(() => RestaurantMenu, menu => menu.items)
+  menu: RestaurantMenu[];
 
   constructor(values: MenuItem) {
     Object.assign(this, values);
   }
-
-  // constructor(id: string, name: string, money: Money) {
-  //   this.id = id;
-  //   this.name = name;
-  //   this.money = money;
-  // }
 }

@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "entities",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "@npm//typeorm",
+    ],
+    visibility = [
+        "//packages/events/common:__pkg__"
+    ],
+)

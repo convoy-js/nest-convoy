@@ -4,7 +4,7 @@ import { Repository } from 'typeorm/index';
 
 import { CreateRestaurantRequest, RestaurantCreated } from '../api';
 import { Restaurant } from '../entities';
-import { RestaurantDomainEventPublisher } from './restaurant-domain-event-publisher';
+import { RestaurantDomainEventPublisher } from './domain-event-publisher';
 
 @Injectable()
 export class RestaurantService {

@@ -3,11 +3,16 @@ load("//tools:defaults.bzl", "nest_library")
 nest_library(
     name = "aggregate",
     srcs = glob(
-        ["*.ts"],
-        exclude = ["*.spec.ts"],
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
     ),
     module_name = "@nest-convoy/events/aggregate",
     deps = [
+        "@npm//@nestjs/typeorm",
+        "@npm//typeorm",
+        "@npm//@nestjs/core",
+        "@npm//@nestjs/cqrs",
+        "//packages/common",
         "//packages/events/common",
         "//packages/events/publisher",
         "//packages/events/subscriber",

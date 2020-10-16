@@ -1,4 +1,4 @@
-import { RuntimeException } from '@nest-convoy/common';
+import { RuntimeException } from '@nest-convoy/core';
 
 export class UnsupportedStateTransitionException extends RuntimeException {
   constructor(state: string) {

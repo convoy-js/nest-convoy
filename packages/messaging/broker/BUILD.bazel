@@ -13,6 +13,7 @@ nest_library(
         "//packages/core",
         "//packages/messaging",
         "@npm//@nestjs/microservices",
+        "@npm//@nestjs/typeorm",
         "@npm//rxjs",
     ],
 )

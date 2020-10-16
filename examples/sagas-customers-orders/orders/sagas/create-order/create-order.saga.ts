@@ -4,20 +4,20 @@ import { Repository } from 'typeorm';
 import { Saga, NestSaga } from '@nest-convoy/core';
 
 import { ReserveCreditCommand } from '../../../customers/commands';
+import { OrderState, RejectionReason } from '../../common';
+import { CustomerServiceProxy } from '../participants';
+import { CreateOrderSagaData } from './create-order-saga.data';
+import { Order } from '../../entities';
 import {
   CustomerCreditLimitExceeded,
   CustomerNotFound,
 } from '../../../customers/replies';
-import { OrderState, RejectionReason } from '../../common';
-import { CustomerServiceProxy } from '../participants';
-import { Order } from '../../entities';
-import { CreateOrderSagaData } from './create-order-saga.data';
 
 @Saga(CreateOrderSagaData)
 export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
   readonly sagaDefinition = this.step()
-    .invokeLocal(this.create.bind(this))
-    .withCompensation(this.reject.bind(this))
+    .invokeLocal(this.create)
+    .withCompensation(this.reject)
     .step()
     .invokeParticipant(
       this.customerServiceProxy.reserveCredit,
@@ -29,7 +29,7 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
       this.handleCustomerCreditLimitExceeded,
     )
     .step()
-    .invokeLocal(this.approve.bind(this))
+    .invokeLocal(this.approve)
     .build();
 
   constructor(
@@ -55,28 +55,28 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
   }
 
   private createReserveCreditCommand({
-    orderDetails: { customerId, orderTotal },
-    orderId,
+    details: { customerId, orderTotal },
+    id,
   }: CreateOrderSagaData): ReserveCreditCommand {
-    return new ReserveCreditCommand(customerId, orderId!, orderTotal);
+    return new ReserveCreditCommand(customerId, id, orderTotal);
   }
 
   private async create(data: CreateOrderSagaData): Promise<void> {
     const order = await this.orderRepository.save({
-      details: data.orderDetails,
+      details: data.details,
     });
 
-    data.orderId = order.id;
+    data.id = order.id;
   }
 
   private async approve(data: CreateOrderSagaData): Promise<void> {
-    await this.orderRepository.update(data.orderId!, {
+    await this.orderRepository.update(data.id, {
       state: OrderState.APPROVED,
     });
   }
 
   private async reject(data: CreateOrderSagaData): Promise<void> {
-    await this.orderRepository.update(data.orderId!, {
+    await this.orderRepository.update(data.id, {
       state: OrderState.REJECTED,
       rejectionReason: data.rejectionReason,
     });

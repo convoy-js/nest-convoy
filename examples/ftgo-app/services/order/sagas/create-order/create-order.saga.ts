@@ -1,5 +1,6 @@
-import { NestSaga, Saga } from '@nest-convoy/core';
+import { CommandDestination, NestSaga, Saga } from '@nest-convoy/core';
 
+import { RestaurantServiceChannel } from '@ftgo-app/api/restaurant';
 import { AuthorizeCommand } from '@ftgo-app/api/accounting';
 import { ValidateOrderByCustomerCommand } from '@ftgo-app/api/customer';
 import {
@@ -35,7 +36,6 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
     .step()
     .invokeParticipant(this.kitchen.confirmCreate, this.confirmCreateTicket)
     .step()
-    // @ts-ignore
     .invokeParticipant(this.order.approve, this.approveOrder)
     .build();
 
@@ -89,15 +89,15 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
     return new CancelCreateTicketCommand(data.ticketId);
   }
 
-  // @CommandDestination(RestaurantServiceChannel.COMMAND)
+  @CommandDestination(RestaurantServiceChannel.COMMAND)
   private createTicket({
     orderDetails: { restaurantId, lineItems },
     orderId,
   }: CreateOrderSagaData): CreateTicketCommand {
-    // TODO: Refactor this when @CommandDestination is implemented
     return new CreateTicketCommand(
       restaurantId,
       orderId,
+      // @ts-ignore
       new TicketDetails(lineItems),
     );
   }

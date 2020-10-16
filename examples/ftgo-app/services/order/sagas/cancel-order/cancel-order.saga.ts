@@ -52,9 +52,10 @@ export class CancelOrderSaga extends NestSaga<CancelOrderSagaData> {
 
   @CommandDestination(KitchenServiceChannel.COMMAND)
   private beginCancelTicket({
+    orderId,
     orderDetails: { restaurantId },
   }: CancelOrderSagaData): BeginCancelTicketCommand {
-    return new BeginCancelTicketCommand(restaurantId);
+    return new BeginCancelTicketCommand(restaurantId, orderId);
   }
 
   @CommandDestination(KitchenServiceChannel.COMMAND)

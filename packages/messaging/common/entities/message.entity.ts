@@ -7,7 +7,7 @@ import {
   VersionColumn,
 } from 'typeorm';
 
-import { MessageHeaders, MessageRecordHeaders } from '../message';
+import { MessageHeaders, MessageRecordHeaders } from '../types';
 
 @Index('message_published_idx', ['published', 'id'])
 @Entity('message')

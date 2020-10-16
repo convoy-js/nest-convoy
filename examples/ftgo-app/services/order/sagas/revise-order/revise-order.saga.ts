@@ -64,9 +64,13 @@ export class ReviseOrderSaga extends NestSaga<ReviseOrderSagaData> {
   private beginReviseTicket({
     orderId,
     restaurantId,
-    orderRevision,
+    orderRevision: { revisedOrderLineItems },
   }: ReviseOrderSagaData): BeginReviseTicketCommand {
-    return new BeginReviseTicketCommand(restaurantId, orderId, orderRevision);
+    return new BeginReviseTicketCommand(
+      restaurantId,
+      orderId,
+      revisedOrderLineItems,
+    );
   }
 
   @CommandDestination(KitchenServiceChannel.COMMAND)
@@ -94,9 +98,13 @@ export class ReviseOrderSaga extends NestSaga<ReviseOrderSagaData> {
   private confirmTicketRevision({
     orderId,
     restaurantId,
-    orderRevision,
+    orderRevision: { revisedOrderLineItems },
   }: ReviseOrderSagaData): ConfirmReviseTicketCommand {
-    return new ConfirmReviseTicketCommand(restaurantId, orderId, orderRevision);
+    return new ConfirmReviseTicketCommand(
+      restaurantId,
+      orderId,
+      revisedOrderLineItems,
+    );
   }
 
   @CommandDestination(OrderServiceChannel.COMMAND)

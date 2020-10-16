@@ -11,7 +11,7 @@ import {
 } from '@ftgo-app/api/restaurant';
 
 @DomainEventsConsumer(RestaurantServiceChannel.RESTAURANT_EVENT)
-export class OrderEventsConsumer {
+export class RestaurantEventsConsumer {
   @OnEvent(RestaurantCreated)
   async createMenu({
     aggregateId,

@@ -1,9 +1,8 @@
 import { Order } from '../../entities';
 
 export class CreateOrderSagaData {
-  constructor(
-    public orderDetails: Order['details'],
-    public orderId?: Order['id'],
-    public rejectionReason?: Order['rejectionReason'],
-  ) {}
+  id: Order['id'];
+  rejectionReason?: Order['rejectionReason'];
+
+  constructor(readonly details: Order['details']) {}
 }

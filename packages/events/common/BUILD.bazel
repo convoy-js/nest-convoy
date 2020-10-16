@@ -6,5 +6,8 @@ nest_library(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
+    deps = [
+        "//packages/events/common/entities"
+    ],
     module_name = "@nest-convoy/events/common",
 )

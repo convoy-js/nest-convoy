@@ -1,0 +1,20 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "restaurant",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "@npm//@nestjs/microservices",
+        "//packages/core",
+        "//packages/messaging/broker",
+        "//examples/ftgo-app/services/restaurant/api",
+        "//examples/ftgo-app/services/restaurant/entities",
+        "//examples/ftgo-app/services/restaurant/services",
+    ],
+    visibility = [
+        "//visibility:private"
+    ]
+)

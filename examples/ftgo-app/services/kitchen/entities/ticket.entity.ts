@@ -37,7 +37,7 @@ export enum TicketState {
 }
 
 @Entity()
-export class Ticket implements AggregateRoot {
+export class Ticket extends AggregateRoot {
   @PrimaryGeneratedColumn()
   id: number;
 

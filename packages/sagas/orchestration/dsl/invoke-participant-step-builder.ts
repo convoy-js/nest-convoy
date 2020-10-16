@@ -39,35 +39,26 @@ export class InvokeParticipantStepBuilder<Data>
 
   constructor(private readonly parent: NestSagaDefinitionBuilder<Data>) {}
 
-  // private isCommandWithDestinationProvider<C extends Command>(
-  //   fn: any,
-  // ): fn is CommandProvider<Data, C> {
-  //   return Reflect.hasMetadata(COMMAND_WITH_DESTINATION, fn);
-  // }
-
   // Adds support for @CommandDestination()
   private wrapCommandProvider<C extends Command>(args: any[]): void {
     const action = args[0];
-    let destination: string | undefined;
-    // if (this.isCommandWithDestinationProvider<C>(args[0])) {
-    destination = Reflect.getMetadata(COMMAND_WITH_DESTINATION, args[0]);
-    // }
+    let destination: string | undefined = Reflect.getMetadata(
+      COMMAND_WITH_DESTINATION,
+      args[0],
+    );
 
     args[0] = async (data: Data): Promise<CommandWithDestination<C> | C> => {
       const cmd = await action(data);
-      // if (Reflect.hasMetadata(COMMAND_WITH_DESTINATION, cmd.constructor)) {
       if (!destination) {
         destination = Reflect.getMetadata(
           COMMAND_WITH_DESTINATION,
           cmd.constructor,
         );
       }
-      // }
-      if (destination) {
-        return new CommandWithDestination<C>(destination, cmd as never);
-      }
 
-      return cmd;
+      return destination
+        ? new CommandWithDestination<C>(destination, cmd as never)
+        : cmd;
     };
   }
 

@@ -1,7 +1,11 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ClientOptions, MicroserviceOptions } from '@nestjs/microservices';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { ConvoyCoreModule } from '@nest-convoy/core/core.module';
+import {
+  ConvoyCoreModule,
+  ConvoyTypeOrmOptions,
+} from '@nest-convoy/core/core.module';
 import {
   ConvoyMessagingConsumerModule,
   ConvoyMessagingProducerModule,
@@ -13,9 +17,10 @@ import { ConvoyMicroserviceProxy } from './microservice-proxy';
 import { CLIENT_OPTIONS, SERVER_OPTIONS } from './tokens';
 
 export interface ConvoyMessagingBrokerModuleOptions {
-  appName: string;
-  server?: MicroserviceOptions;
-  client?: ClientOptions;
+  serviceName: string;
+  server: MicroserviceOptions;
+  client: ClientOptions;
+  typeOrm?: ConvoyTypeOrmOptions;
 }
 
 @Global()
@@ -25,7 +30,7 @@ export class ConvoyMessagingBrokerModule {
     return {
       module: ConvoyMessagingBrokerModule,
       imports: [
-        ConvoyCoreModule.forRoot(),
+        ConvoyCoreModule.forRoot(options.typeOrm),
         ConvoyMessagingConsumerModule.register({
           useExisting: MicroserviceMessageConsumer,
         }),

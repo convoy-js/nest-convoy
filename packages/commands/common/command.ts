@@ -6,6 +6,4 @@ export interface Command {}
 
 export type CommandType = Type<Command>;
 
-export type CommandProvider<T, C extends Command> = (
-  data: T,
-) => AsyncLikeFn<[T], C>;
+export type CommandProvider<T, C extends Command> = AsyncLikeFn<[T], C>;

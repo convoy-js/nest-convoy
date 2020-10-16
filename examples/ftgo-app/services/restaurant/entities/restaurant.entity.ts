@@ -3,16 +3,10 @@ import { AggregateRoot } from '@nest-convoy/core';
 
 import { Address } from '@ftgo-app/libs/common';
 
-import { MenuItem } from './menu-item.entity';
 import { RestaurantMenu } from './restaurant-menu.entity';
 
-// @Entity()
-// export class Restaurant implements AggregateRoot {
-//   constructor(readonly id: number, readonly menuItems: MenuItem[]) {}
-// }
-
 @Entity()
-export class Restaurant implements AggregateRoot {
+export class Restaurant extends AggregateRoot<Restaurant> {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,13 +19,7 @@ export class Restaurant implements AggregateRoot {
   @Column(() => Address)
   address: Address;
 
-  constructor(values: Restaurant) {
-    Object.assign(this, values);
+  applyEvent<E>(event: E): this {
+    return this;
   }
-
-  // constructor(name: string, address: Address, menu: RestaurantMenu) {
-  //   this.name = name;
-  //   this.address = address;
-  //   this.menu = menu;
-  // }
 }

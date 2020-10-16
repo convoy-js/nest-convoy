@@ -1,4 +1,4 @@
-import { Column } from 'typeorm';
+import { Column } from 'typeorm/index';
 
 export class Money {
   @Column({ default: 0.0, type: 'float' })

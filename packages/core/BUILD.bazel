@@ -15,6 +15,7 @@ nest_library(
         "//packages/messaging",
         "//packages/sagas",
         "//packages/sagas/participant",
+        "@npm//@nestjs/typeorm",
         "@npm//@nestjs/core",
         "@npm//@nestjs/cqrs",
         "@npm//@types/uuid",

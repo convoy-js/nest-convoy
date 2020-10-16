@@ -1,1 +1,1 @@
-export * from './restaurant-domain-event-publisher';
+export * from './services.module';

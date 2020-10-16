@@ -50,11 +50,11 @@ export class InitializerService implements OnModuleInit {
     instance: I,
   ): PropertyType<K>[] {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
-      .filter(propertyKey => Reflect.hasMetadata(token, instance, propertyKey))
-      .map(propertyKey => {
-        const type = Reflect.hasMetadata(token, instance, propertyKey);
+      .filter(property => Reflect.hasMetadata(token, instance, property))
+      .map(property => {
+        const type = Reflect.getMetadata(token, instance, property);
         return {
-          property: propertyKey,
+          property,
           type,
         };
       }) as PropertyType<K>[];

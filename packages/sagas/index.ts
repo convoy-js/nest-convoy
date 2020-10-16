@@ -3,6 +3,7 @@ export {
   Saga,
   CommandEndpointBuilder,
   CommandEndpoint,
+  SagaData,
 } from './orchestration/dsl';
 export {
   DestinationAndResource,

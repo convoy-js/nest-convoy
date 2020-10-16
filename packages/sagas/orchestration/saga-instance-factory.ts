@@ -1,8 +1,6 @@
 import { Injectable, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import { Instance } from '@nest-convoy/common';
-
 import { Saga } from './saga';
 import { SagaManager } from './saga-manager';
 import { SagaManagerFactory } from './saga-manager-factory';
@@ -28,6 +26,7 @@ export class SagaInstanceFactory {
     return sagaManager;
   }
 
+  // TODO: Should resume sagas that are not being handled
   async create<SagaData>(
     sagaType: Type<Saga<SagaData>>,
     data: SagaData,

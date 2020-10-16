@@ -9,7 +9,8 @@ import {
 
 import { PostLock } from './post-lock';
 
-export type SagaCommandHandlerPostLock<C = Command> = (
+export type SagaCommandHandlerPostLock<T, C = Command> = (
+  this: T,
   postLock: PostLock<C>,
 ) => void;
 
@@ -20,8 +21,8 @@ export class SagaCommandHandler extends CommandHandler {
     invoke: CommandMessageHandler,
     readonly options: CommandMessageHandlerOptions = {},
     resource?: string,
-    readonly preLock?: SagaCommandHandlerPreLock,
-    readonly postLock?: SagaCommandHandlerPostLock,
+    readonly preLock?: SagaCommandHandlerPreLock<any>,
+    readonly postLock?: SagaCommandHandlerPostLock<any>,
   ) {
     super(channel, command, invoke, options, resource);
   }

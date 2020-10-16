@@ -24,6 +24,6 @@ export class OrderService {
     const data = new CreateOrderSagaData(details);
     await this.sagaInstanceFactory.create(CreateOrderSaga, data);
 
-    return this.find(data.orderId!);
+    return this.find(data.id!);
   }
 }
