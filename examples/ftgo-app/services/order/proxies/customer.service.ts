@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CommandEndpointBuilder, Success } from '@nest-convoy/core';
-
 import {
   CustomerServiceChannel,
   ValidateOrderByCustomerCommand,
 } from '@ftgo-app/api/customer';
 
+import { CommandEndpoint, Success } from '@nest-convoy/core';
+
 @Injectable()
 export class CustomerServiceProxy {
-  readonly validateOrder = new CommandEndpointBuilder(
+  readonly validateOrder = new CommandEndpoint(
+    CustomerServiceChannel.COMMAND,
     ValidateOrderByCustomerCommand,
-  )
-    .withChannel(CustomerServiceChannel.COMMAND)
-    .withReply(Success)
-    .build();
+    [Success],
+  );
 }

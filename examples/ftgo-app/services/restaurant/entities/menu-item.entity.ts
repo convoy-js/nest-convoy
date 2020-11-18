@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm/index';
-
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Money } from '@ftgo-app/libs/common';
 
 import { RestaurantMenu } from './restaurant-menu.entity';

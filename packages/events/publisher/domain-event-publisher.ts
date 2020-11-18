@@ -1,4 +1,4 @@
-import { Injectable, Type } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { Message } from '@nest-convoy/messaging/common';
 import {
@@ -35,7 +35,7 @@ export class DomainEventPublisher {
   async publish(
     aggregateType: string,
     aggregateId: string | number,
-    domainEvents: DomainEvent[],
+    domainEvents: readonly DomainEvent[],
     headers: Map<string, string> = new Map(),
   ): Promise<void> {
     for (const event of domainEvents) {

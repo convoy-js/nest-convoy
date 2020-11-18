@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CommandEndpointBuilder, Success } from '@nest-convoy/core';
-
 import {
   ApproveOrderCommand,
   BeginCancelOrderCommand,
@@ -9,27 +7,31 @@ import {
   UndoBeginCancelOrderCommand,
 } from '@ftgo-app/api/order';
 
+import { CommandEndpoint, Success } from '@nest-convoy/core';
+
 @Injectable()
 export class OrderServiceProxy {
-  readonly approve = new CommandEndpointBuilder(ApproveOrderCommand)
-    .withChannel(OrderServiceChannel.COMMAND)
-    .withReply(Success)
-    .build();
+  readonly approve = new CommandEndpoint(
+    OrderServiceChannel.COMMAND,
+    ApproveOrderCommand,
+    [Success],
+  );
 
-  readonly reject = new CommandEndpointBuilder(RejectOrderCommand)
-    .withChannel(OrderServiceChannel.COMMAND)
-    .withReply(Success)
-    .build();
+  readonly reject = new CommandEndpoint(
+    OrderServiceChannel.COMMAND,
+    RejectOrderCommand,
+    [Success],
+  );
 
-  readonly beginCancel = new CommandEndpointBuilder(BeginCancelOrderCommand)
-    .withChannel(OrderServiceChannel.COMMAND)
-    .withReply(Success)
-    .build();
+  readonly beginCancel = new CommandEndpoint(
+    OrderServiceChannel.COMMAND,
+    BeginCancelOrderCommand,
+    [Success],
+  );
 
-  readonly undoBeginCancel = new CommandEndpointBuilder(
+  readonly undoBeginCancel = new CommandEndpoint(
+    OrderServiceChannel.COMMAND,
     UndoBeginCancelOrderCommand,
-  )
-    .withChannel(OrderServiceChannel.COMMAND)
-    .withReply(Success)
-    .build();
+    [Success],
+  );
 }

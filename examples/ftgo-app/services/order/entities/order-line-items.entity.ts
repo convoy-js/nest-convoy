@@ -1,4 +1,3 @@
-import { IllegalArgumentException } from '@nest-convoy/common';
 import {
   Entity,
   JoinColumn,
@@ -6,9 +5,10 @@ import {
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-} from 'typeorm/index';
-
+} from 'typeorm';
 import { LineItemQuantityChange, Money } from '@ftgo-app/libs/common';
+
+import { IllegalArgumentException } from '@nest-convoy/common';
 
 import { OrderRevision } from '../api';
 import { OrderDetails } from './order-details.entity';

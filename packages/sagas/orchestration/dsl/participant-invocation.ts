@@ -28,7 +28,7 @@ export class ParticipantInvocation<
   constructor(
     private readonly commandBuilder: CommandProvider<
       Data,
-      CommandWithDestination
+      CommandWithDestination<C>
     >,
     readonly isInvocable?: Predicate<Data>,
   ) {
@@ -54,7 +54,7 @@ export class ParticipantEndpointInvocation<
 
   async createCommandToSend(data: Data): Promise<CommandWithDestination> {
     return new CommandWithDestination(
-      this.commandEndpoint.commandChannel,
+      this.commandEndpoint.channel,
       await this.commandProvider(data),
     );
   }

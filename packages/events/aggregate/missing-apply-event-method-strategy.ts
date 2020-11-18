@@ -1,30 +1,38 @@
+import { Injectable } from '@nestjs/common';
+
 import { AggregateRoot } from './aggregate-root';
 import { MissingApplyMethodException } from './exceptions';
 
-export class DefaultMissingApplyEventMethodStrategy<A extends AggregateRoot>
-  implements MissingApplyEventMethodStrategy<A> {
-  supports<E>(aggregate: A, error: MissingApplyMethodException<E>): boolean {
+export const MISSING_APPLY_EVENT_METHOD_STRATEGY = Symbol(
+  '__missingApplyEventMethodStrategy__',
+);
+
+@Injectable()
+export class DefaultMissingApplyEventMethodStrategy<AR extends AggregateRoot>
+  implements MissingApplyEventMethodStrategy<AR> {
+  supports<E>(aggregate: AR, error: MissingApplyMethodException<E>): boolean {
     return true;
   }
 
-  handle<E>(aggregate: A, error: MissingApplyMethodException<E>): void {
+  handle<E>(aggregate: AR, error: MissingApplyMethodException<E>): void {
     throw error;
   }
 }
 
-export class CompositeMissingApplyEventMethodStrategy<A extends AggregateRoot>
-  implements MissingApplyEventMethodStrategy<A> {
+@Injectable()
+export class CompositeMissingApplyEventMethodStrategy<AR extends AggregateRoot>
+  implements MissingApplyEventMethodStrategy<AR> {
   private readonly defaultStrategy = new DefaultMissingApplyEventMethodStrategy();
 
   constructor(
-    private readonly strategies: MissingApplyEventMethodStrategy<A>[],
+    private readonly strategies: MissingApplyEventMethodStrategy<AR>[] = [],
   ) {}
 
-  supports<E>(aggregate: A, error: MissingApplyMethodException<E>): boolean {
+  supports<E>(aggregate: AR, error: MissingApplyMethodException<E>): boolean {
     return this.strategies.some(s => s.supports(aggregate, error));
   }
 
-  handle<E>(aggregate: A, error: MissingApplyMethodException<E>): void {
+  handle<E>(aggregate: AR, error: MissingApplyMethodException<E>): void {
     const strategy = this.strategies.find(s => s.supports(aggregate, error));
 
     return strategy
@@ -33,7 +41,7 @@ export class CompositeMissingApplyEventMethodStrategy<A extends AggregateRoot>
   }
 }
 
-export interface MissingApplyEventMethodStrategy<A extends AggregateRoot> {
-  supports<E>(aggregate: A, error: MissingApplyMethodException<E>): boolean;
-  handle<E>(aggregate: A, error: MissingApplyMethodException<E>): void;
+export interface MissingApplyEventMethodStrategy<AR extends AggregateRoot> {
+  supports<E>(aggregate: AR, error: MissingApplyMethodException<E>): boolean;
+  handle<E>(aggregate: AR, error: MissingApplyMethodException<E>): void;
 }

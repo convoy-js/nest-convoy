@@ -18,27 +18,16 @@ export class MicroserviceMessageProducer extends MessageProducer {
     isEvent: boolean,
   ): Promise<void> {
     const data = createMicroserviceMessage(message);
+    const produce$ = isEvent
+      ? this.proxy.client!.emit(destination, data)
+      : this.proxy.client!.send(destination, data);
 
-    // return new Promise((complete, error) => {
-    if (isEvent) {
-      this.proxy
-        .client!.emit(destination, data)
-        .pipe(timeout(1000), retry(2))
-        .subscribe(/*{
+    produce$
+      .pipe(timeout(this.proxy.timeout), retry(this.proxy.retries))
+      .subscribe(/*{
             next: value => console.log(value),
             error,
             complete,
           }*/);
-    } else {
-      this.proxy
-        .client!.send(destination, data)
-        .pipe(timeout(1000), retry(2))
-        .subscribe(/*{
-            next: value => console.log(value),
-            error,
-            complete,
-          }*/);
-    }
-    // });
   }
 }

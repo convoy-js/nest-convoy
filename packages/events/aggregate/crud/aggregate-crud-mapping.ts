@@ -1,65 +1,68 @@
 import { Injectable, Type } from '@nestjs/common';
 
-import { Snapshot } from '../snapshot';
+import { Snapshot, SerializedSnapshot, SnapshotManager } from '../snapshot';
 import {
   EventIdTypeAndData,
   EventTypeAndData,
   EventWithMetadata,
-} from '../event-with-metadata';
-
-import { SerializedSnapshot } from './serialized-snapshot';
+} from '../interfaces';
 
 @Injectable()
 export class AggregateCrudMapping {
-  toAggregateCrudFindOptions() {}
-  toAggregateCrudSaveOptions() {}
-  toAggregateCrudUpdateOptions() {}
+  constructor(private readonly snapshotManager: SnapshotManager) {}
 
   toSerializedEventsWithIds(
     serializedEvents: EventTypeAndData<any>[],
-    eventIds: number[],
+    eventIds: string[],
   ): EventIdTypeAndData<any>[] {
-    return serializedEvents.map(
-      (se, idx) => new EventIdTypeAndData(eventIds[idx], se),
-    );
+    return serializedEvents.map((se, idx) => ({
+      eventId: eventIds[idx],
+      ...se,
+    }));
   }
 
   toSerializedSnapshot<S extends Snapshot>(snapshot: S): SerializedSnapshot<S> {
     return new SerializedSnapshot(
-      snapshot.constructor as Type<S>,
+      snapshot.constructor.name,
       JSON.stringify(snapshot),
     );
   }
 
-  toSnapshot<S extends Snapshot>({ type, json }: SerializedSnapshot<S>): S {
-    return Object.assign(new type(), JSON.parse(json));
+  toSnapshot<S extends Snapshot>(ss: SerializedSnapshot<S>): S {
+    const type = this.snapshotManager
+      .getSnapshots()
+      .find(snapshot => snapshot.name === ss.type);
+    if (!type) {
+      throw new Error('Could not find snapshot ' + ss.type);
+    }
+    return Object.assign(new type(), JSON.parse(ss.json));
   }
 
-  toEventTypeAndData<E extends object>(
+  toEventTypeAndData<E extends Record<string, unknown>>(
     event: E,
-    metadata?: string,
+    metadata: Record<string, string> = {},
   ): EventTypeAndData<E> {
-    return new EventTypeAndData(
-      event.constructor as Type<E>,
-      JSON.stringify(event),
-      metadata,
-    );
+    return {
+      eventType: event.constructor as Type<E>,
+      eventData: event,
+      metadata: metadata,
+    };
   }
 
-  toEvent<E>(type: Type<E>, data: string): E {
-    return Object.assign(new type(), JSON.parse(data));
+  toEvent<E>(type: Type<E>, data: Record<string, unknown>): E {
+    return Object.assign(new type(), data);
   }
 
   toEventWithMetadata<E>({
-    id,
+    eventId,
     metadata,
     eventType,
     eventData,
   }: EventIdTypeAndData<E>): EventWithMetadata<E> {
-    return new EventWithMetadata<E>(
-      this.toEvent(eventType, eventData),
-      id,
-      metadata ? JSON.parse(metadata) : {},
-    );
+    return {
+      event: this.toEvent(eventType, eventData),
+      eventId,
+      metadata,
+    };
   }
 }

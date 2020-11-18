@@ -1,7 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm/index';
-import { AggregateRoot } from '@nest-convoy/core';
-
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Address } from '@ftgo-app/libs/common';
+
+import { AggregateRoot } from '@nest-convoy/core';
 
 import { RestaurantMenu } from './restaurant-menu.entity';
 

@@ -1,4 +1,4 @@
-import { Column, PrimaryGeneratedColumn } from 'typeorm/index';
+import { Column, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Delivery } from './delivery.entity';
 

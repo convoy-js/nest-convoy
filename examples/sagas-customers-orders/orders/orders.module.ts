@@ -28,49 +28,32 @@ import { OrdersController } from './orders.controller';
     ConvoySagaTypeOrmModule,
     TypeOrmModule.forFeature([Order]),
     ConvoyMessagingBrokerModule.register({
+      id: 'orders',
       server: {
-        transport: Transport.REDIS,
+        transport: Transport.KAFKA,
         options: {
-          retryAttempts: 2,
-          retryDelay: 100,
-          url: 'redis://localhost:6379',
+          consumer: {
+            groupId: 'orders',
+          },
+          client: {
+            clientId: 'orders-consumer',
+            brokers: ['localhost:9092'],
+          },
         },
       },
       client: {
-        transport: Transport.REDIS,
+        transport: Transport.KAFKA,
         options: {
-          retryAttempts: 2,
-          retryDelay: 100,
-          url: 'redis://localhost:6379',
+          consumer: {
+            groupId: 'orders',
+          },
+          client: {
+            clientId: 'orders-consumer',
+            brokers: ['localhost:9092'],
+          },
         },
       },
     }),
-    // ConvoyMessagingBrokerModule.register(
-    //   {
-    //     transport: Transport.KAFKA,
-    //     options: {
-    //       consumer: {
-    //         groupId: 'orders',
-    //       },
-    //       client: {
-    //         clientId: 'orders-consumer',
-    //         brokers: ['localhost:9092'],
-    //       },
-    //     },
-    //   },
-    //   {
-    //     transport: Transport.KAFKA,
-    //     options: {
-    //       consumer: {
-    //         groupId: 'orders',
-    //       },
-    //       client: {
-    //         clientId: 'orders-consumer',
-    //         brokers: ['localhost:9092'],
-    //       },
-    //     },
-    //   },
-    // ),
     ConvoySagasModule,
   ],
   controllers: [OrdersController],

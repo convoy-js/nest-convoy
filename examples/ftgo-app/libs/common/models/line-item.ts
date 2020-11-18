@@ -1,4 +1,4 @@
-import { Column, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm/index';
+import { Column, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 export class LineItem {
   @PrimaryGeneratedColumn()
@@ -17,3 +17,5 @@ export class LineItem {
     Object.assign(this, values);
   }
 }
+
+export class RevisedOrderLineItem extends LineItem {}

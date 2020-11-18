@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm/index';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 import { MenuItem } from './menu-item.entity';
 

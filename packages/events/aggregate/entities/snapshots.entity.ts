@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm/index';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('snapshots')
 export class SnapshotsEntity {
@@ -14,8 +14,8 @@ export class SnapshotsEntity {
   @Column({ name: 'snapshot_type' })
   snapshotType: string;
 
-  @Column({ name: 'snapshot_json' })
-  snapshotJson: string;
+  @Column({ name: 'snapshot_json', type: 'simple-json' })
+  snapshotJson: Record<string, unknown>;
 
   @Column({
     name: 'triggering_events',

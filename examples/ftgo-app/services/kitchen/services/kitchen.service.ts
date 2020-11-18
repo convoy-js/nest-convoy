@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm/index';
-
+import { Repository } from 'typeorm';
 import { Restaurant, RestaurantMenu } from '@ftgo-app/api/restaurant';
 
 @Injectable()

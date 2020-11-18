@@ -25,13 +25,13 @@ export class CustomerService {
     customerId: Customer['id'],
     orderId: number,
     orderTotal: Money,
-  ): Promise<void> {
+  ): Promise<Customer> {
     const customer = await this.find(customerId);
     if (!customer) {
       throw new CustomerNotFound(customerId);
     }
 
     customer.reserveCredit(orderId, orderTotal);
-    await this.customerRepository.save(customer);
+    return this.customerRepository.save(customer);
   }
 }

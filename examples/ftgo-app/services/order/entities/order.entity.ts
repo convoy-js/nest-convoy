@@ -1,22 +1,12 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm/index';
-
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import {
   LineItemQuantityChange,
   Money,
   UnsupportedStateTransitionException,
 } from '@ftgo-app/libs/common';
 
-import { OrderLineItem } from './order-line-item.entity';
-import { DeliveryInfo } from './delivery-info.entity';
-import { PaymentInfo } from './payment-info.entity';
-import { OrderDetails } from './order-details.entity';
+import { AggregateRoot, ResultWithDomainEvents } from '@nest-convoy/core';
+
 import {
   OrderAuthorized,
   OrderCancelled,
@@ -25,8 +15,11 @@ import {
   OrderRevised,
   OrderRevision,
   OrderRevisionProposed,
-} from '@ftgo-app/api/order';
-import { ResultWithDomainEvents } from '@nest-convoy/events';
+} from '../api';
+import { OrderLineItem } from './order-line-item.entity';
+import { DeliveryInfo } from './delivery-info.entity';
+import { PaymentInfo } from './payment-info.entity';
+import { OrderDetails } from './order-details.entity';
 
 export enum OrderState {
   APPROVAL_PENDING = 'APPROVAL_PENDING',
@@ -38,7 +31,7 @@ export enum OrderState {
 }
 
 @Entity()
-export class Order {
+export class Order extends AggregateRoot<Order> {
   @PrimaryGeneratedColumn()
   id: number;
 

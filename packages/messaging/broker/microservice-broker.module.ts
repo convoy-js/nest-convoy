@@ -17,9 +17,12 @@ import { ConvoyMicroserviceProxy } from './microservice-proxy';
 import { CLIENT_OPTIONS, SERVER_OPTIONS } from './tokens';
 
 export interface ConvoyMessagingBrokerModuleOptions {
-  serviceName: string;
+  id: string;
   server: MicroserviceOptions;
-  client: ClientOptions;
+  client: ClientOptions & {
+    retries?: number;
+    timeout?: number;
+  };
   typeOrm?: ConvoyTypeOrmOptions;
 }
 

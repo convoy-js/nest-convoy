@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CommandEndpointBuilder, Success } from '@nest-convoy/core';
-
 import {
   BeginCancelTicketCommand,
   CancelCreateTicketCommand,
@@ -12,43 +10,43 @@ import {
   UndoBeginCancelTicketCommand,
 } from '@ftgo-app/api/kitchen';
 
+import { CommandEndpoint, Success } from '@nest-convoy/core';
+
 @Injectable()
 export class KitchenServiceProxy {
-  readonly create = new CommandEndpointBuilder(CreateTicketCommand)
-    .withChannel(KitchenServiceChannel.COMMAND)
-    .withReply(CreateTicketReply)
-    .build();
+  readonly create = new CommandEndpoint(
+    KitchenServiceChannel.COMMAND,
+    CreateTicketCommand,
+    [CreateTicketReply],
+  );
 
-  readonly confirmCreate = new CommandEndpointBuilder(
+  readonly confirmCreate = new CommandEndpoint(
+    KitchenServiceChannel.COMMAND,
     ConfirmCreateTicketCommand,
-  )
-    .withChannel(KitchenServiceChannel.COMMAND)
-    .withReply(Success)
-    .build();
+    [Success],
+  );
 
-  readonly cancel = new CommandEndpointBuilder(CancelCreateTicketCommand)
-    .withChannel(KitchenServiceChannel.COMMAND)
-    .withReply(Success)
-    .build();
+  readonly cancel = new CommandEndpoint(
+    KitchenServiceChannel.COMMAND,
+    CancelCreateTicketCommand,
+    [Success],
+  );
 
-  readonly confirmTicketCancel = new CommandEndpointBuilder(
+  readonly confirmTicketCancel = new CommandEndpoint(
+    KitchenServiceChannel.COMMAND,
     ConfirmCancelTicketCommand,
-  )
-    .withChannel(KitchenServiceChannel.COMMAND)
-    .withReply(Success)
-    .build();
+    [Success],
+  );
 
-  readonly undoBeginCancelTicket = new CommandEndpointBuilder(
+  readonly undoBeginCancelTicket = new CommandEndpoint(
+    KitchenServiceChannel.COMMAND,
     UndoBeginCancelTicketCommand,
-  )
-    .withChannel(KitchenServiceChannel.COMMAND)
-    .withReply(Success)
-    .build();
+    [Success],
+  );
 
-  readonly beginCancelTicket = new CommandEndpointBuilder(
+  readonly beginCancelTicket = new CommandEndpoint(
+    KitchenServiceChannel.COMMAND,
     BeginCancelTicketCommand,
-  )
-    .withChannel(KitchenServiceChannel.COMMAND)
-    .withReply(Success)
-    .build();
+    [Success],
+  );
 }

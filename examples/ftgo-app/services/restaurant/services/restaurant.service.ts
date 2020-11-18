@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm/index';
+import { Repository } from 'typeorm';
 
 import { CreateRestaurantRequest, RestaurantCreated } from '../api';
 import { Restaurant } from '../entities';

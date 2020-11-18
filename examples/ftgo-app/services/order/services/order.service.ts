@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm/index';
+import { Repository } from 'typeorm';
+import {
+  LineItemQuantityChange,
+  RevisedOrderLineItem,
+} from '@ftgo-app/libs/common';
+import { ReviseOrderSagaData } from '@ftgo-app/services/order/sagas/revise-order/revise-order-saga.data';
+import { ReviseOrderSaga } from '@ftgo-app/services/order/sagas/revise-order/revise-order.saga';
+
 import { DomainEvent, SagaInstanceFactory } from '@nest-convoy/core';
 
 import { Order } from '../entities';
-import {
-  OrderNotFoundException,
-  OrderRevision,
-  RevisedOrder,
-  RevisedOrderLineItem,
-} from '../api';
+import { OrderNotFoundException, OrderRevision, RevisedOrder } from '../api';
 import { OrderDomainEventPublisher } from './order-domain-event-publisher';
-import { ReviseOrderSagaData } from '@ftgo-app/services/order/sagas/revise-order/revise-order-saga.data';
-import { ReviseOrderSaga } from '@ftgo-app/services/order/sagas/revise-order/revise-order.saga';
-import { LineItemQuantityChange } from '@ftgo-app/libs/common';
 
 type MutateOrder = (order: Order) => DomainEvent[];
 

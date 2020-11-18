@@ -26,49 +26,32 @@ import { CustomersController } from './customers.controller';
     ConvoySagaTypeOrmModule,
     TypeOrmModule.forFeature([CreditReservation, Customer]),
     ConvoyMessagingBrokerModule.register({
+      id: 'customers',
       server: {
-        transport: Transport.REDIS,
+        transport: Transport.KAFKA,
         options: {
-          retryAttempts: 2,
-          retryDelay: 100,
-          url: 'redis://localhost:6379',
+          consumer: {
+            groupId: 'customers',
+          },
+          client: {
+            clientId: 'customers-consumer',
+            brokers: ['localhost:9092'],
+          },
         },
       },
       client: {
-        transport: Transport.REDIS,
+        transport: Transport.KAFKA,
         options: {
-          retryAttempts: 2,
-          retryDelay: 100,
-          url: 'redis://localhost:6379',
+          consumer: {
+            groupId: 'customers',
+          },
+          client: {
+            clientId: 'customers-consumer',
+            brokers: ['localhost:9092'],
+          },
         },
       },
     }),
-    // ConvoyMessagingBrokerModule.register(
-    //   {
-    //     transport: Transport.KAFKA,
-    //     options: {
-    //       consumer: {
-    //         groupId: 'customers',
-    //       },
-    //       client: {
-    //         clientId: 'customers-consumer',
-    //         brokers: ['localhost:9092'],
-    //       },
-    //     },
-    //   },
-    //   {
-    //     transport: Transport.KAFKA,
-    //     options: {
-    //       consumer: {
-    //         groupId: 'customers',
-    //       },
-    //       client: {
-    //         clientId: 'customers-consumer',
-    //         brokers: ['localhost:9092'],
-    //       },
-    //     },
-    //   },
-    // ),
     ConvoySagasModule,
   ],
   controllers: [CustomersController],

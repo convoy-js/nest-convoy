@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { Transport } from '@nestjs/microservices';
+
 import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
 
 import { RestaurantServicesModule } from './services';
@@ -8,7 +9,7 @@ import { RestaurantServiceChannel } from './api';
 @Module({
   imports: [
     ConvoyMessagingBrokerModule.register({
-      serviceName: RestaurantServiceChannel.NAME,
+      id: RestaurantServiceChannel.NAME,
       server: {
         transport: Transport.REDIS,
         options: {

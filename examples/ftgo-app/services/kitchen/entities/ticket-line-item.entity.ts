@@ -1,5 +1,4 @@
-import { Entity, ManyToOne } from 'typeorm/index';
-
+import { Entity, ManyToOne } from 'typeorm';
 import { LineItem } from '@ftgo-app/libs/common';
 
 import { Ticket } from './ticket.entity';

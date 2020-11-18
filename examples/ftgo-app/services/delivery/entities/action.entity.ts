@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity } from 'typeorm/index';
+import { Column, CreateDateColumn, Entity } from 'typeorm';
 
 import { Delivery } from './delivery.entity';
 

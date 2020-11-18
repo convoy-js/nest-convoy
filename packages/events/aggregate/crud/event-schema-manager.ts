@@ -1,13 +1,18 @@
-import { Type } from '@nestjs/common';
+import { Injectable, Type } from '@nestjs/common';
+
 import { RuntimeException } from '@nest-convoy/common';
 
-import { AggregateRoot } from './aggregate-root';
-import { EventIdTypeAndData, EventTypeAndData } from './event-with-metadata';
-import { SerializedEvent } from './serialized-event';
-import { AggregateSchema } from './aggregate-schema';
+import { AggregateRoot } from '../aggregate-root';
+import { EventIdTypeAndData } from '../interfaces';
+import { SerializedEvent } from '../serialized-event';
+import { AggregateSchema } from '../aggregate-schema';
+
+export const EVENT_SCHEMA_MANAGER = Symbol('__eventSchemaManager__');
 
 export interface EventSchemaManager {
-  currentSchemaMetadata<A>(aggregateType: Type<A>): Record<string, string>;
+  currentSchemaMetadata<A>(
+    aggregateType: Type<A>,
+  ): Record<string, string> | undefined;
   upcastEvents<A, E>(
     aggregateType: Type<A>,
     events: EventIdTypeAndData<E>[],
@@ -15,6 +20,7 @@ export interface EventSchemaManager {
   upcastEvent<E>(serializedEvent: SerializedEvent<E>): SerializedEvent<E>;
 }
 
+@Injectable()
 export class DefaultEventSchemaManager implements EventSchemaManager {
   static EVENT_SCHEMA_VERSION = 'convoy_schema_version';
 
@@ -23,7 +29,7 @@ export class DefaultEventSchemaManager implements EventSchemaManager {
     AggregateSchema<any>
   >();
 
-  add<A extends AggregateRoot>(aggregateSchema: AggregateSchema<A>): void {
+  add<AR extends AggregateRoot>(aggregateSchema: AggregateSchema<AR>): void {
     if (this.aggregateSchemaVersions.has(aggregateSchema.aggregateType)) {
       throw new RuntimeException(
         'Already defined: ' + aggregateSchema.aggregateType.name,
@@ -41,18 +47,22 @@ export class DefaultEventSchemaManager implements EventSchemaManager {
     return schema?.currentVersion;
   }
 
-  currentSchemaMetadata<A>(aggregateType: Type<A>): Record<string, string> {
+  currentSchemaMetadata<A>(
+    aggregateType: Type<A>,
+  ): Record<string, string> | undefined {
     const version = this.currentVersion(aggregateType);
     return version
       ? { [DefaultEventSchemaManager.EVENT_SCHEMA_VERSION]: version }
-      : {};
+      : undefined;
   }
 
   upcastEvent<E>(se: SerializedEvent<E>): SerializedEvent<E> {
-    const original = new EventIdTypeAndData(
-      se.id,
-      new EventTypeAndData(se.eventType, se.eventData, se.metadata),
-    );
+    const original: EventIdTypeAndData<E> = {
+      eventId: se.id,
+      eventType: se.eventType,
+      eventData: se.eventData,
+      metadata: se.metadata,
+    };
     const upcasted = this.upcastEvents(se.entityType, [original])[0];
 
     return new SerializedEvent(

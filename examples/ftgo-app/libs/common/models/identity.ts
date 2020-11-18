@@ -1,4 +1,4 @@
-import { Column } from 'typeorm/index';
+import { Column } from 'typeorm';
 
 export class Identity {
   @Column()

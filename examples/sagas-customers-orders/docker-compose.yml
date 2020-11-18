@@ -1,23 +1,5 @@
 version: '3'
 services:
-  postgres:
-    image: debezium/postgres:12-alpine
-    ports:
-      - 5432:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      PGPASSWORD: postgres
-
-  redis:
-    image: bitnami/redis:5.0
-    restart: always
-    ports:
-      - 6379:6379
-    volumes:
-      - redis_data:/bitnami/redis/data
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
 
 volumes:
   redis_data: {}

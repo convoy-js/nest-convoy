@@ -1,10 +1,13 @@
-import { Injectable, OnModuleInit, Type } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit, Type } from '@nestjs/common';
 import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
 import { ModuleRef, ModulesContainer } from '@nestjs/core';
 
 import { AggregateRoot } from '../aggregate-root';
-import { EventWithMetadata } from '../event-with-metadata';
-import { MissingApplyEventMethodStrategy } from '../missing-apply-event-method-strategy';
+import { EventWithMetadata } from '../interfaces';
+import {
+  MISSING_APPLY_EVENT_METHOD_STRATEGY,
+  MissingApplyEventMethodStrategy,
+} from '../missing-apply-event-method-strategy';
 import {
   Snapshot,
   NestSnapshotStrategy,
@@ -13,41 +16,54 @@ import {
 
 @Injectable()
 export class SnapshotManager implements OnModuleInit {
-  private strategies: WeakMap<
-    Type<AggregateRoot>,
-    NestSnapshotStrategy<any, any>
+  private store: Map<
+    string,
+    { snapshot: Type<Snapshot>; strategy: NestSnapshotStrategy<any, any> }
   >;
 
   constructor(
     private readonly moduleRef: ModuleRef,
     private readonly explorer: ExplorerService,
     private readonly modulesContainer: ModulesContainer,
+    @Inject(MISSING_APPLY_EVENT_METHOD_STRATEGY)
+    private readonly missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<
+      any
+    >,
   ) {}
 
-  addStrategy(snapshot: NestSnapshotStrategy<any, any>): void {
-    this.strategies.set(snapshot.aggregateType, snapshot);
+  // addStrategy(snapshot: NestSnapshotStrategy<any, any>): void {
+  //   this.strategies.set(snapshot.aggregateType, snapshot);
+  // }
+
+  getSnapshots(): Type<Snapshot>[] {
+    return [...this.store.values()].map(({ snapshot }) => snapshot);
   }
 
-  possiblySnapshot<A extends AggregateRoot, S extends Snapshot>(
-    aggregate: A,
-    oldEvents: EventWithMetadata<any>[],
-    newEvents: any[],
-    version?: number,
+  possiblySnapshot<AR extends AggregateRoot, S extends Snapshot>(
+    aggregate: AR,
+    oldEvents: readonly EventWithMetadata<any>[],
+    newEvents: readonly any[],
+    version?: string,
   ): S | undefined {
-    const strategy = this.strategies.get(aggregate.constructor as Type<A>);
-    return strategy?.possibleSnapshot(aggregate, oldEvents, newEvents, version);
+    const data = this.store.get(aggregate.constructor.name);
+    return data?.strategy.possibleSnapshot(
+      aggregate,
+      oldEvents,
+      newEvents,
+      version,
+    );
   }
 
-  recreateFromSnapshot<A extends AggregateRoot, S extends Snapshot>(
-    aggregateType: Type<A>,
+  async recreateFromSnapshot<AR extends AggregateRoot, S extends Snapshot>(
+    aggregateType: Type<AR>,
     snapshot: S,
-    missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<A>,
-  ): A | undefined {
-    const strategy = this.strategies.get(aggregateType);
-    return strategy?.recreateAggregate(
+    // missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<AR>,
+  ): Promise<AR | undefined> {
+    const data = this.store.get(aggregateType.name);
+    return data?.strategy.recreateAggregate(
       aggregateType,
       snapshot,
-      missingApplyEventMethodStrategy,
+      this.missingApplyEventMethodStrategy,
     );
   }
 
@@ -57,18 +73,28 @@ export class SnapshotManager implements OnModuleInit {
       .flatMap<NestSnapshotStrategy<any, any>>(modules, instance =>
         this.explorer.filterProvider(instance, SNAPSHOT_STRATEGY_METADATA),
       )
-      .map<[Type<AggregateRoot>, NestSnapshotStrategy<any, any>]>(
-        snapshotStrategy => [
-          Reflect.getMetadata(
-            SNAPSHOT_STRATEGY_METADATA,
-            snapshotStrategy,
-          ) as Type<AggregateRoot>,
-          this.moduleRef.get<NestSnapshotStrategy<any, any>>(snapshotStrategy, {
+      .map<
+        [
+          string,
+          {
+            snapshot: Type<Snapshot>;
+            strategy: NestSnapshotStrategy<any, any>;
+          },
+        ]
+      >(snapshotStrategy => {
+        const { aggregate, snapshot } = Reflect.getMetadata(
+          SNAPSHOT_STRATEGY_METADATA,
+          snapshotStrategy,
+        );
+        const strategy = this.moduleRef.get<NestSnapshotStrategy<any, any>>(
+          snapshotStrategy,
+          {
             strict: false,
-          }),
-        ],
-      );
+          },
+        );
+        return [aggregate.name, { snapshot, strategy }];
+      });
 
-    this.strategies = new WeakMap(snapshotStrategies);
+    this.store = new Map(snapshotStrategies);
   }
 }

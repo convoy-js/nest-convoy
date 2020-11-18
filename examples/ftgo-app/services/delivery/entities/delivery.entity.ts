@@ -4,8 +4,7 @@ import {
   Entity,
   PrimaryColumn,
   PrimaryGeneratedColumn,
-} from 'typeorm/index';
-
+} from 'typeorm';
 import { Address } from '@ftgo-app/libs/common';
 
 import { Courier } from './courier.entity';

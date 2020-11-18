@@ -1,5 +1,4 @@
 import { Command, CommandProvider } from '@nest-convoy/commands/common';
-import { CommandWithDestination } from '@nest-convoy/commands/consumer';
 import { Consumer, Predicate } from '@nest-convoy/common';
 
 import { SagaDefinition } from '../saga-definition';
@@ -7,7 +6,11 @@ import { NestSagaDefinitionBuilder } from './nest-saga-definition-builder';
 import { InvokeParticipantStepBuilder } from './invoke-participant-step-builder';
 import { CommandEndpoint } from './command-endpoint';
 import { LocalStepBuilder } from './local-step-builder';
-import { Compensation, WithCompensationBuilder } from './with-builder';
+import {
+  Compensation,
+  WithArgs,
+  WithCompensationBuilder,
+} from './with-builder';
 
 export interface BaseStepBuilder<Data> {
   step(): StepBuilder<Data>;
@@ -22,7 +25,7 @@ export class StepBuilder<Data> implements WithCompensationBuilder<Data> {
   }
 
   invokeParticipant<C extends Command>(
-    action: CommandProvider<Data, CommandWithDestination<C>> | C,
+    action: CommandProvider<Data, C>,
     participantInvocationPredicate?: Predicate<Data>,
   ): InvokeParticipantStepBuilder<Data>;
   invokeParticipant<C extends Command>(
@@ -30,43 +33,37 @@ export class StepBuilder<Data> implements WithCompensationBuilder<Data> {
     commandProvider: CommandProvider<Data, C>,
     participantInvocationPredicate?: Predicate<Data>,
   ): InvokeParticipantStepBuilder<Data>;
-  invokeParticipant(
-    actionOrCommandEndpoint: any,
-    commandProviderOrPredicate: any,
-    invocationPredicate?: any,
+  invokeParticipant<C extends Command>(
+    ...args: WithArgs<Data, C>
   ): InvokeParticipantStepBuilder<Data> {
     return new InvokeParticipantStepBuilder<Data>(this.parent).withAction(
-      actionOrCommandEndpoint,
-      commandProviderOrPredicate,
-      invocationPredicate,
+      ...args,
     );
   }
 
-  withCompensation(
-    compensation: Compensation<Data, CommandWithDestination>,
+  withCompensation<C extends Command>(
+    compensation: Compensation<Data, C>,
   ): InvokeParticipantStepBuilder<Data>;
-  withCompensation(
+  withCompensation<C extends Command>(
+    compensation: Compensation<Data, C>,
     compensationPredicate: Predicate<Data>,
-    compensation: Compensation<Data, CommandWithDestination>,
   ): InvokeParticipantStepBuilder<Data>;
   withCompensation<C extends Command>(
     commandEndpoint: CommandEndpoint<C>,
     commandProvider: Compensation<Data, C>,
   ): InvokeParticipantStepBuilder<Data>;
   withCompensation<C extends Command>(
-    compensationPredicate: Predicate<Data>,
     commandEndpoint: CommandEndpoint<C>,
     commandProvider: Compensation<Data, C>,
+    compensationPredicate: Predicate<Data>,
   ): InvokeParticipantStepBuilder<Data>;
-  withCompensation(
-    compensationPredicate: any,
-    compensation?: any,
-    commandProvider?: any,
+  withCompensation<C extends Command>(
+    ...args: WithArgs<Data, C>
   ): InvokeParticipantStepBuilder<Data> {
     return new InvokeParticipantStepBuilder<Data>(this.parent).withCompensation(
-      compensationPredicate,
-      compensation,
-      commandProvider,
+      // TODO: No clue why this cannot compile, but "invokeParticipant" can
+      // @ts-ignore
+      ...args,
     );
   }
 }

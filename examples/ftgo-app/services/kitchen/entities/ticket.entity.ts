@@ -1,4 +1,3 @@
-import { IllegalArgumentException, AggregateRoot } from '@nest-convoy/core';
 import {
   Column,
   CreateDateColumn,
@@ -7,10 +6,13 @@ import {
   OneToMany,
   PrimaryColumn,
   PrimaryGeneratedColumn,
-} from 'typeorm/index';
+} from 'typeorm';
+import {
+  RevisedOrderLineItem,
+  UnsupportedStateTransitionException,
+} from '@ftgo-app/libs/common';
 
-import { UnsupportedStateTransitionException } from '@ftgo-app/libs/common';
-import { RevisedOrderLineItem } from '@ftgo-app/api/order';
+import { IllegalArgumentException, AggregateRoot } from '@nest-convoy/core';
 
 import {
   TicketDetails,

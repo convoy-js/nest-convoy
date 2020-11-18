@@ -1,14 +1,14 @@
 import { Type } from '@nestjs/common';
 
+import { AggregateRoot } from './aggregate-root';
+import { EventIdTypeAndData } from './interfaces';
+import { DefaultEventSchemaManager } from './crud/event-schema-manager';
 import {
   AggregateSchemaVersion,
   EventUpcaster,
 } from './aggregate-schema-version';
-import { AggregateRoot } from './aggregate-root';
-import { EventIdTypeAndData, EventTypeAndData } from './event-with-metadata';
-import { DefaultEventSchemaManager } from './event-schema-manager';
 
-class NewEventNameAndUpcasters<E> {
+export class NewEventNameAndUpcasters<E> {
   constructor(
     readonly upcasters: EventUpcaster[],
     readonly eventType?: Type<E>,
@@ -53,19 +53,18 @@ export class AggregateSchema<A extends AggregateRoot> {
 
     if (newEventTypeAndUpcasters.isEmpty()) return event;
 
-    const json = newEventTypeAndUpcasters.upcasters.reduce(
+    const eventData = newEventTypeAndUpcasters.upcasters.reduce(
       (json, upcaster) => upcaster.upcast(json),
-      JSON.parse(event.eventData),
+      event.eventData,
     );
+    const metadata = this.withNewVersion(this.currentVersion, event.metadata);
 
-    return new EventIdTypeAndData(
-      event.id,
-      new EventTypeAndData(
-        newEventTypeAndUpcasters.eventType || originalEventType,
-        JSON.stringify(json),
-        this.withNewVersion(this.currentVersion, event.metadata),
-      ),
-    );
+    return {
+      ...event,
+      eventType: newEventTypeAndUpcasters.eventType || originalEventType,
+      metadata,
+      eventData,
+    };
   }
 
   private findUpcasters<E>(
@@ -73,8 +72,7 @@ export class AggregateSchema<A extends AggregateRoot> {
     fromVersion: string,
     toVersion: string,
   ): NewEventNameAndUpcasters<E> {
-    let originalEventType = eventType;
-
+    const originalEventType = eventType;
     const upcasters: EventUpcaster[] = [];
 
     for (let versionIdx = 0; versionIdx < this.versions.length; versionIdx++) {
@@ -93,16 +91,14 @@ export class AggregateSchema<A extends AggregateRoot> {
 
   private withNewVersion(
     currentVersion: string,
-    metadata?: string,
-  ): string | undefined {
-    const md = metadata ? JSON.parse(metadata) : {};
-    md[DefaultEventSchemaManager.EVENT_SCHEMA_VERSION] = currentVersion;
-    return JSON.stringify(md);
+    metadata: Record<string, string>,
+  ): Record<string, string> {
+    metadata[DefaultEventSchemaManager.EVENT_SCHEMA_VERSION] = currentVersion;
+    return metadata;
   }
 
   private eventVersion<E>(event: EventIdTypeAndData<E>): string {
-    const md = event.metadata ? JSON.parse(event.metadata) : {};
-    return md[DefaultEventSchemaManager.EVENT_SCHEMA_VERSION];
+    return event.metadata[DefaultEventSchemaManager.EVENT_SCHEMA_VERSION];
   }
 
   private needsUpcast(latestVersion: string, actualVersion: string): boolean {

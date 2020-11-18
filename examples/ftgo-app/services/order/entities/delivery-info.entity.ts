@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn } from 'typeorm/index';
+import { Column, CreateDateColumn } from 'typeorm';
 import { Address } from '@ftgo-app/libs/common';
 
 export class DeliveryInfo {

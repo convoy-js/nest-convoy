@@ -62,10 +62,7 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
   }
 
   private async create(data: CreateOrderSagaData): Promise<void> {
-    const order = await this.orderRepository.save({
-      details: data.details,
-    });
-
+    const order = await this.orderRepository.save(data);
     data.id = order.id;
   }
 

@@ -10,6 +10,6 @@ nest_library(
         "@npm//typeorm",
     ],
     visibility = [
-        "//packages/events/common:__pkg__"
+        "//packages/events/aggregate:__pkg__"
     ],
 )

@@ -1,17 +1,18 @@
 import { Type } from '@nestjs/common';
 
 import { Message } from '@nest-convoy/messaging/common';
+import { AsyncLikeFn } from '@nest-convoy/common';
 
 import { StepOutcome } from './step-outcome';
 
 // T should be a registered Event?
-export type SagaStepReplyHandler<Data, R = unknown> = (
-  data: Data,
-  reply: R,
-) => void;
+export type SagaStepReplyHandler<Data, R = unknown> = AsyncLikeFn<
+  [data: Data, reply: R],
+  void
+>;
 
 export interface SagaStepReply<Data, R = unknown> {
-  type: Type<any>;
+  type: Type<R>;
   handler: SagaStepReplyHandler<Data, R>;
 }
 

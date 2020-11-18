@@ -1,9 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm/index';
-
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Identity, Money } from '@ftgo-app/libs/common';
 
+import { AggregateRoot } from '@nest-convoy/core';
+
 @Entity()
-export class Customer {
+export class Customer extends AggregateRoot<Customer> {
   @PrimaryGeneratedColumn()
   id: number;
 

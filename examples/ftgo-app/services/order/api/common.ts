@@ -1,4 +1,7 @@
-import { LineItem, LineItemQuantityChange } from '@ftgo-app/libs/common';
+import {
+  RevisedOrderLineItem,
+  LineItemQuantityChange,
+} from '@ftgo-app/libs/common';
 
 import { DeliveryInfo, Order } from '../entities';
 
@@ -8,8 +11,6 @@ export class OrderRevision {
     readonly deliveryInfo?: DeliveryInfo,
   ) {}
 }
-
-export class RevisedOrderLineItem extends LineItem {}
 
 export class RevisedOrder {
   constructor(readonly order: Order, readonly change: LineItemQuantityChange) {}

@@ -1,7 +1,7 @@
 import {
   CommandMessage,
-  ICommandHandler,
-  SagaCommandHandler,
+  OnMessage,
+  SagaCommandHandlers,
 } from '@nest-convoy/core';
 
 import { Channel } from '../../common';
@@ -9,20 +9,20 @@ import { CustomerCreditReserved } from '../replies';
 import { CustomerService } from '../customer.service';
 import { ReserveCreditCommand } from './reserve-credit.command';
 
-@SagaCommandHandler(ReserveCreditCommand, Channel.CUSTOMER)
-export class ReserveCreditCommandHandler
-  implements ICommandHandler<ReserveCreditCommand> {
+@SagaCommandHandlers(Channel.CUSTOMER)
+export class ReserveCreditCommandHandler {
   constructor(private readonly customer: CustomerService) {}
 
-  async execute({
-    command,
+  @OnMessage(ReserveCreditCommand)
+  async reserveCredit({
+    command: { customerId, orderId, orderTotal },
   }: CommandMessage<ReserveCreditCommand>): Promise<CustomerCreditReserved> {
-    await this.customer.reserveCredit(
-      command.customerId,
-      command.orderId,
-      command.orderTotal,
+    const { creditReservations } = await this.customer.reserveCredit(
+      customerId,
+      orderId,
+      orderTotal,
     );
 
-    return new CustomerCreditReserved();
+    return new CustomerCreditReserved(creditReservations);
   }
 }

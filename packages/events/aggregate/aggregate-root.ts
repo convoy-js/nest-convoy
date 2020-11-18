@@ -1,12 +1,11 @@
-import { AggregateRoot as AR } from '@nestjs/cqrs';
-
-export abstract class AggregateRoot<T> extends AR {
+export abstract class AggregateRoot<T = Record<string, unknown>> {
   abstract id: string | number;
 
-  constructor(values: Partial<T>) {
-    super();
+  constructor(values: Partial<T> = {}) {
     Object.assign(this, values);
   }
 
-  abstract applyEvent<E>(event: E): this;
+  applyEvent<E>(event: E): Promise<this> | this {
+    return this;
+  }
 }

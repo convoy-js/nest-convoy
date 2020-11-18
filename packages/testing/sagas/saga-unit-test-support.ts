@@ -2,9 +2,9 @@ import { forwardRef, Inject, Injectable, Module } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { ModuleRef } from '@nestjs/core';
 
-import { Instance } from '@nest-convoy/common';
+import { Instance, Reply } from '@nest-convoy/common';
 import { SagaManager, NestSaga } from '@nest-convoy/sagas';
-import { SagaReplyHeaders } from '@nest-convoy/sagas/common';
+import { SagaLockManager, SagaReplyHeaders } from '@nest-convoy/sagas/common';
 import {
   SagaCommandProducer,
   SagaInstance,
@@ -90,11 +90,11 @@ export class SagaExpectCommandTest<Data> {
     await this.sagaManager.handleMessage(message);
   }
 
-  async successReply<T>(reply?: T): Promise<void> {
+  async successReply<R extends Reply>(reply?: R): Promise<void> {
     await this.sendReply(reply ?? new Success(), CommandReplyOutcome.SUCCESS);
   }
 
-  async failureReply<T>(reply?: T): Promise<void> {
+  async failureReply<R extends Reply>(reply?: R): Promise<void> {
     await this.sendReply(reply ?? new Failure(), CommandReplyOutcome.FAILURE);
   }
 
@@ -148,7 +148,6 @@ export class SagaUnitTestSupport<Data> {
   private readonly expectations: SagaExpectationTest[][] = [];
   private sagaManager: SagaManager<Data>;
   private createException?: Error;
-  private counter = 2;
   public readonly sentCommands: MessageWithDestination[] = [];
   public sagaInstance: SagaInstance;
 
@@ -190,10 +189,6 @@ export class SagaUnitTestSupport<Data> {
     }
   }
 
-  genId(): string {
-    return String(this.counter++);
-  }
-
   expect(): SagaExpectCommandTest<Data> {
     if (this.createException) {
       throw this.createException;
@@ -211,15 +206,16 @@ export class SagaUnitTestSupport<Data> {
   }
 
   async create(saga: NestSaga<Data>, sagaData: Data): Promise<this> {
+    class TestSagaLockManager extends SagaLockManager {
+      claimLock = jest.fn().mockReturnValue(true);
+    }
+
     this.sagaManager = new SagaManager(
       saga,
       this.sagaInstanceRepository,
       this.commandProducer,
       this.messageConsumer,
-      // @ts-ignore
-      {
-        claimLock: jest.fn().mockReturnValue(true),
-      },
+      new TestSagaLockManager(),
       this.sagaCommandProducer,
     );
     try {
@@ -242,8 +238,15 @@ export class SagaUnitTestSupport<Data> {
     this.runExpectations();
     this.assertNoCommands();
 
-    expect(this.sagaInstance.endState).toBeTruthy();
-    expect(this.sagaInstance.compensating).toBeTruthy();
+    // expect(this.sagaInstance.endState).toBeTruthy();
+    if (!this.sagaInstance.endState) {
+      fail('Expected ' + this.sagaInstance.sagaType + ' to have end state');
+    }
+
+    // expect(this.sagaInstance.compensating).toBeTruthy();
+    if (!this.sagaInstance.compensating) {
+      fail('Expected ' + this.sagaInstance.sagaType + ' to be compensating');
+    }
   }
 
   expectException(expectedException: Error): this {
@@ -260,8 +263,7 @@ export class TestMessageProducer {
   ) {}
 
   async send(destination: string, message: Message): Promise<void> {
-    const id = this.sagaUnitTestSupport.genId();
-    message.setHeader(Message.ID, id);
+    message.setHeader(Message.ID, uuidv4());
     this.sagaUnitTestSupport.sentCommands.push(
       new MessageWithDestination(destination, message),
     );

@@ -1,7 +1,7 @@
-import { CommandDestination } from '@nest-convoy/core';
-
-import { RevisedOrderLineItem } from '@ftgo-app/api/order';
+import { RevisedOrderLineItem } from '@ftgo-app/libs/common';
 import { RestaurantServiceChannel } from '@ftgo-app/api/restaurant';
+
+import { CommandDestination } from '@nest-convoy/core';
 
 import { TicketDetails } from './common';
 

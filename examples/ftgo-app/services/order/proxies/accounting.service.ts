@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CommandEndpointBuilder, Success } from '@nest-convoy/core';
+import {
+  AccountingServiceChannel,
+  AuthorizeCommand,
+} from '@ftgo-app/api/accounting';
 
-import { AuthorizeCommand } from '@ftgo-app/api/accounting';
+import { CommandEndpoint, Success } from '@nest-convoy/core';
 
 @Injectable()
 export class AccountingServiceProxy {
-  readonly authorize = new CommandEndpointBuilder(AuthorizeCommand)
-    .withChannel(AuthorizeCommand)
-    .withReply(Success)
-    .build();
+  readonly authorize = new CommandEndpoint(
+    AccountingServiceChannel.COMMAND,
+    AuthorizeCommand,
+    [Success],
+  );
 }

@@ -4,7 +4,10 @@ import { Column, PrimaryColumn, Index, Entity, VersionColumn } from 'typeorm';
 @Index('events_published_idx', ['published', 'eventId'])
 @Index('entities_idx', ['entityType', 'entityId'])
 @Entity('events')
-export class EventsEntity<Data, Metadata = unknown> {
+export class EventsEntity<
+  Data extends Record<string, unknown> = {},
+  Metadata extends Record<string, unknown> = {}
+> {
   @PrimaryColumn('event_id')
   eventId: string;
 
@@ -26,8 +29,8 @@ export class EventsEntity<Data, Metadata = unknown> {
   @Column({ name: 'triggering_event', nullable: true })
   triggeringEvent?: string;
 
-  @Column({ type: 'simple-json', nullable: true })
-  metadata?: Metadata;
+  @Column({ type: 'simple-json', nullable: true, default: {} })
+  metadata: Metadata;
 
   @Column()
   published: boolean;

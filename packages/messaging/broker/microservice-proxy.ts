@@ -2,6 +2,7 @@ import { ServerFactory } from '@nestjs/microservices/server/server-factory';
 import { ClientProxy } from '@nestjs/microservices/client/client-proxy';
 import { Closeable } from '@nestjs/microservices/interfaces/closeable.interface';
 import { CustomTransportStrategy } from '@nestjs/microservices/interfaces';
+import { ClientProxyFactory, Server } from '@nestjs/microservices';
 import {
   Inject,
   Injectable,
@@ -9,14 +10,9 @@ import {
   OnApplicationShutdown,
   OnModuleInit,
 } from '@nestjs/common';
-import {
-  ClientOptions,
-  ClientProxyFactory,
-  MicroserviceOptions,
-  Server,
-} from '@nestjs/microservices';
 
 import { CLIENT_OPTIONS, SERVER_OPTIONS } from './tokens';
+import { ConvoyMessagingBrokerModuleOptions } from './microservice-broker.module';
 
 @Injectable()
 export class ConvoyMicroserviceProxy
@@ -24,18 +20,18 @@ export class ConvoyMicroserviceProxy
   readonly logger = new Logger(this.constructor.name, true);
   readonly server?: Server & CustomTransportStrategy;
   readonly client?: ClientProxy & Closeable;
-  // readonly server: Server & CustomTransportStrategy = ServerFactory.create(
-  //   this.serverOptions,
-  // );
-  // readonly client: ClientProxy & Closeable = ClientProxyFactory.create(
-  //   this.clientOptions,
-  // );
+  readonly retries: number;
+  readonly timeout: number;
 
   constructor(
     @Inject(SERVER_OPTIONS)
-    private readonly serverOptions: MicroserviceOptions | undefined,
+    private readonly serverOptions:
+      | ConvoyMessagingBrokerModuleOptions['server']
+      | undefined,
     @Inject(CLIENT_OPTIONS)
-    private readonly clientOptions: ClientOptions | undefined,
+    private readonly clientOptions:
+      | ConvoyMessagingBrokerModuleOptions['client']
+      | undefined,
   ) {
     if (serverOptions) {
       this.server = ServerFactory.create(serverOptions);
@@ -44,6 +40,9 @@ export class ConvoyMicroserviceProxy
     if (clientOptions) {
       this.client = ClientProxyFactory.create(clientOptions);
     }
+
+    this.retries = clientOptions?.retries || 2;
+    this.timeout = clientOptions?.timeout || 1000;
   }
 
   async onModuleInit(): Promise<void> {

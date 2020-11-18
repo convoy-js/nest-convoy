@@ -1,16 +1,16 @@
 import { Type } from '@nestjs/common';
 
-import { Command, CommandProvider } from '@nest-convoy/commands/common';
+import { IllegalArgumentException, Predicate } from '@nest-convoy/common';
+import { Command } from '@nest-convoy/commands/common';
 import {
   COMMAND_WITH_DESTINATION,
   CommandWithDestination,
 } from '@nest-convoy/commands/consumer';
-import { Predicate } from '@nest-convoy/common';
 
 import { SagaDefinition } from '../saga-definition';
 import { NestSagaDefinitionBuilder } from './nest-saga-definition-builder';
 import { BaseStepBuilder, StepBuilder } from './step-builder';
-import { SagaStepReply, SagaStepReplyHandler } from './saga-step';
+import { SagaStepReplyHandler } from './saga-step';
 import { CommandEndpoint } from './command-endpoint';
 import {
   BaseParticipantInvocation,
@@ -22,10 +22,26 @@ import {
   ReplyHandlers,
 } from './participant-invocation-step';
 import {
-  Compensation,
   WithActionBuilder,
   WithCompensationBuilder,
+  WithArgs,
+  WithEndpointArgs,
+  WithoutEndpointArgs,
+  WithDestinationArgs,
+  Compensation,
 } from './with-builder';
+
+function isEndpoint<Data, C extends Command>(
+  args: WithArgs<Data, C>,
+): args is WithEndpointArgs<Data, C> {
+  return args[0] instanceof CommandEndpoint;
+}
+
+function is<Data, C extends Command>(
+  args: WithArgs<Data, C>,
+): args is WithoutEndpointArgs<Data, C> {
+  return !(args[0] instanceof CommandEndpoint);
+}
 
 export class InvokeParticipantStepBuilder<Data>
   implements
@@ -39,27 +55,39 @@ export class InvokeParticipantStepBuilder<Data>
 
   constructor(private readonly parent: NestSagaDefinitionBuilder<Data>) {}
 
-  // Adds support for @CommandDestination()
-  private wrapCommandProvider<C extends Command>(args: any[]): void {
-    const action = args[0];
+  private wrapCommandProvider<C extends Command>(
+    args: WithoutEndpointArgs<Data, C>,
+  ): WithDestinationArgs<Data, C> {
+    const action = args.shift()!.bind(this.parent.saga);
     let destination: string | undefined = Reflect.getMetadata(
       COMMAND_WITH_DESTINATION,
-      args[0],
+      action,
     );
 
-    args[0] = async (data: Data): Promise<CommandWithDestination<C> | C> => {
-      const cmd = await action(data);
-      if (!destination) {
-        destination = Reflect.getMetadata(
-          COMMAND_WITH_DESTINATION,
-          cmd.constructor,
-        );
-      }
+    return [
+      // TODO: Not entirely sure if command destination is a requirement
+      async function withDestination(
+        data: Data,
+      ): Promise<CommandWithDestination<C>> {
+        const cmd = await action(data);
+        if (cmd instanceof CommandWithDestination) return cmd;
 
-      return destination
-        ? new CommandWithDestination<C>(destination, cmd as never)
-        : cmd;
-    };
+        if (!destination) {
+          destination = Reflect.getMetadata(
+            COMMAND_WITH_DESTINATION,
+            cmd.constructor,
+          );
+        }
+
+        if (!destination) {
+          throw new Error('Missing @CommandDestination() for ' + cmd);
+        }
+
+        return new CommandWithDestination<C>(destination, cmd as C);
+      },
+      // @ts-ignore
+      ...args,
+    ];
   }
 
   private addStep(): void {
@@ -73,39 +101,36 @@ export class InvokeParticipantStepBuilder<Data>
     );
   }
 
-  withAction<C extends Command>(
-    action: CommandProvider<Data, CommandWithDestination<C> | C>,
-    participantInvocationPredicate?: Predicate<Data>,
-  ): this;
-  withAction<C extends Command>(
-    commandEndpoint: CommandEndpoint<C>,
-    commandProvider: CommandProvider<Data, C>,
-    participantInvocationPredicate?: Predicate<Data>,
-  ): this;
-  withAction(...args: any[]): this {
-    this.wrapCommandProvider(args);
-
-    if (args[0] instanceof CommandEndpoint) {
-      this.action = new ParticipantEndpointInvocation(
-        args[0],
+  private with<C extends Command>(
+    args: WithArgs<Data, C>,
+  ): ParticipantEndpointInvocation<Data, C> | ParticipantInvocation<Data, C> {
+    if (isEndpoint(args)) {
+      return new ParticipantEndpointInvocation<Data, C>(
+        args[0] as CommandEndpoint<C>,
         args[1].bind(this.parent.saga),
-        args[2].bind(this.parent.saga),
+        args[2]?.bind(this.parent.saga),
+      );
+    } else if (is(args)) {
+      const destArgs = this.wrapCommandProvider(args);
+      return new ParticipantInvocation<Data, C>(
+        destArgs[0].bind(this.parent.saga),
+        destArgs[1]?.bind(this.parent.saga),
       );
     } else {
-      this.action = new ParticipantInvocation(
-        args[0].bind(this.parent.saga),
-        args[1].bind(this.parent.saga),
-      );
+      throw new IllegalArgumentException();
     }
+  }
 
+  withAction<C extends Command>(...args: WithArgs<Data, C>): this {
+    this.action = this.with(args);
     return this;
   }
 
   withCompensation<C extends Command>(
-    compensation: Compensation<Data, CommandWithDestination<C> | C>,
+    compensation: Compensation<Data, C>,
   ): this;
   withCompensation<C extends Command>(
-    compensation: Compensation<Data, CommandWithDestination<C> | C>,
+    compensation: Compensation<Data, C>,
     compensationPredicate: Predicate<Data>,
   ): this;
   withCompensation<C extends Command>(
@@ -117,40 +142,18 @@ export class InvokeParticipantStepBuilder<Data>
     commandProvider: Compensation<Data, C>,
     compensationPredicate: Predicate<Data>,
   ): this;
-  withCompensation(...args: any[]): this {
-    this.wrapCommandProvider(args);
-
-    // eslint-disable-next-line prefer-rest-params
-    if (arguments[0] instanceof CommandEndpoint) {
-      this.compensation = new ParticipantEndpointInvocation(
-        args[0],
-        args[1].bind(this.parent.saga),
-        args[2].bind(this.parent.saga),
-      );
-    } else {
-      this.compensation = new ParticipantInvocation(
-        args[0].bind(this.parent.saga),
-        args[1].bind(this.parent.saga),
-      );
-    }
-
+  withCompensation<C extends Command>(...args: WithArgs<Data, C>): this {
+    this.compensation = this.with(args);
     return this;
   }
 
-  onReply<T, R>(
-    replyType: Type<T>,
-    replyHandler: SagaStepReplyHandler<Data, R>,
-  ): this {
-    replyHandler = replyHandler.bind(this.parent.saga);
-    const store: SagaStepReply<Data, R> = {
-      type: replyType,
-      handler: replyHandler.bind(this.parent.saga),
-    };
+  onReply<T, R>(type: Type<T>, handler: SagaStepReplyHandler<Data, R>): this {
+    handler = handler.bind(this.parent.saga);
 
     if (this.compensation) {
-      this.compensationReplyHandlers.set(replyType.name, store);
+      this.compensationReplyHandlers.set(type.name, { type, handler });
     } else {
-      this.actionReplyHandlers.set(replyType.name, store);
+      this.actionReplyHandlers.set(type.name, { type, handler });
     }
 
     return this;
