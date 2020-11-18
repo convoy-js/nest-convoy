@@ -70,7 +70,7 @@
     "@nestjs/cqrs": "7.0.1",
     "@nestjs/microservices": "7.5.1",
     "@nestjs/platform-express": "7.5.1",
-    "@nestjs/typeorm": "7.1.4",
+    "@nestjs/typeorm": "7.1.5",
     "kafkajs": "1.14.0",
     "pg": "8.4.2",
     "redis": "3.0.2",
