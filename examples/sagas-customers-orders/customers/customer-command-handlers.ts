@@ -4,13 +4,12 @@ import {
   SagaCommandHandlers,
 } from '@nest-convoy/core';
 
-import { Channel } from '../../common';
-import { CustomerCreditReserved } from '../replies';
-import { CustomerService } from '../customer.service';
-import { ReserveCreditCommand } from './reserve-credit.command';
+import { Channel } from '../common';
+import { CustomerCreditReserved, ReserveCreditCommand } from './api';
+import { CustomerService } from './customer.service';
 
 @SagaCommandHandlers(Channel.CUSTOMER)
-export class ReserveCreditCommandHandler {
+export class CustomerCommandHandlers {
   constructor(private readonly customer: CustomerService) {}
 
   @OnMessage(ReserveCreditCommand)

@@ -6,6 +6,7 @@ export const defaultOptions: TypeOrmModuleOptions = {
   username: 'postgres',
   password: 'postgres',
   autoLoadEntities: true,
+  port: 5432,
   synchronize: true,
   migrationsRun: true,
 };

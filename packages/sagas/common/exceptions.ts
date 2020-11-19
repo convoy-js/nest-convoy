@@ -1,3 +1,5 @@
+import { Type } from '@nestjs/common';
+
 import { RuntimeException } from '@nest-convoy/common';
 
 export class StashMessageRequiredException extends RuntimeException {
@@ -13,7 +15,13 @@ export class CannotClaimLockException extends RuntimeException {
 }
 
 export class CannotClaimResourceLockException extends RuntimeException {
-  constructor() {
+  constructor(resource?: string) {
     super('Cannot claim lock for resource');
+  }
+}
+
+export class MissingSagaManagerException extends RuntimeException {
+  constructor(sagaType: Type<any>) {
+    super(`Missing manager for saga ${sagaType.name}`);
   }
 }

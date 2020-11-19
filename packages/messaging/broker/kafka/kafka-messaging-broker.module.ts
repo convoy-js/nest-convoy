@@ -19,7 +19,7 @@ import { KAFKA_CONFIG } from './tokens';
 export interface ConvoyKafkaMessagingBrokerModuleOptions {
   consumer?: Omit<ConsumerConfig, 'groupId'>;
   producer?: Omit<ProducerConfig, 'idempotent'>;
-  typeOrm?: ConvoyTypeOrmOptions;
+  database?: ConvoyTypeOrmOptions;
 }
 
 @Global()
@@ -32,7 +32,7 @@ export class ConvoyKafkaMessagingBrokerModule {
     return {
       module: ConvoyKafkaMessagingBrokerModule,
       imports: [
-        ConvoyCoreModule.forRoot(_.typeOrm),
+        ConvoyCoreModule.forRoot(_.database),
         ConvoyMessagingConsumerModule.register({
           useExisting: KafkaMessageConsumer,
         }),

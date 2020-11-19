@@ -3,15 +3,15 @@ import { Repository } from 'typeorm';
 
 import { Saga, NestSaga } from '@nest-convoy/core';
 
-import { ReserveCreditCommand } from '../../../customers/commands';
-import { OrderState, RejectionReason } from '../../common';
-import { CustomerServiceProxy } from '../participants';
-import { CreateOrderSagaData } from './create-order-saga.data';
-import { Order } from '../../entities';
 import {
   CustomerCreditLimitExceeded,
   CustomerNotFound,
-} from '../../../customers/replies';
+  ReserveCreditCommand,
+} from '../../../customers/api';
+import { OrderState, RejectionReason } from '../../common';
+import { Order } from '../../entities';
+import { CustomerServiceProxy } from '../participants';
+import { CreateOrderSagaData } from './create-order-saga.data';
 
 @Saga(CreateOrderSagaData)
 export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
@@ -44,7 +44,6 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
     data: CreateOrderSagaData,
     reply: CustomerNotFound,
   ): void {
-    console.log(reply);
     data.rejectionReason = RejectionReason.UNKNOWN_CUSTOMER;
   }
 

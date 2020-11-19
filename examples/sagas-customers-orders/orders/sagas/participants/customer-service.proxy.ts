@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 
-import { Success, CommandEndpointBuilder } from '@nest-convoy/core';
+import { Success, CommandEndpoint } from '@nest-convoy/core';
 
-import { ReserveCreditCommand } from '../../../customers/commands';
+import { ReserveCreditCommand } from '../../../customers/api';
 import { Channel } from '../../../common';
 
 @Injectable()
 export class CustomerServiceProxy {
-  readonly reserveCredit = new CommandEndpointBuilder(ReserveCreditCommand)
-    .withChannel(Channel.CUSTOMER)
-    .withReply(Success)
-    .build();
+  readonly reserveCredit = new CommandEndpoint(
+    Channel.CUSTOMER,
+    ReserveCreditCommand,
+    [Success],
+  );
 }

@@ -1,15 +1,13 @@
 import { COMMAND_HANDLER_METADATA } from '@nestjs/cqrs/dist/decorators/constants';
-import { CommandHandler, EventsHandler } from '@nestjs/cqrs';
+import { EventsHandler } from '@nestjs/cqrs';
 
 import { Type } from '@nest-convoy/common';
 import { AggregateRoot } from '@nest-convoy/events';
 import {
   COMMAND_WITH_DESTINATION,
-  CommandType,
   CommandMessageHandlerOptions,
 } from '@nest-convoy/commands';
 
-import { ICommandHandler, IEventHandler } from './handlers';
 import {
   SAGA_COMMAND_HANDLER_METADATA,
   AGGREGATE_TYPE_METADATA,
@@ -19,19 +17,6 @@ import {
   COMMAND_MESSAGE_HANDLER,
   COMMAND_MESSAGE_HANDLER_OPTIONS,
 } from './tokens';
-
-export function FromChannel(channel: string) {
-  return (target: Type<ICommandHandler<any>>): void => {
-    Reflect.defineMetadata(FROM_CHANNEL_METADATA, channel, target);
-  };
-}
-
-// type CommandHandlerMethodDecorator = <T, K extends keyof T, C, V>(
-//   target: T,
-//   propertyKey: K,
-// ) => { [K in keyof T]: CommandMessageHandler<C, V> };
-//
-// type EventMethod = <T, K extends keyof T>(target: T, propertyKey: K) => T[K];
 
 export function OnEvent<E, T>(event: Type<E>) {
   return (target: T, propertyKey: string): void => {
@@ -93,7 +78,6 @@ export function DomainEventsConsumer<T extends AggregateRoot>(
 export function CommandHandlers(channel: string): ClassDecorator {
   return (target: any) => {
     Reflect.defineMetadata(COMMAND_HANDLER_METADATA, true, target);
-    // CommandHandler(target as never)(target);
     Reflect.defineMetadata(FROM_CHANNEL_METADATA, channel, target);
   };
 }
@@ -108,21 +92,5 @@ export function SagaCommandHandlers(channel: string): ClassDecorator {
 
     Reflect.defineMetadata(SAGA_COMMAND_HANDLER_METADATA, true, target);
     Reflect.defineMetadata(FROM_CHANNEL_METADATA, channel, target);
-  };
-}
-
-export function ForAggregateType<T extends AggregateRoot>(
-  aggregateType: string | (() => Type<T>),
-) {
-  return (target: Type<IEventHandler<any>>): void => {
-    Reflect.defineMetadata(
-      AGGREGATE_TYPE_METADATA,
-      () => {
-        return typeof aggregateType === 'function'
-          ? aggregateType().name
-          : aggregateType;
-      },
-      target,
-    );
   };
 }

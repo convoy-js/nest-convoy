@@ -13,6 +13,7 @@ export const GROUP_ID = 'nest-convoy';
 @Injectable()
 export class KafkaProxy
   implements OnApplicationBootstrap, OnApplicationShutdown {
+  // TODO: Custom logger
   private readonly kafka = new Kafka(this.config);
   readonly producer: Producer = this.kafka.producer({
     idempotent: true,

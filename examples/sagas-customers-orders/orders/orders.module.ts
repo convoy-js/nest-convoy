@@ -9,27 +9,26 @@ import { CustomerServiceProxy } from './sagas/participants';
 import { Order } from './entities';
 import { OrderService } from './order.service';
 import { OrdersController } from './orders.controller';
-import {
-  ConvoySagaTypeOrmModule,
-  defaultOptions,
-  TypeOrmModuleOptions,
-} from '../common';
+import { Channel, defaultOptions, TypeOrmModuleOptions } from '../common';
 
 @Module({
   imports: [
     ConvoyCommonModule,
     TypeOrmModule.forRoot({
       ...defaultOptions,
-      port: 5432,
       schema: 'orders',
       entities: [Order],
     } as TypeOrmModuleOptions),
-    ConvoySagaTypeOrmModule,
     TypeOrmModule.forFeature([Order]),
-    ConvoyKafkaMessagingBrokerModule.register({
-      clientId: 'order',
-      brokers: ['localhost:9092'],
-    }),
+    ConvoyKafkaMessagingBrokerModule.register(
+      {
+        clientId: Channel.ORDER,
+        brokers: ['localhost:9092'],
+      },
+      {
+        database: defaultOptions,
+      },
+    ),
     ConvoySagasModule,
   ],
   controllers: [OrdersController],

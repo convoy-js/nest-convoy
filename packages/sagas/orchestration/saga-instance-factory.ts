@@ -1,7 +1,8 @@
 import { Injectable, OnModuleInit, Type } from '@nestjs/common';
-import { ModuleRef, ModulesContainer } from '@nestjs/core';
+import { ModuleRef } from '@nestjs/core';
 import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
-import { SAGA_METADATA } from '@nestjs/cqrs/dist/decorators/constants';
+
+import { MissingSagaManagerException } from '@nest-convoy/sagas/common';
 
 import { Saga } from './saga';
 import { SagaManager } from './saga-manager';
@@ -16,7 +17,6 @@ export class SagaInstanceFactory implements OnModuleInit {
     private readonly sagaManagerFactory: SagaManagerFactory,
     private readonly moduleRef: ModuleRef,
     private readonly explorer: ExplorerService,
-    private readonly modulesContainer: ModulesContainer,
   ) {}
 
   private async createSagaManager<SagaData>(
@@ -28,13 +28,6 @@ export class SagaInstanceFactory implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
-    /*
-    const modules = [...this.modulesContainer.values()];
-      this.explorer
-        .flatMap<Saga<unknown>>(modules, instance =>
-          this.explorer.filterProvider(instance, SAGA_METADATA),
-        )
-     */
     const sagas = this.explorer.explore().sagas || [];
 
     const sagaManagers = await Promise.all(
@@ -59,7 +52,7 @@ export class SagaInstanceFactory implements OnModuleInit {
     data: SagaData,
   ): Promise<SagaInstance<SagaData>> {
     if (!this.sagaManagers.has(sagaType)) {
-      throw new Error('Missing manager for saga ' + sagaType.name);
+      throw new MissingSagaManagerException(sagaType);
     }
 
     return this.sagaManagers.get(sagaType)!.create(data);

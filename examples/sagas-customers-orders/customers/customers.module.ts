@@ -5,32 +5,31 @@ import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
 import { ConvoyKafkaMessagingBrokerModule } from '@nest-convoy/messaging/broker/kafka';
 
 import { CreditReservation, Customer } from './entities';
-import { ReserveCreditCommandHandler } from './commands';
+import { CustomerCommandHandlers } from './customer-command-handlers';
 import { CustomerService } from './customer.service';
 import { CustomersController } from './customers.controller';
-import {
-  ConvoySagaTypeOrmModule,
-  defaultOptions,
-  TypeOrmModuleOptions,
-} from '../common';
+import { Channel, defaultOptions, TypeOrmModuleOptions } from '../common';
 
 @Module({
   imports: [
     ConvoyCommonModule,
     TypeOrmModule.forRoot({
       ...defaultOptions,
-      port: 5432,
       schema: 'customers',
     } as TypeOrmModuleOptions),
-    ConvoySagaTypeOrmModule,
     TypeOrmModule.forFeature([CreditReservation, Customer]),
-    ConvoyKafkaMessagingBrokerModule.register({
-      clientId: 'customer',
-      brokers: ['localhost:9092'],
-    }),
+    ConvoyKafkaMessagingBrokerModule.register(
+      {
+        clientId: Channel.CUSTOMER,
+        brokers: ['localhost:9092'],
+      },
+      {
+        database: defaultOptions,
+      },
+    ),
     ConvoySagasModule,
   ],
   controllers: [CustomersController],
-  providers: [CustomerService, ReserveCreditCommandHandler],
+  providers: [CustomerService, CustomerCommandHandlers],
 })
 export class CustomersModule {}

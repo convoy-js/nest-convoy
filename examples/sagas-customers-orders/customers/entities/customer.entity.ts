@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 import { Money } from '../../common';
-import { CustomerCreditLimitExceeded } from '../replies';
+import { CustomerCreditLimitExceeded } from '../api';
 import { CreditReservation } from './credit-reservation.entity';
 
 @Entity()

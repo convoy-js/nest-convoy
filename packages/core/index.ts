@@ -23,10 +23,5 @@ export {
 export * from '@nest-convoy/sagas';
 export * from '@nest-convoy/events';
 
-export { EventsHandler, CommandHandler, QueryHandler } from '@nestjs/cqrs';
-
-export * from './command-bus';
-export * from './event-bus';
 export * from './decorators';
-export * from './handlers';
 export * from './common.module';
