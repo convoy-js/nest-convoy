@@ -21,7 +21,7 @@ export class OrdersController {
   constructor(private readonly order: OrderService) {}
 
   @Post('')
-  createOrder(
+  create(
     @Body() { customerId, orderTotal }: CreateOrderDto,
   ): Promise<Order | undefined> {
     return this.order.create({
@@ -31,7 +31,7 @@ export class OrdersController {
   }
 
   @Get(':id')
-  async getOrder(@Param('id') id: number): Promise<Order> {
+  async find(@Param('id') id: number): Promise<Order> {
     const order = await this.order.find(id);
     if (!order) {
       throw new NotFoundException(`No order found by ID ${id}`);

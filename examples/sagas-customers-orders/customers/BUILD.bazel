@@ -8,7 +8,7 @@ nest_library(
         "//examples/sagas-customers-orders/common",
         "//packages/common",
         "//packages/core",
-        "//packages/messaging/broker",
+        "//packages/messaging/broker/kafka",
         "@npm//@nestjs/core",
         "@npm//@nestjs/microservices",
         "@npm//@nestjs/platform-express",

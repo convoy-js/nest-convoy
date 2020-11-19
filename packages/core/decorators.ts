@@ -92,25 +92,21 @@ export function DomainEventsConsumer<T extends AggregateRoot>(
 
 export function CommandHandlers(channel: string): ClassDecorator {
   return (target: any) => {
-    CommandHandler(target as never)(target);
+    Reflect.defineMetadata(COMMAND_HANDLER_METADATA, true, target);
+    // CommandHandler(target as never)(target);
     Reflect.defineMetadata(FROM_CHANNEL_METADATA, channel, target);
   };
 }
 
 export function SagaCommandHandlers(channel: string): ClassDecorator {
-  return (target: any) =>
-    SagaCommandHandler(undefined as never, channel)(target);
-}
-
-export function SagaCommandHandler(command: CommandType, channel: string) {
-  return (target: Type<ICommandHandler<any>>): void => {
+  return (target: object): void => {
     if (Reflect.hasMetadata(COMMAND_HANDLER_METADATA, target)) {
       Reflect.defineMetadata(HAS_COMMAND_HANDLER_METADATA, true, target);
     } else {
-      Reflect.defineMetadata(COMMAND_HANDLER_METADATA, command, target);
+      Reflect.defineMetadata(COMMAND_HANDLER_METADATA, true, target);
     }
 
-    Reflect.defineMetadata(SAGA_COMMAND_HANDLER_METADATA, command, target);
+    Reflect.defineMetadata(SAGA_COMMAND_HANDLER_METADATA, true, target);
     Reflect.defineMetadata(FROM_CHANNEL_METADATA, channel, target);
   };
 }

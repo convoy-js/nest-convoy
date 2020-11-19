@@ -13,7 +13,7 @@ export class CreateCustomerDto {
 export class CustomersController {
   constructor(private readonly customer: CustomerService) {}
 
-  @Post()
+  @Post('')
   create(@Body() createCustomerDto: CreateCustomerDto): Promise<Customer> {
     return this.customer.create(createCustomerDto);
   }

@@ -110,7 +110,7 @@ export class ConvoyCommandDispatcher implements Dispatcher {
       );
       replies = await this.invoke(commandHandler, commandMessage);
       this.logger.debug(
-        `Generated replies ${this.commandDispatcherId} ${
+        `Generated replies ${commandHandler.command.name} ${
           message.constructor.name
         } ${replies.map(reply => reply.toString())}`,
       );

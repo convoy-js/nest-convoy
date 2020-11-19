@@ -1,6 +1,11 @@
-import { Injectable, OnModuleInit, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  OnApplicationBootstrap,
+  OnModuleInit,
+  Optional,
+} from '@nestjs/common';
 import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
-import { ModuleRef } from '@nestjs/core';
+import { ModuleRef, ModulesContainer } from '@nestjs/core';
 
 import {
   SagaCommandDispatcherFactory,

@@ -44,6 +44,7 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
     data: CreateOrderSagaData,
     reply: CustomerNotFound,
   ): void {
+    console.log(reply);
     data.rejectionReason = RejectionReason.UNKNOWN_CUSTOMER;
   }
 

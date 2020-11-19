@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
 
 import { ConvoyCommandsProducerModule } from '@nest-convoy/commands';
 import { SagaCommonModule } from '@nest-convoy/sagas/common';
@@ -24,6 +25,7 @@ import {
     ConvoyCommandsProducerModule,
   ],
   providers: [
+    ExplorerService,
     SagaInstanceFactory,
     SagaManagerFactory,
     SagaCommandProducer,

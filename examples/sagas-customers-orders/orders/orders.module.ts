@@ -1,20 +1,19 @@
 import { Module } from '@nestjs/common';
-import { Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ConvoyMessagingBrokerModule } from '@nest-convoy/messaging/broker';
+import { ConvoyKafkaMessagingBrokerModule } from '@nest-convoy/messaging/broker/kafka';
 import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
 
-import {
-  ConvoySagaTypeOrmModule,
-  defaultOptions,
-  TypeOrmModuleOptions,
-} from '../common';
 import { CreateOrderSaga } from './sagas/create-order';
 import { CustomerServiceProxy } from './sagas/participants';
 import { Order } from './entities';
 import { OrderService } from './order.service';
 import { OrdersController } from './orders.controller';
+import {
+  ConvoySagaTypeOrmModule,
+  defaultOptions,
+  TypeOrmModuleOptions,
+} from '../common';
 
 @Module({
   imports: [
@@ -27,32 +26,9 @@ import { OrdersController } from './orders.controller';
     } as TypeOrmModuleOptions),
     ConvoySagaTypeOrmModule,
     TypeOrmModule.forFeature([Order]),
-    ConvoyMessagingBrokerModule.register({
-      id: 'orders',
-      server: {
-        transport: Transport.KAFKA,
-        options: {
-          consumer: {
-            groupId: 'orders',
-          },
-          client: {
-            clientId: 'orders-consumer',
-            brokers: ['localhost:9092'],
-          },
-        },
-      },
-      client: {
-        transport: Transport.KAFKA,
-        options: {
-          consumer: {
-            groupId: 'orders',
-          },
-          client: {
-            clientId: 'orders-consumer',
-            brokers: ['localhost:9092'],
-          },
-        },
-      },
+    ConvoyKafkaMessagingBrokerModule.register({
+      clientId: 'order',
+      brokers: ['localhost:9092'],
     }),
     ConvoySagasModule,
   ],

@@ -227,9 +227,6 @@ export class SagaManager<Data> /* implements SagaManager<Data>*/ {
     if (message.hasHeader(SagaReplyHeaders.REPLY_SAGA_ID)) {
       await this.handleReply(message);
     } else {
-      // throw new RuntimeException(
-      //   "handleMessage doesn't know what to do with: " + message.toString(),
-      // );
       this.logger.warn(
         "handleMessage doesn't know what to do with: " + message.toString(),
       );

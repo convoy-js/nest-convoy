@@ -12,6 +12,10 @@ import { DestinationAndResource } from './destination-and-resource';
 export class SagaInstanceRepository {
   private readonly store = new Map<string, SagaInstance>();
 
+  // findAll(): readonly SagaInstance[] {
+  //   return [...this.store.values()];
+  // }
+
   async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
     return this.store.get(`${sagaType}-${sagaId}`)!;
   }
@@ -79,6 +83,12 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
         new DestinationAndResource(destination, resource),
     );
   }
+
+  // async findAll(): Promise<readonly SagaInstance[]> {
+  //   return this.sagaInstanceRepository.find({
+  //     where: {},
+  //   });
+  // }
 
   async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
     const destinationAndResources = await this.findDestinationsAndResources(
