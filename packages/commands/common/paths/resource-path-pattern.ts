@@ -16,7 +16,9 @@ export class ResourcePathPattern extends ResourcePath {
     }, {} as Record<string, string>);
   }
 
-  replacePlaceholders(pathParams: Record<string, string>[]): ResourcePath {
+  replacePlaceholders(
+    pathParams: readonly Record<string, string>[],
+  ): ResourcePath {
     let idx = 0;
 
     return new ResourcePath(

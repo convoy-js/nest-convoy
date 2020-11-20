@@ -3,7 +3,7 @@ import { CommandWithDestination } from '@nest-convoy/commands';
 
 export class SagaActions<Data> {
   constructor(
-    readonly commands: CommandWithDestination[],
+    readonly commands: readonly CommandWithDestination[],
     readonly endState: boolean,
     readonly compensating: boolean,
     readonly local: boolean,
@@ -42,7 +42,7 @@ export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
     return this;
   }
 
-  withCommands(commands: CommandWithDestination[]): this {
+  withCommands(commands: readonly CommandWithDestination[]): this {
     this.commands.push(...commands);
     return this;
   }

@@ -17,9 +17,9 @@ import { KafkaProxy } from './kafka-proxy';
 import { KAFKA_CONFIG } from './tokens';
 
 export interface ConvoyKafkaMessagingBrokerModuleOptions {
-  consumer?: Omit<ConsumerConfig, 'groupId'>;
-  producer?: Omit<ProducerConfig, 'idempotent'>;
-  database?: ConvoyTypeOrmOptions;
+  readonly consumer?: Omit<ConsumerConfig, 'groupId'>;
+  readonly producer?: Omit<ProducerConfig, 'idempotent'>;
+  readonly database?: ConvoyTypeOrmOptions;
 }
 
 @Global()
@@ -27,12 +27,12 @@ export interface ConvoyKafkaMessagingBrokerModuleOptions {
 export class ConvoyKafkaMessagingBrokerModule {
   static register(
     config: KafkaConfig,
-    _: ConvoyKafkaMessagingBrokerModuleOptions = {},
+    { database }: ConvoyKafkaMessagingBrokerModuleOptions = {},
   ): DynamicModule {
     return {
       module: ConvoyKafkaMessagingBrokerModule,
       imports: [
-        ConvoyCoreModule.forRoot(_.database),
+        ConvoyCoreModule.forRoot(database),
         ConvoyMessagingConsumerModule.register({
           useExisting: KafkaMessageConsumer,
         }),

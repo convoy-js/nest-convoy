@@ -67,7 +67,7 @@ export class AccountSnapshotStrategy
 
   possibleSnapshot(
     aggregate: Account,
-    oldEvents: EventWithMetadata<any>[],
+    oldEvents: readonly EventWithMetadata<any>[],
     newEvents: readonly any[],
     version?: string,
   ): AccountSnapshot | undefined {

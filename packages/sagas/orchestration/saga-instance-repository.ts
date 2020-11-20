@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
@@ -11,10 +11,6 @@ import { DestinationAndResource } from './destination-and-resource';
 @Injectable()
 export class SagaInstanceRepository {
   private readonly store = new Map<string, SagaInstance>();
-
-  // findAll(): readonly SagaInstance[] {
-  //   return [...this.store.values()];
-  // }
 
   async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
     return this.store.get(`${sagaType}-${sagaId}`)!;
@@ -43,8 +39,6 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     private readonly sagaInstanceParticipantsRepository: Repository<
       SagaInstanceParticipantsEntity
     >,
-    @InjectConnection(NEST_CONVOY_CONNECTION)
-    private readonly connection: Connection,
   ) {
     super();
   }
@@ -54,7 +48,7 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     sagaId,
     sagaType,
   }: SagaInstance): Promise<void> {
-    await this.connection.transaction(manager =>
+    await this.sagaInstanceParticipantsRepository.manager.transaction(manager =>
       Promise.all(
         destinationsAndResources.map(dr =>
           manager.create(SagaInstanceParticipantsEntity, {
@@ -83,12 +77,6 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
         new DestinationAndResource(destination, resource),
     );
   }
-
-  // async findAll(): Promise<readonly SagaInstance[]> {
-  //   return this.sagaInstanceRepository.find({
-  //     where: {},
-  //   });
-  // }
 
   async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
     const destinationAndResources = await this.findDestinationsAndResources(

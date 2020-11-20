@@ -42,7 +42,7 @@ export interface Dispatcher {
 
 export interface Handler<H extends AsyncLikeFn> {
   handles(message: unknown): boolean;
-  invoke: H;
+  readonly invoke: H;
 }
 
 // export interface EventHandler<I = any, T = any> extends BaseHandler<I> {

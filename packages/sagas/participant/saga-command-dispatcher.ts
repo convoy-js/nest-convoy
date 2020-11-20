@@ -42,7 +42,7 @@ export class SagaCommandDispatcher extends ConvoyCommandDispatcher {
   protected async invoke(
     commandHandler: CommandHandler,
     commandMessage: CommandMessage,
-  ): Promise<Message[]> {
+  ): Promise<readonly Message[]> {
     const sagaType = getSagaType(commandMessage.message);
     const sagaId = getSagaId(commandMessage.message);
     let lockedTarget: string | undefined;
@@ -107,6 +107,8 @@ export class SagaCommandDispatcher extends ConvoyCommandDispatcher {
             target,
             message,
           );
+        } else {
+          throw err;
         }
       }
     }

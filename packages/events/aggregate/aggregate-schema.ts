@@ -10,7 +10,7 @@ import {
 
 export class NewEventNameAndUpcasters<E> {
   constructor(
-    readonly upcasters: EventUpcaster[],
+    readonly upcasters: readonly EventUpcaster[],
     readonly eventType?: Type<E>,
   ) {}
 
@@ -26,7 +26,7 @@ export class AggregateSchema<A extends AggregateRoot> {
 
   constructor(
     readonly aggregateType: Type<A>,
-    private readonly versions: AggregateSchemaVersion[],
+    private readonly versions: readonly AggregateSchemaVersion[],
   ) {}
 
   private maybeUpcast<E>(
@@ -105,7 +105,9 @@ export class AggregateSchema<A extends AggregateRoot> {
     return latestVersion !== actualVersion;
   }
 
-  upcastEvents<E>(events: EventIdTypeAndData<E>[]): EventIdTypeAndData<E>[] {
+  upcastEvents<E>(
+    events: readonly EventIdTypeAndData<E>[],
+  ): readonly EventIdTypeAndData<E>[] {
     return events.map(event => this.maybeUpcast(this.currentVersion, event));
   }
 }

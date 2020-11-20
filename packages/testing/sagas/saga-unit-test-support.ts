@@ -60,7 +60,7 @@ export class SagaTestInstanceRepository extends SagaInstanceRepository {
 }
 
 export type SagaExpectationTest = (
-  sentCommands: MessageWithDestination[],
+  sentCommands: readonly MessageWithDestination[],
 ) => void;
 
 export class SagaExpectCommandTest<Data> {
@@ -174,15 +174,14 @@ export class SagaUnitTestSupport<Data> {
     switch (this.sentCommands.length) {
       case 0:
         break;
-      case 1: {
-        const mwd = this.sentCommands[0];
+      case 1:
+        const { message, destination } = this.sentCommands[0];
         fail(
-          `Expected saga to have finished but found a command of ${mwd.message.getRequiredHeader(
+          `Expected saga to have finished but found a command of ${message.getRequiredHeader(
             CommandMessageHeaders.COMMAND_TYPE,
-          )} sent to ${mwd.destination}: ${mwd.message.toString()}`,
+          )} sent to ${destination}: ${message.toString()}`,
         );
         break;
-      }
       default:
         expect(this.sentCommands).toHaveLength(0);
         break;

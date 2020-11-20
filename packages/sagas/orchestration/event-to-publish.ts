@@ -6,6 +6,6 @@ export class EventToPublish {
   constructor(
     readonly aggregateType: Type<any>,
     readonly aggregateId: string,
-    readonly domainEvents: DomainEvent[],
+    readonly domainEvents: readonly DomainEvent[],
   ) {}
 }

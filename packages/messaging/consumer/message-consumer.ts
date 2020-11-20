@@ -15,7 +15,7 @@ export abstract class MessageConsumer {
   abstract id: string;
   abstract subscribe(
     subscriberId: string,
-    channels: string[],
+    channels: readonly string[],
     handler: Consumer<Message>,
     isEventHandler?: boolean,
   ): MessageSubscription;
@@ -53,7 +53,7 @@ export class ConvoyMessageConsumer
 
   async subscribe(
     subscriberId: string,
-    channels: string[],
+    channels: readonly string[],
     handler: MessageHandler,
     isEventHandler?: boolean,
   ): MessageSubscription {

@@ -12,9 +12,9 @@ export class AggregateCrudMapping {
   constructor(private readonly snapshotManager: SnapshotManager) {}
 
   toSerializedEventsWithIds(
-    serializedEvents: EventTypeAndData<any>[],
-    eventIds: string[],
-  ): EventIdTypeAndData<any>[] {
+    serializedEvents: readonly EventTypeAndData<any>[],
+    eventIds: readonly string[],
+  ): readonly EventIdTypeAndData<any>[] {
     return serializedEvents.map((se, idx) => ({
       eventId: eventIds[idx],
       ...se,

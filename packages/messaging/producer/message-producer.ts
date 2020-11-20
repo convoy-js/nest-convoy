@@ -31,7 +31,7 @@ export class ConvoyMessageProducer {
     protected readonly target: MessageProducer,
     @Optional()
     @Inject(NEST_CONVOY_MESSAGE_INTERCEPTORS)
-    private readonly messageInterceptors: MessageInterceptor[],
+    private readonly messageInterceptors: readonly MessageInterceptor[],
   ) {}
 
   private async preSend(message: Message): Promise<void> {

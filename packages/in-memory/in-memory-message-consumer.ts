@@ -9,7 +9,7 @@ import {
 @Injectable()
 export class InMemoryMessageConsumer extends MessageConsumer {
   private readonly logger = new Logger(this.constructor.name, true);
-  private subscriptions = new Map<string, MessageHandler[]>();
+  private subscriptions = new Map<string, readonly MessageHandler[]>();
   private wildcardSubscriptions = new Set<MessageHandler>();
 
   readonly id = this.constructor.name;
@@ -22,7 +22,7 @@ export class InMemoryMessageConsumer extends MessageConsumer {
   private async dispatchMessageToHandlers(
     destination: string,
     message: Message,
-    handlers: MessageHandler[],
+    handlers: readonly MessageHandler[],
   ): Promise<void> {
     for (const handle of handlers) {
       await handle(message);
@@ -49,7 +49,7 @@ export class InMemoryMessageConsumer extends MessageConsumer {
 
   async subscribe(
     subscriberId: string,
-    channels: string[],
+    channels: readonly string[],
     handler: MessageHandler,
   ): MessageSubscription {
     channels.forEach(channel => {

@@ -1,7 +1,7 @@
 import { splitResourcePath } from './utils';
 
 export class ResourcePath {
-  readonly splits: string[];
+  readonly splits: readonly string[];
 
   get length(): number {
     return this.splits.length;

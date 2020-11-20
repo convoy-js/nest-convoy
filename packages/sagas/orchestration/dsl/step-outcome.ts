@@ -9,7 +9,7 @@ export interface StepOutcome {
       localException?: RuntimeException,
     ) => SagaActionsBuilder<Data>,
     commandsConsumer: (
-      commands: CommandWithDestination[],
+      commands: readonly CommandWithDestination[],
     ) => SagaActionsBuilder<Data>,
   ): unknown;
 }
@@ -22,7 +22,7 @@ export class LocalStepOutcome implements StepOutcome {
       localException?: RuntimeException,
     ) => SagaActionsBuilder<Data>,
     commandsConsumer: (
-      commands: CommandWithDestination[],
+      commands: readonly CommandWithDestination[],
     ) => SagaActionsBuilder<Data>,
   ): void {
     localConsumer(this.localOutcome);
@@ -30,14 +30,16 @@ export class LocalStepOutcome implements StepOutcome {
 }
 
 export class RemoteStepOutcome implements StepOutcome {
-  constructor(private readonly commandsToSend: CommandWithDestination[]) {}
+  constructor(
+    private readonly commandsToSend: readonly CommandWithDestination[],
+  ) {}
 
   visit<Data>(
     localConsumer: (
       localException?: RuntimeException,
     ) => SagaActionsBuilder<Data>,
     commandsConsumer: (
-      commands: CommandWithDestination[],
+      commands: readonly CommandWithDestination[],
     ) => SagaActionsBuilder<Data>,
   ): void {
     commandsConsumer(this.commandsToSend);

@@ -29,9 +29,9 @@ export function getCommandTarget(message: Message): string {
 }
 
 export function addLockedHeader(
-  messages: Message[],
+  messages: readonly Message[],
   lockedTarget: string,
-): Message[] {
+): readonly Message[] {
   return messages.map(message =>
     MessageBuilder.withMessage(message)
       .withHeader(SagaReplyHeaders.REPLY_LOCKED, lockedTarget)
@@ -39,12 +39,8 @@ export function addLockedHeader(
   );
 }
 
-export function getLock(messages: Message[]): LockTarget | undefined {
+export function getLock(messages: readonly Message[]): LockTarget | undefined {
   return (messages.find(
     message => message instanceof SagaReplyMessage && !!message.lockTarget,
   ) as SagaReplyMessage | undefined)?.lockTarget;
 }
-
-// export function getLock(List<Message> messages) {
-//   return messages.stream().filter(m -> m instanceof SagaReplyMessage && ((SagaReplyMessage) m).hasLockTarget()).findFirst().flatMap(m -> ((SagaReplyMessage)m).getLockTarget());
-// }

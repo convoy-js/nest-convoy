@@ -1,7 +1,7 @@
 import { ResourcePath } from './resource-path';
 import { ResourcePathPattern } from './resource-path-pattern';
 
-export function splitResourcePath(pathPattern: string): string[] {
+export function splitResourcePath(pathPattern: string): readonly string[] {
   if (!pathPattern.startsWith('/')) {
     throw new TypeError('Should start with / ' + pathPattern);
   }
@@ -34,7 +34,7 @@ export function resourceMatches(
 }
 
 export function getPlaceholderValue(
-  pathParams: Record<string, string>[],
+  pathParams: readonly Record<string, string>[],
   idx: number,
 ): string | null {
   return idx < pathParams.length ? pathParams[idx].toString() : null;

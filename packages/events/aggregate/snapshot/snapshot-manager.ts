@@ -35,7 +35,7 @@ export class SnapshotManager implements OnModuleInit {
   //   this.strategies.set(snapshot.aggregateType, snapshot);
   // }
 
-  getSnapshots(): Type<Snapshot>[] {
+  getSnapshots(): readonly Type<Snapshot>[] {
     return [...this.store.values()].map(({ snapshot }) => snapshot);
   }
 

@@ -15,8 +15,8 @@ export interface EventSchemaManager {
   ): Record<string, string> | undefined;
   upcastEvents<A, E>(
     aggregateType: Type<A>,
-    events: EventIdTypeAndData<E>[],
-  ): EventIdTypeAndData<E>[];
+    events: readonly EventIdTypeAndData<E>[],
+  ): readonly EventIdTypeAndData<E>[];
   upcastEvent<E>(serializedEvent: SerializedEvent<E>): SerializedEvent<E>;
 }
 
@@ -80,8 +80,8 @@ export class DefaultEventSchemaManager implements EventSchemaManager {
 
   upcastEvents<A, E>(
     aggregateType: Type<A>,
-    events: EventIdTypeAndData<E>[],
-  ): EventIdTypeAndData<E>[] {
+    events: readonly EventIdTypeAndData<E>[],
+  ): readonly EventIdTypeAndData<E>[] {
     const schema = this.aggregateSchemaVersions.get(aggregateType);
     return schema ? schema.upcastEvents(events) : events;
   }

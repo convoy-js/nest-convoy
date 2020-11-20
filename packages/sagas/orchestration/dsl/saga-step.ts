@@ -12,8 +12,8 @@ export type SagaStepReplyHandler<Data, R = unknown> = AsyncLikeFn<
 >;
 
 export interface SagaStepReply<Data, R = unknown> {
-  type: Type<R>;
-  handler: SagaStepReplyHandler<Data, R>;
+  readonly type: Type<R>;
+  readonly handler: SagaStepReplyHandler<Data, R>;
 }
 
 export interface SagaStep<Data> {

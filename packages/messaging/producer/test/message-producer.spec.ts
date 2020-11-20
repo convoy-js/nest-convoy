@@ -49,7 +49,7 @@ describe('ConvoyMessageProducer', () => {
           provide: NEST_CONVOY_MESSAGE_INTERCEPTORS,
           useFactory(
             messageInterceptor: TestMessageInterceptor,
-          ): MessageInterceptor[] {
+          ): readonly MessageInterceptor[] {
             return [messageInterceptor];
           },
           inject: [TestMessageInterceptor],

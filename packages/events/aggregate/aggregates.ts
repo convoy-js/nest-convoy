@@ -37,7 +37,7 @@ export class Aggregates {
     return aggregate;
   }
 
-  recreateAggregate<AR extends AggregateRoot, E extends object[]>(
+  recreateAggregate<AR extends AggregateRoot, E extends readonly object[]>(
     aggregateType: Type<AR>,
     events: E,
     // missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<AR>,

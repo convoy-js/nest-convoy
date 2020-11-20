@@ -14,7 +14,7 @@ export class SagaCommandProducer {
   async sendCommands(
     sagaType: string,
     sagaId: string,
-    commands: CommandWithDestination[],
+    commands: readonly CommandWithDestination[],
     sagaReplyChannel: string,
   ): Promise<string | undefined> {
     let messageId: string | undefined;

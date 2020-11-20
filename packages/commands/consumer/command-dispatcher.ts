@@ -43,7 +43,7 @@ export class ConvoyCommandDispatcher implements Dispatcher {
 
   private async sendReplies(
     correlationHeaders: MessageHeaders,
-    replies: Message[],
+    replies: readonly Message[],
     defaultReplyChannel: string,
   ): Promise<void> {
     for (const reply of replies) {
@@ -58,7 +58,7 @@ export class ConvoyCommandDispatcher implements Dispatcher {
   protected async invoke(
     commandHandler: CommandHandler,
     commandMessage: CommandMessage,
-  ): Promise<Message[]> {
+  ): Promise<readonly Message[]> {
     // TODO: Figure out whether or not it should sendReplies or handleException
     try {
       const reply = await commandHandler.invoke(commandMessage);
@@ -96,7 +96,7 @@ export class ConvoyCommandDispatcher implements Dispatcher {
       CommandMessageHeaders.REPLY_TO,
     );
 
-    let replies: Message[];
+    let replies: readonly Message[];
     try {
       const command = Object.assign(
         new commandHandler.command(),

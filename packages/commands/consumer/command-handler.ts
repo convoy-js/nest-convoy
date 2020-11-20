@@ -16,10 +16,10 @@ export type CommandMessageHandler<
 > = AsyncLikeFn<[cm: CommandMessage<C> /*, pvs?: Map<string, string>*/], R>;
 
 export interface CommandMessageHandlerOptions<T = any> {
-  withLock?: boolean;
-  preLock?: SagaCommandHandlerPreLock<T>;
+  readonly withLock?: boolean;
+  readonly preLock?: SagaCommandHandlerPreLock<T>;
   // Use @CommandDestination() instead
-  destination?: string;
+  readonly destination?: string;
 }
 
 export class CommandHandler implements Handler<CommandMessageHandler> {

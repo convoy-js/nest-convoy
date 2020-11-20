@@ -14,8 +14,8 @@ export interface UpdateEventsAndOptions<
   S extends Snapshot,
   E extends readonly any[]
 > {
-  events: E;
-  options?: AggregateCrudUpdateOptions<AR, S>;
+  readonly events: E;
+  readonly options?: AggregateCrudUpdateOptions<AR, S>;
 }
 
 export interface AggregateRepositoryInterceptor<

@@ -35,8 +35,8 @@ import {
 } from './tokens';
 
 interface PropertyType<K> {
-  property: K;
-  type: any;
+  readonly property: K;
+  readonly type: any;
 }
 
 @Injectable()
@@ -53,7 +53,7 @@ export class InitializerService implements OnModuleInit {
   private getMethodTypes<I, K extends keyof I>(
     token: string,
     instance: I,
-  ): PropertyType<K>[] {
+  ): readonly PropertyType<K>[] {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
       .filter(property => Reflect.hasMetadata(token, instance, property))
       .map(property => {
@@ -66,7 +66,7 @@ export class InitializerService implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
-    const { commands, events, queries, sagas } = this.explorer.explore();
+    const { commands, events } = this.explorer.explore();
 
     const commandHandlers = (commands || []).map(async instanceType => {
       const channel = Reflect.getMetadata(
