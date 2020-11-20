@@ -60,7 +60,7 @@ export class SagaTestInstanceRepository extends SagaInstanceRepository {
 }
 
 export type SagaExpectationTest = (
-  sentCommands: readonly MessageWithDestination[],
+  sentCommands: MessageWithDestination[],
 ) => void;
 
 export class SagaExpectCommandTest<Data> {
