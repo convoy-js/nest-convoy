@@ -1,4 +1,5 @@
 import { Type } from '@nestjs/common';
+
 import { AsyncLikeFn } from '@nest-convoy/common';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

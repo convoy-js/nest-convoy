@@ -1,6 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+
 import {
   NEST_CONVOY_CONNECTION,
   NEST_CONVOY_SCHEMA,
@@ -9,8 +10,10 @@ import {
 import { ConvoyCommonModule } from './common.module';
 import { InitializerService } from './initializer.service';
 
-export interface ConvoyTypeOrmOptions
-  extends Omit<TypeOrmModuleOptions, 'name' | 'schema'> {}
+export type ConvoyTypeOrmOptions = Omit<
+  TypeOrmModuleOptions,
+  'name' | 'schema'
+>;
 
 @Module({})
 export class ConvoyCoreModule {

@@ -2,7 +2,6 @@ import { AggregateRoot } from '@nest-convoy/events/aggregate';
 import { Message } from '@nest-convoy/messaging/common';
 
 import { withFailure, withSuccess } from '../command-handler-reply-builder';
-
 import { SagaReplyMessage } from './saga-reply-message';
 import { LockTarget } from './lock-target';
 
