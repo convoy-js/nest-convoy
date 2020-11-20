@@ -32,11 +32,10 @@ export class ConvoyCommandDispatcher implements Dispatcher {
 
   private async handleException(
     message: Message,
-    // commandHandler: CommandHandler,
     defaultReplyChannel: string,
-    // error: Error,
+    error: Error,
   ): Promise<void> {
-    const reply = MessageBuilder.withPayload(new Failure()).build();
+    const reply = withFailure(error);
     const correlationHeaders = correlateMessageHeaders(message.getHeaders());
     await this.sendReplies(correlationHeaders, [reply], defaultReplyChannel);
   }
@@ -62,17 +61,28 @@ export class ConvoyCommandDispatcher implements Dispatcher {
     // TODO: Figure out whether or not it should sendReplies or handleException
     try {
       const reply = await commandHandler.invoke(commandMessage);
-      return Array.isArray(reply)
-        ? reply.map(r => (r instanceof Message ? r : withSuccess(r)))
-        : reply instanceof Message
-        ? [reply]
-        : [
-            commandHandler.options.withLock
-              ? withLock(commandMessage.command).withSuccess(reply)
-              : withSuccess(reply),
-          ];
+      return [
+        reply instanceof Message
+          ? reply
+          : commandHandler.options.withLock
+          ? withLock(commandMessage.command).withSuccess(reply)
+          : withSuccess(reply),
+      ];
+      // return Array.isArray(reply)
+      //   ? reply.map(r => (r instanceof Message ? r : withSuccess(r)))
+      //   : reply instanceof Message
+      //   ? [reply]
+      //   : [
+      //       commandHandler.options.withLock
+      //         ? withLock(commandMessage.command).withSuccess(reply)
+      //         : withSuccess(reply),
+      //     ];
     } catch (err) {
-      return [withFailure(err)];
+      return [
+        commandHandler.options.withLock
+          ? withLock(commandMessage.command).withFailure(err)
+          : withFailure(err),
+      ];
     }
   }
 
@@ -115,10 +125,11 @@ export class ConvoyCommandDispatcher implements Dispatcher {
         } ${replies.map(reply => reply.toString())}`,
       );
     } catch (err) {
+      // TODO: This will never be called (unless payload cannot be parsed) as "invoke" handles errors as well
       this.logger.error(
         `Generated error ${this.commandDispatcherId} ${message.toString()}`,
       );
-      await this.handleException(message, defaultReplyChannel /*, err*/);
+      await this.handleException(message, defaultReplyChannel, err);
       return;
     }
 

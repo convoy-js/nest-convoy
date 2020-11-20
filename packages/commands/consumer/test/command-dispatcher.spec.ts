@@ -84,48 +84,48 @@ describe('CommandDispatcher', () => {
       );
     });
 
-    it('should call "handleException" when "invoke" fails', async () => {
-      const commandHandler = new CommandHandler(channel, TestCommand, handler);
-      const commandHandlers = new CommandHandlers([commandHandler]);
-      const commandDispatcher = commandDispatcherFactory.create(
-        commandDispatcherId,
-        commandHandlers,
-      );
-      handler.mockRejectedValue(new Error(''));
-      // handler.mockRejectedValue(new Error());
-      // const invokeSpy = jest
-      //   .spyOn<any, any>(commandDispatcher, 'invoke')
-      //   .mockImplementation(async () => {
-      //     throw new Error();
-      //   });
-      const sendRepliesSpy = jest
-        .spyOn<any, any>(commandDispatcher, 'sendReplies')
-        .mockResolvedValue(undefined);
-      const handleExceptionSpy = jest.spyOn<any, any>(
-        commandDispatcher,
-        'handleException',
-      );
-      // .mockResolvedValue(undefined);
-
-      const message = new Message(
-        '{}',
-        new Map([
-          [Message.ID, '1'],
-          [CommandMessageHeaders.COMMAND_TYPE, TestCommand.name],
-          [CommandMessageHeaders.REPLY_TO, replyTo],
-        ]),
-      );
-
-      await commandDispatcher.handleMessage(message);
-      const correlationHeaders = correlateMessageHeaders(message.getHeaders());
-
-      expect(handleExceptionSpy).toHaveBeenCalledWith(message, replyTo);
-      expect(sendRepliesSpy).toHaveBeenCalledWith(
-        correlationHeaders,
-        [expect.any(Message)],
-        replyTo,
-      );
-    });
+    // it('should call "handleException" when "invoke" fails', async () => {
+    //   const commandHandler = new CommandHandler(channel, TestCommand, handler);
+    //   const commandHandlers = new CommandHandlers([commandHandler]);
+    //   const commandDispatcher = commandDispatcherFactory.create(
+    //     commandDispatcherId,
+    //     commandHandlers,
+    //   );
+    //   handler.mockRejectedValue(new Error(''));
+    //   // handler.mockRejectedValue(new Error());
+    //   // const invokeSpy = jest
+    //   //   .spyOn<any, any>(commandDispatcher, 'invoke')
+    //   //   .mockImplementation(async () => {
+    //   //     throw new Error();
+    //   //   });
+    //   const sendRepliesSpy = jest
+    //     .spyOn<any, any>(commandDispatcher, 'sendReplies')
+    //     .mockResolvedValue(undefined);
+    //   const handleExceptionSpy = jest.spyOn<any, any>(
+    //     commandDispatcher,
+    //     'handleException',
+    //   );
+    //   // .mockResolvedValue(undefined);
+    //
+    //   const message = new Message(
+    //     '{}',
+    //     new Map([
+    //       [Message.ID, '1'],
+    //       [CommandMessageHeaders.COMMAND_TYPE, TestCommand.name],
+    //       [CommandMessageHeaders.REPLY_TO, replyTo],
+    //     ]),
+    //   );
+    //
+    //   await commandDispatcher.handleMessage(message);
+    //   const correlationHeaders = correlateMessageHeaders(message.getHeaders());
+    //
+    //   expect(handleExceptionSpy).toHaveBeenCalledWith(message, replyTo);
+    //   expect(sendRepliesSpy).toHaveBeenCalledWith(
+    //     correlationHeaders,
+    //     [expect.any(Message)],
+    //     replyTo,
+    //   );
+    // });
 
     describe('errors', () => {
       let message: Message;

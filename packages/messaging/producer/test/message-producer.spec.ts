@@ -58,7 +58,7 @@ describe('ConvoyMessageProducer', () => {
       ],
     }).compile();
 
-    message = new Message('{}', new Map());
+    message = new Message('{}', new Map([[Message.ID, '1']]));
     destination = '';
 
     mockedMessageProducer = module.get(MessageProducer);
@@ -69,6 +69,8 @@ describe('ConvoyMessageProducer', () => {
 
   describe('prepareMessageHeaders', () => {
     it('should throw "MissingRequiredMessageIDException" if message is missing ID and implementation cannot generate it', () => {
+      message.removeHeader(Message.ID);
+
       jest
         .spyOn<any, any>(mockedMessageProducer, 'generateMessageId')
         .mockReturnValue(undefined);
@@ -101,6 +103,7 @@ describe('ConvoyMessageProducer', () => {
     });
   });
 
+  // TODO: Figure out why "postSend" doesn't get called on MessageInterceptor
   // describe('postSend', () => {
   //   it('should call "postSend" method on MessageInterceptor', async () => {
   //     await messageProducer.postSend(message);
@@ -130,7 +133,11 @@ describe('ConvoyMessageProducer', () => {
 
     it('should call implementation', async () => {
       await messageProducer.send(destination, message);
-      expect(mockedMessageProducer.send).toHaveBeenCalledWith(message);
+      expect(mockedMessageProducer.send).toHaveBeenCalledWith(
+        destination,
+        message,
+        false,
+      );
     });
 
     describe('preSend', () => {

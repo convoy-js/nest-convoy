@@ -20,8 +20,9 @@ export class Message {
     });
   }
 
-  setPayload(payload: string): void {
+  setPayload(payload: string): this {
     this.payload = payload;
+    return this;
   }
 
   parsePayload<T = any>(): T {
@@ -32,15 +33,17 @@ export class Message {
     return this.payload;
   }
 
-  setHeaders(headers: MessageHeaders): void {
+  setHeaders(headers: MessageHeaders): this {
     this.headers = headers;
+    return this;
   }
 
-  setHeader(name: string, value: string | number): void {
+  setHeader(name: string, value: string | number): this {
     if (!this.headers) {
       this.headers = new Map();
     }
     this.headers.set(name, String(value));
+    return this;
   }
 
   removeHeader(name: string): boolean {
