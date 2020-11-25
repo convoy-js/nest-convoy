@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u -e -o pipefail
+set -ueo pipefail
 
 # Symlink fetched bazelisk to /usr/local/bin/bazel
 pathToBazel=$(realpath ./node_modules/@bazel/bazelisk/bazelisk-linux_amd64)

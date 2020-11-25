@@ -12,6 +12,11 @@ import {
 
 @Injectable()
 export abstract class MessageProducer {
+  abstract sendBatch(
+    destination: string,
+    messages: readonly Message[],
+    isEvent: boolean,
+  ): Promise<void>;
   abstract send(
     destination: string,
     message: Message,
@@ -49,7 +54,10 @@ export class ConvoyMessageProducer {
     }
   }
 
-  private prepareMessageHeaders(destination: string, message: Message): void {
+  private prepareMessageHeaders<M extends Message>(
+    destination: string,
+    message: M,
+  ): M {
     const id = this.target.generateMessageId();
     if (!id && !message.hasHeader(Message.ID)) {
       throw new MissingRequiredMessageIDException(message);
@@ -62,7 +70,39 @@ export class ConvoyMessageProducer {
       this.channelMapping.transform(destination),
     );
 
-    message.setHeader(Message.DATE, new Date().toJSON());
+    return message.setHeader(Message.DATE, new Date().toJSON());
+  }
+
+  async sendBatch(
+    destination: string,
+    messages: readonly Message[],
+    isEvent = false,
+  ): Promise<void> {
+    messages = messages.map(message =>
+      this.prepareMessageHeaders(destination, message),
+    );
+
+    for (const message of messages) {
+      await this.preSend(message);
+    }
+
+    try {
+      this.logger.debug(
+        `Sending messages ${messages.map(message =>
+          message.toString(),
+        )} to destination ${destination}`,
+      );
+      await this.target.sendBatch(destination, messages, isEvent);
+      for (const message of messages) {
+        await this.postSend(message);
+      }
+    } catch (err) {
+      this.logger.error(err.message);
+      for (const message of messages) {
+        await this.postSend(message);
+      }
+      throw err;
+    }
   }
 
   async send(
@@ -75,7 +115,7 @@ export class ConvoyMessageProducer {
     await this.preSend(message);
     try {
       this.logger.debug(
-        `Sending message ${message.toString()} to channel ${destination}`,
+        `Sending message ${message.toString()} to destination ${destination}`,
       );
       await this.target.send(destination, message, isEvent);
       await this.postSend(message);

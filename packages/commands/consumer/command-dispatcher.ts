@@ -45,13 +45,13 @@ export class ConvoyCommandDispatcher implements Dispatcher {
     replies: readonly Message[],
     defaultReplyChannel: string,
   ): Promise<void> {
-    for (const reply of replies) {
-      const message = MessageBuilder.withMessage(reply)
+    const messages = replies.map(reply =>
+      MessageBuilder.withMessage(reply)
         .withExtraHeaders(correlationHeaders)
-        .build();
+        .build(),
+    );
 
-      await this.messageProducer.send(defaultReplyChannel, message);
-    }
+    await this.messageProducer.sendBatch(defaultReplyChannel, messages);
   }
 
   protected async invoke(
@@ -87,11 +87,22 @@ export class ConvoyCommandDispatcher implements Dispatcher {
   }
 
   async subscribe(): Promise<void> {
-    await this.messageConsumer.subscribe(
-      this.commandDispatcherId,
-      this.commandHandlers.getChannels(),
-      this.handleMessage.bind(this),
+    await Promise.all(
+      this.commandHandlers.getHandlers().map(async handler => {
+        await this.messageConsumer.subscribe(
+          this.commandDispatcherId,
+          [`${handler.channel}-${handler.command.name}`],
+          this.handleMessage.bind(this),
+        );
+      }),
     );
+
+    // TODO: We need a generic subscriber for channel ONLY, in case of multiple messages being sent to the same destination
+    // await this.messageConsumer.subscribe(
+    //   this.commandDispatcherId,
+    //   this.commandHandlers.getChannels(),
+    //   this.handleMessage.bind(this),
+    // );
   }
 
   async handleMessage(message: Message): Promise<void> {

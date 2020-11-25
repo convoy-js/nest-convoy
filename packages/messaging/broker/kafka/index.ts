@@ -1,1 +1,1 @@
-export * from './kafka-messaging-broker.module';
+export * from './kafka-messaging.module';

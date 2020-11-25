@@ -7,7 +7,7 @@ import {
   VersionColumn,
 } from 'typeorm';
 
-import { MessageHeaders, MessageRecordHeaders } from '../types';
+import { MessageHeaders, MessageRecordHeaders } from '../message-headers';
 
 @Index('message_published_idx', ['published', 'id'])
 @Entity('message')
@@ -21,11 +21,11 @@ export class MessageEntity<Payload> {
   @Column({
     type: 'simple-json',
     transformer: {
-      to(value: MessageRecordHeaders): MessageHeaders {
-        return new Map(Object.entries(value));
+      to(headers: MessageRecordHeaders): MessageHeaders {
+        return MessageHeaders.fromRecord(headers);
       },
-      from(value: MessageHeaders): MessageRecordHeaders {
-        return Object.fromEntries(value);
+      from(headers: MessageHeaders): MessageRecordHeaders {
+        return headers.asRecord();
       },
     },
   })

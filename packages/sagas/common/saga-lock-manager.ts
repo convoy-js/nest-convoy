@@ -79,7 +79,7 @@ export class SagaDatabaseLockManager extends SagaLockManager {
     target: string,
     message: Message,
   ): Promise<void> {
-    const messageHeaders = message.getHeadersAsRecord();
+    const messageHeaders = message.getHeaders().asRecord();
     const messageId = message.getRequiredHeader(Message.ID);
     const messagePayload = message.getPayload();
 

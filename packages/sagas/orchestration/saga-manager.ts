@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common';
+import { Logger, Type } from '@nestjs/common';
 
-import { Instance, RuntimeException } from '@nest-convoy/common';
+import { Instance } from '@nest-convoy/common';
 import {
   Message,
   MessageBuilder,
@@ -22,29 +22,19 @@ import {
   SagaLockManager,
   SagaReplyHeaders,
   SagaUnlockCommand,
+  StateMachineEmptyException,
 } from '@nest-convoy/sagas/common';
 
 import { SagaInstance } from './saga-instance';
 import { SagaInstanceRepository } from './saga-instance-repository';
 import { SagaCommandProducer } from './saga-command-producer';
-import { OnStarting, Saga, SagaLifecycleHooks } from './saga';
+import { Saga, SagaLifecycleHooks } from './saga';
 import { SagaDefinition } from './saga-definition';
 import { SagaActions } from './saga-actions';
 import { DestinationAndResource } from './destination-and-resource';
 
-// export interface SagaManager<Data extends any> {
-//   subscribeToReplyChannel(): Promise<void>;
-//   create(sagaData: Data): Promise<SagaInstance<Data>>;
-//   create(sagaData: Data, lockTarget?: string): Promise<SagaInstance<Data>>;
-//   create(
-//     data: Data,
-//     targetType: Type<Instance>,
-//     targetId: string,
-//   ): Promise<SagaInstance<Data>>;
-// }
-
-export class SagaManager<Data> /* implements SagaManager<Data>*/ {
-  private readonly logger = new Logger(SagaManager.name, true);
+export class SagaManager<Data> {
+  private readonly logger = new Logger(this.constructor.name, true);
 
   private get sagaType(): string {
     return this.saga.constructor.name;
@@ -71,7 +61,9 @@ export class SagaManager<Data> /* implements SagaManager<Data>*/ {
     const sm = this.saga.sagaDefinition;
 
     if (!sm) {
-      throw new RuntimeException('State machine cannot be empty');
+      throw new StateMachineEmptyException(
+        this.saga.constructor as Type<Saga<Data>>,
+      );
     }
 
     return sm;
@@ -115,7 +107,7 @@ export class SagaManager<Data> /* implements SagaManager<Data>*/ {
     sagaData: Data,
   ): Promise<void> {
     for (const dr of sagaInstance.destinationsAndResources) {
-      const headers: MessageHeaders = new Map();
+      const headers = new MessageHeaders();
       headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
       headers.set(SagaCommandHeaders.SAGA_TYPE, this.sagaType);
       await this.commandProducer.send(
@@ -261,16 +253,13 @@ export class SagaManager<Data> /* implements SagaManager<Data>*/ {
       null as never,
       '????',
       undefined,
-      ((sagaData as unknown) as Instance).constructor.name,
+      (<Instance>sagaData).constructor.name,
       sagaData,
     );
 
     sagaInstance = await this.sagaInstanceRepository.save(sagaInstance);
 
-    await (this.saga as OnStarting<Data>).onStarting?.(
-      sagaInstance.sagaId,
-      sagaData,
-    );
+    await this.saga.onStarting?.(sagaInstance.sagaId, sagaData);
 
     if (resource) {
       if (

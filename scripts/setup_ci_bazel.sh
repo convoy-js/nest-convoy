@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u -e -o pipefail
+set -ueo pipefail
 
 bazelrc_conf="$1"
 bazelrc_user="$2"

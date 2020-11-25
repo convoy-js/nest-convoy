@@ -19,8 +19,19 @@ export class SagaCommandProducer {
   ): Promise<string | undefined> {
     let messageId: string | undefined;
 
+    // commands = commands.map(command => {
+    //   const headers = new MessageHeaders();
+    //   headers.set(SagaCommandHeaders.SAGA_TYPE, sagaType);
+    //   headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
+    //   command.withExtraHeaders(headers);
+    //
+    //   return command;
+    // });
+    //
+    // await this.commandProducer.sendBatch()
+
     for (const command of commands) {
-      const headers: MessageHeaders = new Map(command.extraHeaders);
+      const headers = new MessageHeaders();
       headers.set(SagaCommandHeaders.SAGA_TYPE, sagaType);
       headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
 

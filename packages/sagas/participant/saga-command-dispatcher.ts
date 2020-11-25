@@ -3,6 +3,7 @@ import { Message } from '@nest-convoy/messaging/common';
 import { RuntimeException } from '@nest-convoy/common';
 import { ConvoyMessageProducer } from '@nest-convoy/messaging/producer';
 import {
+  CannotClaimLockException,
   SagaLockManager,
   StashMessageRequiredException,
 } from '@nest-convoy/sagas/common';
@@ -76,7 +77,11 @@ export class SagaCommandDispatcher extends ConvoyCommandDispatcher {
             lockTarget.target,
           ))
         ) {
-          throw new RuntimeException('Cannot claim lock');
+          throw new CannotClaimLockException(
+            sagaType,
+            sagaId,
+            lockTarget.target,
+          );
         }
 
         return addLockedHeader(messages, lockTarget.target);

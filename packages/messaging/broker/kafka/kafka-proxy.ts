@@ -2,19 +2,24 @@ import { Consumer, Kafka, KafkaConfig, Producer } from 'kafkajs';
 import {
   Inject,
   Injectable,
+  Logger,
   OnApplicationBootstrap,
   OnApplicationShutdown,
 } from '@nestjs/common';
 
 import { KAFKA_CONFIG } from './tokens';
+import { KafkaLogger } from './kafka-logger';
 
 export const GROUP_ID = 'nest-convoy';
 
 @Injectable()
 export class KafkaProxy
   implements OnApplicationBootstrap, OnApplicationShutdown {
-  // TODO: Custom logger
-  private readonly kafka = new Kafka(this.config);
+  private readonly logger = new Logger(this.constructor.name);
+  private readonly kafka = new Kafka({
+    ...this.config,
+    logCreator: KafkaLogger.bind(null, this.logger),
+  });
   readonly producer: Producer = this.kafka.producer({
     idempotent: true,
   });

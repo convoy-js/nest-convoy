@@ -7,7 +7,7 @@ nest_library(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
-    module_name = "@nest-convoy/in-memory",
+    module_name = "@nest-convoy/messaging/broker/in-memory",
     deps = [
         "//packages/commands/common",
         "//packages/core",
@@ -15,10 +15,4 @@ nest_library(
         "//packages/messaging/consumer",
         "//packages/messaging/producer",
     ],
-)
-
-pkg_npm(
-    name = "package",
-    srcs = ["package.json"],
-    deps = [":in-memory"],
 )

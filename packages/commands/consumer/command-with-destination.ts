@@ -8,6 +8,11 @@ export class CommandWithDestination<C = Command> implements Command {
     readonly channel: string,
     readonly command: C,
     readonly resource?: string,
-    readonly extraHeaders: MessageHeaders = new Map(),
+    public extraHeaders = new MessageHeaders(),
   ) {}
+
+  withExtraHeaders(headers: MessageHeaders): MessageHeaders {
+    this.extraHeaders = new MessageHeaders(headers);
+    return this.extraHeaders;
+  }
 }

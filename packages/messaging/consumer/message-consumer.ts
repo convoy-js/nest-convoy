@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 
-import { AsyncLikeFn, Consumer } from '@nest-convoy/common';
+import { AsyncLikeFn } from '@nest-convoy/common';
 import {
   ConvoyChannelMapping,
   Message,
@@ -12,38 +12,53 @@ import { DuplicateMessageDetector } from './duplicate-message-detectors';
 
 @Injectable()
 export abstract class MessageConsumer {
-  abstract id: string;
+  protected readonly handlers = new Map<string, readonly MessageHandler[]>();
+
+  protected addHandlerToChannel(
+    channel: string,
+    handler: MessageHandler,
+  ): void {
+    const handlers = this.handlers.get(channel) || [];
+    this.handlers.set(channel, [...handlers, handler]);
+  }
+
+  protected getHandlersByChannel(channel: string): readonly MessageHandler[] {
+    return this.handlers.get(channel) || [];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   abstract subscribe(
     subscriberId: string,
     channels: readonly string[],
-    handler: Consumer<Message>,
+    handler: MessageHandler,
     isEventHandler?: boolean,
   ): MessageSubscription;
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   close(): Promise<void> | void {}
 }
 
 @Injectable()
 export class ConvoyMessageConsumer
-  implements MessageConsumer, OnApplicationShutdown {
+  extends MessageConsumer
+  implements OnApplicationShutdown {
   private readonly subs = new Map<string, AsyncLikeFn>();
   private readonly logger = new Logger(this.constructor.name, true);
-
-  get id(): string {
-    return this.target.id;
-  }
 
   constructor(
     private readonly duplicateMessageDetector: DuplicateMessageDetector,
     private readonly channelMapping: ConvoyChannelMapping,
     private readonly target: MessageConsumer,
-  ) {}
+  ) {
+    super();
+  }
 
   async handleMessage(
     subscriberId: string,
     message: Message,
     handler: MessageHandler,
   ): Promise<void> {
+    // TODO: Should be able to remove this now since brokers handle subscribers and acknowledgement
     await this.duplicateMessageDetector.doWithMessage(
       subscriberId,
       message,

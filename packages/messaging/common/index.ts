@@ -1,4 +1,5 @@
 export * from './message';
+export * from './message-headers';
 export * from './message-interceptor';
 export * from './tokens';
 export * from './exceptions';

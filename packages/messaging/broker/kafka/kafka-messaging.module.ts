@@ -8,6 +8,7 @@ import {
 import {
   ConvoyMessagingConsumerModule,
   ConvoyMessagingProducerModule,
+  DatabaseDuplicateMessageDetector,
 } from '@nest-convoy/messaging';
 
 import { KafkaMessageBuilder } from './kafka-message-builder';
@@ -19,23 +20,28 @@ import { KAFKA_CONFIG } from './tokens';
 export interface ConvoyKafkaMessagingBrokerModuleOptions {
   readonly consumer?: Omit<ConsumerConfig, 'groupId'>;
   readonly producer?: Omit<ProducerConfig, 'idempotent'>;
-  readonly database?: ConvoyTypeOrmOptions;
+  readonly database: ConvoyTypeOrmOptions;
 }
 
 @Global()
 @Module({})
-export class ConvoyKafkaMessagingBrokerModule {
+export class ConvoyKafkaMessagingModule {
   static register(
-    config: KafkaConfig,
-    { database }: ConvoyKafkaMessagingBrokerModuleOptions = {},
+    config: Omit<KafkaConfig, 'logCreator'>,
+    { database }: ConvoyKafkaMessagingBrokerModuleOptions,
   ): DynamicModule {
     return {
-      module: ConvoyKafkaMessagingBrokerModule,
+      module: ConvoyKafkaMessagingModule,
       imports: [
         ConvoyCoreModule.forRoot(database),
-        ConvoyMessagingConsumerModule.register({
-          useExisting: KafkaMessageConsumer,
-        }),
+        ConvoyMessagingConsumerModule.register(
+          {
+            useExisting: KafkaMessageConsumer,
+          },
+          {
+            useClass: DatabaseDuplicateMessageDetector,
+          },
+        ),
         ConvoyMessagingProducerModule.register({
           useExisting: KafkaMessageProducer,
         }),

@@ -14,4 +14,16 @@ export class InMemoryMessageProducer extends MessageProducer {
   async send(destination: string, message: Message): Promise<void> {
     await this.messageConsumer.dispatchMessage(destination, message);
   }
+
+  async sendBatch(
+    destination: string,
+    messages: readonly Message[],
+    isEvent: boolean,
+  ): Promise<void> {
+    await Promise.all(
+      messages.map(message =>
+        this.messageConsumer.dispatchMessage(destination, message),
+      ),
+    );
+  }
 }

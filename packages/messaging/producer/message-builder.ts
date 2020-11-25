@@ -19,7 +19,7 @@ export class MessageBuilder {
     return new MessageBuilder(payload as string);
   }
 
-  protected readonly headers: MessageHeaders = new Map();
+  protected readonly headers = new MessageHeaders();
   protected body: string;
 
   constructor(messageOrPayload: string | Message) {

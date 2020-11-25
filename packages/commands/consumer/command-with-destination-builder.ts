@@ -34,7 +34,7 @@ export class CommandWithDestinationBuilder<C extends Command>
 
   withExtraHeaders(headers: MessageHeaders | MessageRecordHeaders): this {
     this.extraHeaders =
-      headers instanceof Map ? headers : new Map(Object.entries(headers));
+      headers instanceof Map ? headers : MessageHeaders.fromRecord(headers);
 
     return this;
   }

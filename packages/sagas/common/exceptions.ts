@@ -8,8 +8,14 @@ export class StashMessageRequiredException extends RuntimeException {
   }
 }
 
+export class StateMachineEmptyException extends RuntimeException {
+  constructor(sagaType: Type<any>) {
+    super('State machine cannot be empty');
+  }
+}
+
 export class CannotClaimLockException extends RuntimeException {
-  constructor() {
+  constructor(sagaType: string, sagaId: string, target: string) {
     super('Cannot claim lock');
   }
 }

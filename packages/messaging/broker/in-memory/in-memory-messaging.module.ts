@@ -1,7 +1,6 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 
 import { ConvoyMessagingConsumerModule } from '@nest-convoy/messaging/consumer';
-// import { DuplicateMessageDetector } from '@nest-convoy/messaging/consumer/duplicate-message-detectors';
 import { ConvoyMessagingProducerModule } from '@nest-convoy/messaging/producer';
 import { ConvoyCoreModule } from '@nest-convoy/core/core.module';
 
@@ -23,17 +22,12 @@ export class ConvoyInMemoryMessagingModule {
           useExisting: InMemoryMessageProducer,
         }),
       ],
-      providers: [
-        // DuplicateMessageDetector,
-        InMemoryMessageConsumer,
-        InMemoryMessageProducer,
-      ],
+      providers: [InMemoryMessageConsumer, InMemoryMessageProducer],
       exports: [
         ConvoyMessagingConsumerModule,
         ConvoyMessagingProducerModule,
         InMemoryMessageConsumer,
         InMemoryMessageProducer,
-        // DuplicateMessageDetector,
       ],
     };
   }

@@ -23,11 +23,11 @@ export class SagaStashEntity<P = Record<string, unknown>> {
     name: 'message_headers',
     type: 'simple-json',
     transformer: {
-      to(value: MessageRecordHeaders): MessageHeaders {
-        return new Map(Object.entries(value));
+      to(headers: MessageRecordHeaders): MessageHeaders {
+        return MessageHeaders.fromRecord(headers);
       },
-      from(value: MessageHeaders): MessageRecordHeaders {
-        return Object.fromEntries(value);
+      from(headers: MessageHeaders): MessageRecordHeaders {
+        return headers.asRecord();
       },
     },
   })

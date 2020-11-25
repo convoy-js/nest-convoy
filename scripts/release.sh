@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-set -u -e -o pipefail
-
+set -ueo pipefail
 # Call the script with argument "pack" or "publish"
 readonly NPM_COMMAND=${1:-publish}
 # Use a new output_base so we get a clean build

@@ -14,14 +14,22 @@ export class KafkaMessageProducer extends MessageProducer {
     super();
   }
 
+  async sendBatch(
+    destination: string,
+    messages: readonly Message[],
+    isEvent: boolean,
+  ): Promise<void> {
+    await this.kafka.producer.send({
+      topic: destination,
+      messages: messages.map(message => this.message.to(message)),
+    });
+  }
+
   async send(
     destination: string,
     message: Message,
     isEvent: boolean,
   ): Promise<void> {
-    await this.kafka.producer.send({
-      topic: destination,
-      messages: [this.message.to(message)],
-    });
+    await this.sendBatch(destination, [message], isEvent);
   }
 }

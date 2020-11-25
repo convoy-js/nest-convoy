@@ -16,13 +16,6 @@ export abstract class CommandProducer {
     headers: MessageHeaders,
     resource?: string,
   ): Promise<string> | string;
-  // send(
-  //   channel: string,
-  //   resource: string,
-  //   command: Command,
-  //   replyTo: string,
-  //   headers: MessageHeaders,
-  // ): string;
 }
 
 @Injectable()
@@ -51,11 +44,15 @@ export class ConvoyCommandProducer extends CommandProducer {
     return builder.build();
   }
 
+  async sendBatch(channel: string, commands: Command[]): Promise<string[]> {
+    return [];
+  }
+
   async send(
     channel: string,
     command: Command,
     replyTo: string,
-    headers: MessageHeaders = new Map(),
+    headers = new MessageHeaders(),
     resource?: string,
   ): Promise<string> {
     const message = this.createMessage(
@@ -65,7 +62,10 @@ export class ConvoyCommandProducer extends CommandProducer {
       headers,
       resource,
     );
-    await this.messageProducer.send(channel, message);
+    const destination = `${channel}-${message.getRequiredHeader(
+      CommandMessageHeaders.COMMAND_TYPE,
+    )}`;
+    await this.messageProducer.send(destination, message);
     return message.id;
   }
 }

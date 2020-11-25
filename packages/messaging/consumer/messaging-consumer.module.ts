@@ -12,21 +12,24 @@ import {
 @Module({})
 export class ConvoyMessagingConsumerModule {
   static register(
-    provider: Omit<Provider<MessageConsumer>, 'provide'>,
+    messageConsumer: Omit<Provider<MessageConsumer>, 'provide'>,
+    duplicateMessageDetector: Omit<
+      Provider<DuplicateMessageDetector>,
+      'provide'
+    > = DuplicateMessageDetector,
   ): DynamicModule {
     return {
       module: ConvoyMessagingConsumerModule,
       imports: [ConvoyMessagingCommonModule],
       providers: [
         ConvoyMessageConsumer,
-        // DuplicateMessageDetector,
         {
           provide: DuplicateMessageDetector,
-          useClass: DatabaseDuplicateMessageDetector,
-        },
+          ...duplicateMessageDetector,
+        } as Provider<DuplicateMessageDetector>,
         {
           provide: MessageConsumer,
-          ...provider,
+          ...messageConsumer,
         } as Provider<MessageConsumer>,
       ],
       exports: [

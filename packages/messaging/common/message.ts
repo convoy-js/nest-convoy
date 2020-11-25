@@ -1,5 +1,5 @@
 import { MissingMessageHeaderException } from './exceptions';
-import type { MessageRecordHeaders, MessageHeaders } from './types';
+import { MessageHeaders } from './message-headers';
 
 export class Message {
   static ID = 'id';
@@ -11,12 +11,15 @@ export class Message {
     return this.getRequiredHeader(Message.ID);
   }
 
-  constructor(private payload: string, private headers: MessageHeaders) {}
+  constructor(
+    private payload: string,
+    private headers = new MessageHeaders(),
+  ) {}
 
   toString(): string {
     return JSON.stringify({
       payload: this.payload,
-      headers: this.getHeadersAsRecord(),
+      headers: this.getHeaders().asRecord(),
     });
   }
 
@@ -38,20 +41,13 @@ export class Message {
     return this;
   }
 
-  setHeader(name: string, value: string | number): this {
-    if (!this.headers) {
-      this.headers = new Map();
-    }
-    this.headers.set(name, String(value));
+  setHeader(name: string, value: string): this {
+    this.headers.set(name, value);
     return this;
   }
 
   removeHeader(name: string): boolean {
     return this.headers.delete(name);
-  }
-
-  getHeadersAsRecord(): MessageRecordHeaders {
-    return Object.fromEntries(this.getHeaders().entries());
   }
 
   getHeaders(): MessageHeaders {

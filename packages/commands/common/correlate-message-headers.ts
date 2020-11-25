@@ -6,7 +6,7 @@ import { ReplyMessageHeaders } from './reply-message-headers';
 export function correlateMessageHeaders(
   headers: MessageHeaders,
 ): MessageHeaders {
-  const correlationHeaders = new Map(
+  const correlationHeaders = new MessageHeaders(
     [...headers.entries()]
       .filter(([key]) =>
         CommandMessageHeaders.headerStartsWithCommandPrefix(key),
