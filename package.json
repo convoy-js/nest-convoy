@@ -60,7 +60,7 @@
     "jest-cli": "26.6.3",
     "lint-staged": "10.5.1",
     "patch-package": "6.2.2",
-    "prettier": "2.1.2",
+    "prettier": "2.2.1",
     "typescript": "4.0.5"
   },
   "dependencies": {
