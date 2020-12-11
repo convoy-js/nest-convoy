@@ -33,7 +33,7 @@ export function getAggregateRepositoryToken<E>(aggregate: Type<E>) {
   return `${aggregate.name}AggregateRepository`;
 }
 
-class CommandOutcome<E extends readonly any[]> {
+class CommandOutcome<E extends readonly DomainEvent[]> {
   constructor(readonly events: E, readonly throwable?: RuntimeException) {}
 
   isFailure(): boolean {
@@ -142,7 +142,7 @@ export class AggregateRepository<
     entityId: string,
     commandProvider: CommandProvider<AR, C>,
     options?: AggregateCrudUpdateOptions<AR, S>,
-  ): Observable<EntityIdAndVersion> {
+  ): Promise<EntityIdAndVersion> {
     return this.withRetry<EntityIdAndVersion>(async () => {
       const entityWithMetadata = await this.aggregateStore.find(
         this.aggregateType,
@@ -201,7 +201,7 @@ export class AggregateRepository<
           return { entityId, entityVersion };
         }
       }
-    });
+    }).toPromise();
   }
 
   async save<C>(
@@ -219,10 +219,6 @@ export class AggregateRepository<
     cmd: C,
     options?: AggregateCrudUpdateOptions<AR, S>,
   ): Promise<EntityIdAndVersion> {
-    return this.updateWithProvidedCommand(
-      entityId,
-      () => cmd,
-      options,
-    ).toPromise();
+    return this.updateWithProvidedCommand(entityId, () => cmd, options);
   }
 }

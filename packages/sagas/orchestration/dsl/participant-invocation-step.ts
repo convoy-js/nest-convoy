@@ -1,5 +1,6 @@
 import { Message } from '@nest-convoy/messaging/common';
 import { ReplyMessageHeaders } from '@nest-convoy/commands/common';
+import { AsyncLike } from '@nest-convoy/common';
 
 import { SagaStep, SagaStepReply } from './saga-step';
 import { BaseParticipantInvocation } from './participant-invocation';
@@ -21,13 +22,13 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
     return compensation ? this.compensation : this.participantInvocation;
   }
 
-  hasAction(data: Data): Promise<boolean> | boolean {
+  hasAction(data: Data): AsyncLike<boolean> {
     return typeof this.participantInvocation?.isInvocable === 'function'
       ? this.participantInvocation?.isInvocable?.(data)
       : !!this.participantInvocation;
   }
 
-  hasCompensation(data: Data): Promise<boolean> | boolean {
+  hasCompensation(data: Data): AsyncLike<boolean> {
     return typeof this.compensation?.isInvocable === 'function'
       ? this.compensation?.isInvocable?.(data)
       : !!this.compensation;

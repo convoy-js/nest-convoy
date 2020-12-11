@@ -1,10 +1,12 @@
+import { AsyncLike } from '@nest-convoy/common';
+
 import { Message } from './message';
 
 export interface MessageInterceptor {
-  preSend?(message: Message): Promise<void> | void;
-  postSend?(message: Message, error?: Error): Promise<void> | void;
-  preReceive?(message: Message): Promise<void> | void;
-  preHandle?(subscriberId: string, message: Message): Promise<void> | void;
-  postHandle?(subscriberId: string, message: Message): Promise<void> | void;
-  postReceive?(message: Message): Promise<void> | void;
+  preSend?(message: Message): AsyncLike<void>;
+  postSend?(message: Message, error?: Error): AsyncLike<void>;
+  preReceive?(message: Message): AsyncLike<void>;
+  preHandle?(subscriberId: string, message: Message): AsyncLike<void>;
+  postHandle?(subscriberId: string, message: Message): AsyncLike<void>;
+  postReceive?(message: Message): AsyncLike<void>;
 }

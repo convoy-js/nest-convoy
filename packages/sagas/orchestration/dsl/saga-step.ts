@@ -1,7 +1,7 @@
 import { Type } from '@nestjs/common';
 
 import { Message } from '@nest-convoy/messaging/common';
-import { AsyncLikeFn } from '@nest-convoy/common';
+import { AsyncLike, AsyncLikeFn } from '@nest-convoy/common';
 
 import { StepOutcome } from './step-outcome';
 
@@ -23,6 +23,6 @@ export interface SagaStep<Data> {
     compensating: boolean,
   ): SagaStepReply<Data> | void;
   createStepOutcome(data: Data, compensating: boolean): Promise<StepOutcome>;
-  hasAction(data: Data): Promise<boolean> | boolean;
-  hasCompensation(data: Data): Promise<boolean> | boolean;
+  hasAction(data: Data): AsyncLike<boolean>;
+  hasCompensation(data: Data): AsyncLike<boolean>;
 }

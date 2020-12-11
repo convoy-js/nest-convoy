@@ -13,13 +13,13 @@ import { SagaCommandHandlerPreLock } from './saga-reply-lock';
 export type CommandMessageHandler<
   C extends Command = Command,
   R = Instance | Message | undefined
-> = AsyncLikeFn<[cm: CommandMessage<C> /*, pvs?: Map<string, string>*/], R>;
+> = AsyncLikeFn<[cm: CommandMessage<C>, pvs?: Map<string, string>], R | R[]>;
 
 export interface CommandMessageHandlerOptions<T = any> {
   readonly withLock?: boolean;
   readonly preLock?: SagaCommandHandlerPreLock<T>;
   // Use @CommandDestination() instead
-  readonly destination?: string;
+  // readonly destination?: string;
 }
 
 export class CommandHandler implements Handler<CommandMessageHandler> {

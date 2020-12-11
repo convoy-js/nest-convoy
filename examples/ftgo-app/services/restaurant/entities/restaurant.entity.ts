@@ -18,8 +18,4 @@ export class Restaurant extends AggregateRoot<Restaurant> {
 
   @Column(() => Address)
   address: Address;
-
-  applyEvent<E>(event: E): this {
-    return this;
-  }
 }

@@ -1,3 +1,5 @@
+import { AsyncLike } from '@nest-convoy/common';
+
 export abstract class AggregateRoot<T = Record<string, unknown>> {
   abstract id: string | number;
 
@@ -5,7 +7,7 @@ export abstract class AggregateRoot<T = Record<string, unknown>> {
     Object.assign(this, values);
   }
 
-  applyEvent<E>(event: E): Promise<this> | this {
+  applyEvent<E>(event: E): AsyncLike<this> {
     return this;
   }
 }

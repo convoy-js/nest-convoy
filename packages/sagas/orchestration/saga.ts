@@ -1,3 +1,5 @@
+import { AsyncLike } from '@nest-convoy/common';
+
 import { SagaDefinition } from './saga-definition';
 
 export type SagaLifecycleHooks<Data> = Partial<
@@ -9,13 +11,13 @@ export abstract class Saga<Data> implements SagaLifecycleHooks<Data> {
 }
 
 export interface OnSagaCompletedSuccessfully<Data> extends Saga<Data> {
-  onSagaCompletedSuccessfully(sagaId: string, data: Data): Promise<void> | void;
+  onSagaCompletedSuccessfully(sagaId: string, data: Data): AsyncLike<void>;
 }
 
 export interface OnStarting<Data> extends Saga<Data> {
-  onStarting(sagaId: string, data: Data): Promise<void> | void;
+  onStarting(sagaId: string, data: Data): AsyncLike<void>;
 }
 
 export interface OnSagaRolledBack<Data> extends Saga<Data> {
-  onSagaRolledBack(sagaId: string, data: Data): Promise<void> | void;
+  onSagaRolledBack(sagaId: string, data: Data): AsyncLike<void>;
 }

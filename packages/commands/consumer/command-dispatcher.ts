@@ -10,7 +10,6 @@ import {
 import {
   CommandMessageHeaders,
   correlateMessageHeaders,
-  Failure,
   MissingCommandHandlerException,
 } from '@nest-convoy/commands/common';
 
@@ -60,29 +59,22 @@ export class ConvoyCommandDispatcher implements Dispatcher {
   ): Promise<readonly Message[]> {
     // TODO: Figure out whether or not it should sendReplies or handleException
     try {
-      const reply = await commandHandler.invoke(commandMessage);
-      return [
+      const result = await commandHandler.invoke(commandMessage);
+      const replies = Array.isArray(result) ? result : [result];
+      return replies.map(reply =>
         reply instanceof Message
           ? reply
           : commandHandler.options.withLock
           ? withLock(commandMessage.command).withSuccess(reply)
           : withSuccess(reply),
-      ];
-      // return Array.isArray(reply)
-      //   ? reply.map(r => (r instanceof Message ? r : withSuccess(r)))
-      //   : reply instanceof Message
-      //   ? [reply]
-      //   : [
-      //       commandHandler.options.withLock
-      //         ? withLock(commandMessage.command).withSuccess(reply)
-      //         : withSuccess(reply),
-      //     ];
+      );
     } catch (err) {
-      return [
+      const errors = err instanceof AggregateError ? err.errors : [err];
+      return errors.map(reply =>
         commandHandler.options.withLock
-          ? withLock(commandMessage.command).withFailure(err)
-          : withFailure(err),
-      ];
+          ? withLock(commandMessage.command).withFailure(reply)
+          : withFailure(reply),
+      );
     }
   }
 

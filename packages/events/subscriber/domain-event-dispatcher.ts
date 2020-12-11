@@ -18,14 +18,16 @@ export class DomainEventDispatcher implements Dispatcher {
   ) {}
 
   async subscribe(): Promise<void> {
-    await this.domainEventHandlers.getHandlers().map(async handler => {
-      await this.messageConsumer.subscribe(
-        this.eventDispatcherId,
-        [`${handler.aggregateType}-${handler.event.name}`],
-        this.handleMessage.bind(this),
-        true,
-      );
-    });
+    await Promise.all(
+      this.domainEventHandlers.getHandlers().map(async handler => {
+        await this.messageConsumer.subscribe(
+          this.eventDispatcherId,
+          [`${handler.aggregateType}-${handler.event.name}`],
+          this.handleMessage.bind(this),
+          true,
+        );
+      }),
+    );
 
     // await this.messageConsumer.subscribe(
     //   this.eventDispatcherId,
@@ -34,7 +36,6 @@ export class DomainEventDispatcher implements Dispatcher {
     //   true,
     // );
   }
-
   async handleMessage(message: Message): Promise<void> {
     const aggregateType = message.getRequiredHeader(
       EventMessageHeaders.AGGREGATE_TYPE,

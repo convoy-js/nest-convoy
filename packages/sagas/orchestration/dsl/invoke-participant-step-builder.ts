@@ -126,6 +126,9 @@ export class InvokeParticipantStepBuilder<Data>
     return this;
   }
 
+  /**
+   * With compensation
+   */
   withCompensation<C extends Command>(
     compensation: Compensation<Data, C>,
   ): this;
@@ -147,6 +150,9 @@ export class InvokeParticipantStepBuilder<Data>
     return this;
   }
 
+  /**
+   * On reply
+   */
   onReply<T, R>(type: Type<T>, handler: SagaStepReplyHandler<Data, R>): this {
     handler = handler.bind(this.parent.saga);
 
@@ -159,6 +165,9 @@ export class InvokeParticipantStepBuilder<Data>
     return this;
   }
 
+  /**
+   * Step
+   */
   step(): StepBuilder<Data> {
     this.addStep();
     return new StepBuilder<Data>(this.parent);

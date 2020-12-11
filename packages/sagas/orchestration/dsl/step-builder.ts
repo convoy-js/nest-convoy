@@ -20,10 +20,16 @@ export interface BaseStepBuilder<Data> {
 export class StepBuilder<Data> implements WithCompensationBuilder<Data> {
   constructor(private readonly parent: NestSagaDefinitionBuilder<Data>) {}
 
+  /**
+   * Invokes a local action
+   */
   invokeLocal(handler: Consumer<Data>): LocalStepBuilder<Data> {
     return new LocalStepBuilder<Data>(this.parent, handler);
   }
 
+  /**
+   * Invoke participant
+   */
   invokeParticipant<C extends Command>(
     action: CommandProvider<Data, C>,
     participantInvocationPredicate?: Predicate<Data>,
@@ -41,6 +47,9 @@ export class StepBuilder<Data> implements WithCompensationBuilder<Data> {
     );
   }
 
+  /**
+   * With compensation
+   */
   withCompensation<C extends Command>(
     compensation: Compensation<Data, C>,
   ): InvokeParticipantStepBuilder<Data>;

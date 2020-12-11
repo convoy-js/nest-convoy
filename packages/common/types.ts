@@ -17,7 +17,9 @@ export type Consumer<T, S = any, A extends unknown[] = unknown[]> = AsyncLikeFn<
 
 export type AsyncLikeFn<T extends any[] = any[], R = unknown> = (
   ...args: T
-) => Promise<R> | R;
+) => AsyncLike<R>;
+
+export type AsyncLike<R> = Promise<R> | R;
 
 export type Predicate<T extends any> = AsyncLikeFn<[T], boolean>;
 
@@ -44,16 +46,6 @@ export interface Handler<H extends AsyncLikeFn> {
   handles(message: unknown): boolean;
   readonly invoke: H;
 }
-
-// export interface EventHandler<I = any, T = any> extends BaseHandler<I> {
-//   event: Type<T>;
-// }
-//
-// export interface CommandHandler<I = any, T = any> extends BaseHandler<I> {
-//   command: Type<T>;
-// }
-//
-// export type Handler<I, T = any> = EventHandler<I, T> | CommandHandler<I, T>;
 
 export interface DispatcherFactory<D, H extends Handlers<any>> {
   create(id: string, handlers: H): D;

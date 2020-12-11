@@ -22,11 +22,17 @@ export class LocalStepBuilder<Data> implements BaseStepBuilder<Data> {
     );
   }
 
+  /**
+   * Compensates for action failures in a reversed order
+   */
   withCompensation(localCompensation: Consumer<Data>): this {
     this.compensation = localCompensation.bind(this.parent.saga);
     return this;
   }
 
+  /**
+   * Step
+   */
   step(): StepBuilder<Data> {
     this.addStep();
     return new StepBuilder<Data>(this.parent);

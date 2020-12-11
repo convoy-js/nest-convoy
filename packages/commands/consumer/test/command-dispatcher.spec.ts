@@ -6,6 +6,7 @@ import {
   ConvoyMessageConsumer,
   ConvoyMessageProducer,
   MissingMessageHeaderException,
+  MessageHeaders,
 } from '@nest-convoy/messaging';
 import {
   CommandMessageHeaders,
@@ -64,7 +65,7 @@ describe('CommandDispatcher', () => {
 
       const message = new Message(
         '{"id":"1"}',
-        new Map([
+        new MessageHeaders([
           [Message.ID, '1'],
           [CommandMessageHeaders.COMMAND_TYPE, TestCommand.name],
           [CommandMessageHeaders.REPLY_TO, replyTo],
@@ -134,7 +135,7 @@ describe('CommandDispatcher', () => {
       beforeEach(() => {
         message = new Message(
           '{}',
-          new Map([
+          new MessageHeaders([
             [Message.ID, '1'],
             // [CommandMessageHeaders.COMMAND_TYPE, Test2Command.name],
           ]),
