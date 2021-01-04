@@ -9,7 +9,7 @@ nest_library(
     deps = [
         "//packages/commands",
         "//packages/common",
-        "//packages/in-memory",
+        "//packages/messaging/broker/in-memory",
         "//packages/messaging",
         "//packages/sagas",
         "//packages/sagas/common",

@@ -35,7 +35,7 @@ export class AggregateCrudMapping {
     if (!type) {
       throw new Error('Could not find snapshot ' + ss.type);
     }
-    return Object.assign(new type(), JSON.parse(ss.json));
+    return Object.assign(new type(), JSON.parse(ss.json) as S);
   }
 
   toEventTypeAndData<E extends Record<string, unknown>>(

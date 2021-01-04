@@ -8,8 +8,8 @@
   "dependencies": {
     "@nest-convoy/core": "0.0.0-PLACEHOLDER",
     "@nest-convoy/common": "0.0.0-PLACEHOLDER",
-    "uuid": "8.3.0",
-    "tslib": "2.0.1"
+    "uuid": "8.3.2",
+    "tslib": "2.0.3"
   },
   "peerDependencies": {
     "@nestjs/common": ">=7.3.0"

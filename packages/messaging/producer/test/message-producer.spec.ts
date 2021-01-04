@@ -5,6 +5,7 @@ import { mockProvider } from '@nest-convoy/testing';
 import {
   ConvoyChannelMapping,
   Message,
+  MessageHeaders,
   MessageInterceptor,
   MissingRequiredMessageIDException,
   NEST_CONVOY_MESSAGE_INTERCEPTORS,
@@ -17,6 +18,12 @@ class TestMessageProducer extends MessageProducer {
   async send(
     destination: string,
     message: Message,
+    isEvent: boolean,
+  ): Promise<void> {}
+
+  async sendBatch(
+    destination: string,
+    messages: readonly Message[],
     isEvent: boolean,
   ): Promise<void> {}
 }
@@ -58,7 +65,10 @@ describe('ConvoyMessageProducer', () => {
       ],
     }).compile();
 
-    message = new Message('{}', new Map([[Message.ID, '1']]));
+    message = new Message(
+      '{}',
+      MessageHeaders.fromRecord({ [Message.ID]: '1' }),
+    );
     destination = '';
 
     mockedMessageProducer = module.get(MessageProducer);

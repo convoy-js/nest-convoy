@@ -27,7 +27,10 @@ export class KafkaMessageBuilder {
       .withExtraHeaders(
         new MessageHeaders(
           message.headers
-            ? Object.entries(message.headers).map(([k, v]) => [k, v.toString()])
+            ? Object.entries(message.headers).map(([key, value]) => [
+                key,
+                value!.toString(),
+              ])
             : null,
         ),
       )

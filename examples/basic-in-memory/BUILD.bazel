@@ -9,7 +9,7 @@ nest_library(
     ),
     deps = [
         "//packages/core",
-        "//packages/in-memory",
+        "//packages/messaging/broker/in-memory",
         "@npm//@nestjs/core",
     ],
 )

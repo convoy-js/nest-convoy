@@ -29,7 +29,7 @@ export class Message {
   }
 
   parsePayload<T = any>(): T {
-    return JSON.parse(this.payload);
+    return JSON.parse(this.payload) as T;
   }
 
   getPayload(): string {

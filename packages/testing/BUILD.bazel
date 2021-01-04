@@ -10,7 +10,7 @@ nest_library(
     module_name = "@nest-convoy/testing",
     deps = [
         "//packages/commands",
-        "//packages/in-memory",
+        "//packages/messaging/broker/in-memory",
         "//packages/messaging",
         "//packages/testing/common",
         "//packages/testing/sagas",
