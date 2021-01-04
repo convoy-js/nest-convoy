@@ -36,9 +36,7 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     @InjectRepository(SagaInstanceEntity, NEST_CONVOY_CONNECTION)
     private readonly sagaInstanceRepository: Repository<SagaInstanceEntity>,
     @InjectRepository(SagaInstanceParticipantsEntity, NEST_CONVOY_CONNECTION)
-    private readonly sagaInstanceParticipantsRepository: Repository<
-      SagaInstanceParticipantsEntity
-    >,
+    private readonly sagaInstanceParticipantsRepository: Repository<SagaInstanceParticipantsEntity>,
   ) {
     super();
   }

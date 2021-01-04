@@ -11,9 +11,7 @@ import { MissingApplyMethodException } from './exceptions';
 export class Aggregates {
   constructor(
     @Inject(MISSING_APPLY_EVENT_METHOD_STRATEGY)
-    private readonly missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<
-      any
-    >,
+    private readonly missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<any>,
   ) {}
 
   async applyEvents<AR extends AggregateRoot, E extends readonly any[]>(

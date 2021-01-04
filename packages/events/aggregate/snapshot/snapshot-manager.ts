@@ -26,9 +26,7 @@ export class SnapshotManager implements OnModuleInit {
     private readonly explorer: ExplorerService,
     private readonly modulesContainer: ModulesContainer,
     @Inject(MISSING_APPLY_EVENT_METHOD_STRATEGY)
-    private readonly missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<
-      any
-    >,
+    private readonly missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<any>,
   ) {}
 
   // addStrategy(snapshot: NestSnapshotStrategy<any, any>): void {

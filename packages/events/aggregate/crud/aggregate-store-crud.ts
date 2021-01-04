@@ -37,9 +37,7 @@ export class AggregateStoreCrud {
     @Inject(AGGREGATE_CRUD)
     private readonly aggregateCrud: AggregateCrud,
     @Inject(MISSING_APPLY_EVENT_METHOD_STRATEGY)
-    private readonly missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<
-      any
-    >,
+    private readonly missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<any>,
     @Inject(EVENT_SCHEMA_MANAGER)
     private readonly eventSchemaManager: EventSchemaManager,
   ) {}

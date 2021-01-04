@@ -25,9 +25,7 @@ export abstract class CommandProcessingAggregate<
 > /*<
   T extends CommandProcessingAggregate<T, C>,
   C extends Command
-> */ extends AggregateRoot<
-  T
-> {
+> */ extends AggregateRoot<T> {
   private handle<T>(target: any, metadataKey: string): T {
     const keys = Object.getOwnPropertyNames(this.constructor.prototype);
     const methodName = keys.find(key => {

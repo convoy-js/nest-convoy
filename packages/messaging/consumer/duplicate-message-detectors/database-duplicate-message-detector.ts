@@ -15,9 +15,7 @@ import { DuplicateMessageDetector } from './duplicate-message-detector';
 export class DatabaseDuplicateMessageDetector extends DuplicateMessageDetector {
   constructor(
     @InjectRepository(ReceivedMessagesEntity, NEST_CONVOY_CONNECTION)
-    private readonly receivedMessagesRepository: Repository<
-      ReceivedMessagesEntity
-    >,
+    private readonly receivedMessagesRepository: Repository<ReceivedMessagesEntity>,
   ) {
     super();
   }
