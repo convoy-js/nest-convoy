@@ -1,0 +1,11 @@
+{
+  "baseBranches": ["dev"],
+  "extends": [
+    "config:base"
+  ],
+  "packageRules": [
+    {
+      "automerge": true
+    }
+  ]
+}
