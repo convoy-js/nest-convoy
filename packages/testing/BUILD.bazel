@@ -10,8 +10,8 @@ nest_library(
     module_name = "@nest-convoy/testing",
     deps = [
         "//packages/commands",
-        "//packages/messaging/broker/in-memory",
         "//packages/messaging",
+        "//packages/messaging/broker/in-memory",
         "//packages/testing/common",
         "//packages/testing/sagas",
         "@npm//@nestjs/testing",
@@ -22,5 +22,6 @@ nest_library(
 pkg_npm(
     name = "package",
     srcs = ["package.json"],
+    substitutions = {"0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}"},
     deps = [":testing"],
 )

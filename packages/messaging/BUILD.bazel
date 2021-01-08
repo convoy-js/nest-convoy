@@ -18,5 +18,11 @@ nest_library(
 pkg_npm(
     name = "package",
     srcs = ["package.json"],
-    deps = [":messaging"],
+    substitutions = {"0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}"},
+    deps = [
+        "//packages/messaging/broker/kafka",
+        #        "//packages/messaging/broker/database",
+        "//packages/messaging/broker/in-memory",
+        ":messaging",
+    ],
 )

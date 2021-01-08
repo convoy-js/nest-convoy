@@ -15,9 +15,9 @@ nest_library(
         "//packages/messaging",
         "//packages/sagas",
         "//packages/sagas/participant",
-        "@npm//@nestjs/typeorm",
         "@npm//@nestjs/core",
         "@npm//@nestjs/cqrs",
+        "@npm//@nestjs/typeorm",
         "@npm//@types/uuid",
         "@npm//uuid",
     ],
@@ -26,5 +26,6 @@ nest_library(
 pkg_npm(
     name = "package",
     srcs = ["package.json"],
+    substitutions = {"0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}"},
     deps = [":core"],
 )

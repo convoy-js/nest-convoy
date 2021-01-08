@@ -2,3 +2,5 @@ dist
 bazel-out
 node_modules
 .bazelrc.user
+*.log
+*.tgz

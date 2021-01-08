@@ -15,7 +15,7 @@
     "build": "bazel build //packages/...",
     "test": "bazel test //packages/... --test_tag_filters=unit ",
     "lint": "bazel test //... --test_tag_filters=lint",
-    "release": "sh scripts/release.sh"
+    "release": "./scripts/release.sh"
   },
   "config": {
     "commitizen": {
