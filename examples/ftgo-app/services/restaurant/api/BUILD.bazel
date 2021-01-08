@@ -2,15 +2,15 @@ load("//tools:defaults.bzl", "nest_library")
 
 nest_library(
     name = "api",
-    module_name = "@ftgo-app/api/restaurant",
     srcs = glob(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
-    deps = [
-       "//examples/ftgo-app/libs/common"
-    ],
+    module_name = "@ftgo-app/api/restaurant",
     visibility = [
-        "//examples/ftgo-app:__subpackages__"
-    ]
+        "//examples/ftgo-app:__subpackages__",
+    ],
+    deps = [
+        "//examples/ftgo-app/libs/common",
+    ],
 )

@@ -1,4 +1,3 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("//tools:defaults.bzl", "nest_library")
 
 nest_library(

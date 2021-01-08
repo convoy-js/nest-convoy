@@ -68,7 +68,7 @@
     "@nestjs/microservices": "7.6.5",
     "@nestjs/platform-express": "7.6.5",
     "@nestjs/typeorm": "7.1.5",
-    "kafkajs": "1.15.0",
+    "kafkajs": "^1.15.0",
     "pg": "8.5.1",
     "redis": "3.0.2",
     "reflect-metadata": "0.1.13",
