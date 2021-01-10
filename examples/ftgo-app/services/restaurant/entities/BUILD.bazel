@@ -6,13 +6,13 @@ nest_library(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
+    visibility = [
+        "//examples/ftgo-app/services/restaurant:__subpackages__",
+    ],
     deps = [
+        "//examples/ftgo-app/libs/common",
+        "//packages/core",
         "@npm//@nestjs/typeorm",
         "@npm//typeorm",
-        "//packages/core",
-        "//examples/ftgo-app/libs/common",
     ],
-    visibility = [
-        "//examples/ftgo-app/services/restaurant:__subpackages__"
-    ]
 )

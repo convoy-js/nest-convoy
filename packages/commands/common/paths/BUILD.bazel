@@ -6,5 +6,6 @@ nest_library(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
-    visibility = ["//packages/commands/common:__pkg__"],
+    module_name = "@nest-convoy/commands/common/paths",
+    visibility = ["//packages/commands/common:__subpackages__"],
 )

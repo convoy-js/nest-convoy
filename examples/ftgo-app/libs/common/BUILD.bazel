@@ -2,13 +2,13 @@ load("//tools:defaults.bzl", "nest_library")
 
 nest_library(
     name = "common",
-    module_name = "@ftgo-app/libs/common",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
+    module_name = "@ftgo-app/libs/common",
     deps = [
-        "@npm//typeorm",
         "//packages/core",
+        "@npm//typeorm",
     ],
 )

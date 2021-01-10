@@ -1,5 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
-load("//tools:defaults.bzl", "nest_library")
+load("//tools:defaults.bzl", "nest_library", "pkg_npm")
 
 nest_library(
     name = "testing",
@@ -10,8 +9,8 @@ nest_library(
     module_name = "@nest-convoy/testing",
     deps = [
         "//packages/commands",
-        "//packages/messaging/broker/in-memory",
         "//packages/messaging",
+        "//packages/messaging/broker/in-memory",
         "//packages/testing/common",
         "//packages/testing/sagas",
         "@npm//@nestjs/testing",

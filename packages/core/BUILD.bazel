@@ -1,5 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
-load("//tools:defaults.bzl", "nest_library")
+load("//tools:defaults.bzl", "nest_library", "pkg_npm")
 
 nest_library(
     name = "core",
@@ -15,9 +14,9 @@ nest_library(
         "//packages/messaging",
         "//packages/sagas",
         "//packages/sagas/participant",
-        "@npm//@nestjs/typeorm",
         "@npm//@nestjs/core",
         "@npm//@nestjs/cqrs",
+        "@npm//@nestjs/typeorm",
         "@npm//@types/uuid",
         "@npm//uuid",
     ],

@@ -6,8 +6,9 @@ nest_library(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
+    module_name = "@nest-convoy/sagas/common/entities",
     visibility = [
-        "//packages/sagas/common:__pkg__",
+        "//packages/sagas/common:__subpackages__",
     ],
     deps = [
         "//packages/messaging/common",

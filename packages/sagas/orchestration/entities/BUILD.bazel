@@ -7,7 +7,7 @@ nest_library(
         exclude = ["*.spec.ts"],
     ),
     visibility = [
-        "//packages/sagas/orchestration:__pkg__",
+        "//packages/sagas/orchestration:__subpackages__",
     ],
     deps = [
         "@npm//typeorm",

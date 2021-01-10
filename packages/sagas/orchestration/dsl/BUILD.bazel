@@ -8,7 +8,7 @@ nest_library(
     ),
     module_name = "@nest-convoy/sagas/orchestration/dsl",
     #    visibility = [
-    #        "//packages/sagas:__pkg__",
+    #        "//packages/sagas:__subpackages__",
     #    ],
     deps = [
         "//packages/commands/common",

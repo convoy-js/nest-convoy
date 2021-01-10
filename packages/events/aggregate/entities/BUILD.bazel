@@ -6,10 +6,10 @@ nest_library(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
+    visibility = [
+        "//packages/events/aggregate:__subpackages__",
+    ],
     deps = [
         "@npm//typeorm",
-    ],
-    visibility = [
-        "//packages/events/aggregate:__pkg__"
     ],
 )

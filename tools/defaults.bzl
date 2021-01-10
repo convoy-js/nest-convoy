@@ -1,7 +1,15 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", _pkg_npm = "pkg_npm")
 load("@npm//@bazel/typescript:index.bzl", "ts_library")
 load("//tools:eslint.bzl", "eslint_test")
 load("//tools:jest.bzl", "jest_test")
+
+def pkg_npm(substitutions = {}, **kwargs):
+    _pkg_npm(
+        substitutions = dict({
+            "0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}",
+        }, **substitutions),
+        **kwargs
+    )
 
 def eslint(tags = ["lint"], **kwargs):
     eslint_test(

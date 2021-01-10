@@ -6,15 +6,15 @@ nest_library(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
+    visibility = [
+        "//visibility:private",
+    ],
     deps = [
-        "@npm//@nestjs/microservices",
-        "//packages/core",
-        "//packages/messaging/broker/kafka",
         "//examples/ftgo-app/services/restaurant/api",
         "//examples/ftgo-app/services/restaurant/entities",
         "//examples/ftgo-app/services/restaurant/services",
+        "//packages/core",
+        "//packages/messaging/broker/kafka",
+        "@npm//@nestjs/microservices",
     ],
-    visibility = [
-        "//visibility:private"
-    ]
 )

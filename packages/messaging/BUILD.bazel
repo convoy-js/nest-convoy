@@ -1,5 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
-load("//tools:defaults.bzl", "nest_library")
+load("//tools:defaults.bzl", "nest_library", "pkg_npm")
 
 nest_library(
     name = "messaging",
@@ -18,5 +17,10 @@ nest_library(
 pkg_npm(
     name = "package",
     srcs = ["package.json"],
-    deps = [":messaging"],
+    deps = [
+        "//packages/messaging/broker/kafka",
+        #        "//packages/messaging/broker/database",
+        "//packages/messaging/broker/in-memory",
+        ":messaging",
+    ],
 )
