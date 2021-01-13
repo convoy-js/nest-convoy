@@ -1,11 +1,13 @@
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import { DynamicModule, Global, Injectable, Module } from '@nestjs/common';
 import { ConsumerConfig, KafkaConfig, ProducerConfig } from 'kafkajs';
+import { paramCase } from 'change-case';
 
 import {
   ConvoyCoreModule,
   ConvoyTypeOrmOptions,
 } from '@nest-convoy/core/core.module';
 import {
+  ConvoyChannelMapping,
   ConvoyMessagingConsumerModule,
   ConvoyMessagingProducerModule,
   DatabaseDuplicateMessageDetector,
@@ -21,6 +23,13 @@ export interface ConvoyKafkaMessagingBrokerModuleOptions {
   readonly consumer?: Omit<ConsumerConfig, 'groupId'>;
   readonly producer?: Omit<ProducerConfig, 'idempotent'>;
   readonly database: ConvoyTypeOrmOptions;
+}
+
+@Injectable()
+class KafkaChannelMapping extends ConvoyChannelMapping {
+  transform(channel: string): string {
+    return super.transform(channel);
+  }
 }
 
 @Global()

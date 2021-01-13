@@ -7,10 +7,6 @@ nest_library(
         exclude = ["*.spec.ts"],
     ),
     module_name = "@nest-convoy/sagas/orchestration",
-    #    visibility = [
-    #        "//packages/sagas/orchestration/dsl:__subpackages__",
-    #        "//packages/sagas:__subpackages__",
-    #    ],
     deps = [
         "//packages/commands",
         "//packages/common",
