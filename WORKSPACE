@@ -24,6 +24,7 @@ node_repositories(
 yarn_install(
     name = "npm",
     data = [
+        "//:.npmrc",
         "//:patches/@bazel+typescript+2.0.3.patch",
         "//:patches/jest-haste-map+26.1.0.patch",
     ],
