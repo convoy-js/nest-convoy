@@ -6,7 +6,7 @@
     "url": "https://github.com/marcus-sa/nest-convoy/issues"
   },
   "dependencies": {
-    "@nest-convoy/common": "0.0.0-PLACEHOLDER",
+    "@nest-convoy/common": "0.0.6",
     "@nest-convoy/messaging": "0.0.0-PLACEHOLDER",
     "tslib": "2.0.3"
   },
