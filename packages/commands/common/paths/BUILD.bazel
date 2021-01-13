@@ -6,6 +6,7 @@ nest_library(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
+    # TODO: Somehow it doesn't transform nest_convoy/packages into @nest-convoy
     module_name = "@nest-convoy/commands/common/paths",
     visibility = ["//packages/commands/common:__subpackages__"],
 )

@@ -6,6 +6,7 @@ nest_library(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
+    # TODO: Somehow it doesn't transform nest_convoy/packages into @nest-convoy
     module_name = "@nest-convoy/sagas/common/entities",
     visibility = [
         "//packages/sagas/common:__subpackages__",
