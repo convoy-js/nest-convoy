@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@nest-convoy/events": "0.0.0-PLACEHOLDER",
-    "@nest-convoy/messaging": "0.0.0-PLACEHOLDER",
+    "@nest-convoy/messaging": "0.0.6",
     "@nest-convoy/commands": "0.0.0-PLACEHOLDER",
     "@nest-convoy/common": "0.0.0-PLACEHOLDER",
     "tslib": "2.0.3"
