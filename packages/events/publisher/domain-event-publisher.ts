@@ -17,13 +17,15 @@ export class DomainEventPublisher {
     headers: MessageHeaders,
     event: DomainEvent,
   ): Message {
-    return MessageBuilder.withPayload(event)
-      .withExtraHeaders(headers)
-      .withHeader(Message.PARTITION_ID, aggregateId)
-      .withHeader(EventMessageHeaders.AGGREGATE_ID, aggregateId)
-      .withHeader(EventMessageHeaders.AGGREGATE_TYPE, aggregateType)
-      .withHeader(EventMessageHeaders.EVENT_TYPE, event.constructor.name)
-      .build();
+    return (
+      MessageBuilder.withPayload(event)
+        .withExtraHeaders(headers)
+        // .withHeader(Message.PARTITION_ID, aggregateId)
+        .withHeader(EventMessageHeaders.AGGREGATE_ID, aggregateId)
+        .withHeader(EventMessageHeaders.AGGREGATE_TYPE, aggregateType)
+        .withHeader(EventMessageHeaders.EVENT_TYPE, event.constructor.name)
+        .build()
+    );
   }
 
   async publish(

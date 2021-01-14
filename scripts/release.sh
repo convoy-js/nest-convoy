@@ -4,7 +4,10 @@ set -u -e -o pipefail
 # Call the script with argument "pack" or "publish"
 readonly NPM_COMMAND=${1:-publish}
 # Don't rely on $PATH to have the right version
-readonly BAZEL=./node_modules/.bin/bazel
+readonly BAZEL_BIN=$(yarn bin)/bazelisk
+# Build into a distinct output location so that artifacts from previous builds are not reused
+readonly BAZEL_OUTPUT_BASE=$(mktemp -d -t nest-convoy-latest.XXXXXXX)
+readonly BAZEL="$BAZEL_BIN --output_base=$BAZEL_OUTPUT_BASE"
 # Find all the npm packages in the repo
 readonly PKG_NPM_LABELS=`$BAZEL query --output=label 'kind("pkg_npm", //...)'`
 # Build them in one command to maximize parallelism
