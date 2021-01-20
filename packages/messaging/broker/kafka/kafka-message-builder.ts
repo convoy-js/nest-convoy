@@ -17,7 +17,7 @@ export class KafkaMessageBuilder {
     return {
       key: message.id,
       value: message.getPayload(),
-      partition: parseFloat(message.getHeader(Message.PARTITION_ID)),
+      partition: parseFloat(message.getHeader(Message.PARTITION)),
       headers: message.getHeaders().asRecord(),
     };
   }

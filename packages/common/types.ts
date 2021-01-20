@@ -1,14 +1,7 @@
 // import { Message } from '@nest-convoy/messaging/common';
-import { Type } from '@nestjs/common';
+import type { Type } from '@nestjs/common';
 
-import { Handlers } from './handlers';
-
-export function isType<T>(value: any): value is Type<T> {
-  return (
-    (typeof value === 'object' || typeof value === 'function') &&
-    value?.prototype?.constructor === value
-  );
-}
+import type { Handlers } from './handlers';
 
 export type Consumer<T, S = any, A extends unknown[] = unknown[]> = AsyncLikeFn<
   [data: T, ...args: A],

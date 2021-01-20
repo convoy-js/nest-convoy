@@ -22,7 +22,7 @@ export class DomainEventDispatcher implements Dispatcher {
       this.domainEventHandlers.getHandlers().map(async handler => {
         await this.messageConsumer.subscribe(
           this.eventDispatcherId,
-          [`${handler.aggregateType}-${handler.event.name}`],
+          [handler.aggregateType], // [`${handler.aggregateType}-${handler.event.name}`],
           this.handleMessage.bind(this),
           true,
         );

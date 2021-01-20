@@ -58,7 +58,7 @@ export class KafkaMessageConsumer
         const handlers = this.getHandlersByChannel(payload.topic);
         const message = this.message
           .from(payload.message)
-          .setHeader(Message.PARTITION_ID, payload.partition.toString());
+          .setHeader(Message.PARTITION, payload.partition.toString());
 
         await Promise.all(handlers.map(handle => handle(message)));
       },

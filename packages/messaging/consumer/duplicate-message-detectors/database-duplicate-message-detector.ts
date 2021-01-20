@@ -11,6 +11,7 @@ import {
 
 import { DuplicateMessageDetector } from './duplicate-message-detector';
 
+// TODO: Move to /packages/messaging/broker/database
 @Injectable()
 export class DatabaseDuplicateMessageDetector extends DuplicateMessageDetector {
   constructor(

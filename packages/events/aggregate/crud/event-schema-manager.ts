@@ -25,7 +25,7 @@ export class DefaultEventSchemaManager implements EventSchemaManager {
   static EVENT_SCHEMA_VERSION = 'convoy_schema_version';
 
   private readonly aggregateSchemaVersions = new WeakMap<
-    Type<any>,
+    Type,
     AggregateSchema<any>
   >();
 

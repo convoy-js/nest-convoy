@@ -28,7 +28,7 @@ export interface EntityIdVersionAndEventIds extends EntityIdAndVersion {
 }
 
 export interface PublishableEvents<AR extends AggregateRoot> {
-  readonly aggregateType: AR;
+  readonly aggregateType: Type<AR>;
   readonly entityId: string;
   readonly eventsWithIds: readonly EventIdTypeAndData<any>[];
 }
@@ -38,7 +38,8 @@ export interface EntityIdAndVersion {
   readonly entityVersion: string;
 }
 
-export interface EntityIdAndType {
+export interface EntityIdAndType<E = any> {
   readonly entityId: string;
-  readonly entityType: string;
+  readonly entityType: Type<E>;
+  // readonly entityType: string;
 }

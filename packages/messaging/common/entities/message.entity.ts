@@ -18,6 +18,9 @@ export class MessageEntity<Payload> {
   @Column()
   destination: string;
 
+  @Column()
+  partition: number;
+
   @Column({
     type: 'simple-json',
     transformer: {

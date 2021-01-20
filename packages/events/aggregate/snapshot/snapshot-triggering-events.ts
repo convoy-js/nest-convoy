@@ -1,3 +1,5 @@
+import { DuplicateTriggeringEventException } from '../exceptions';
+
 export interface DecodedEtopContext {
   readonly id: string;
   readonly topic: string;
@@ -16,7 +18,7 @@ export class SnapshotTriggeringEvents {
     if (!maxOffset) return;
 
     if (etop.offset <= maxOffset) {
-      throw new Error('DuplicateTriggeringEventException');
+      throw new DuplicateTriggeringEventException();
     }
   }
 }

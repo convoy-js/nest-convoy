@@ -3,12 +3,16 @@ import { MessageHeaders } from './message-headers';
 
 export class Message {
   static ID = 'id';
-  static PARTITION_ID = 'partition_id';
+  static PARTITION = 'partition';
   static DESTINATION = 'destination';
   static DATE = 'date';
 
   get id(): string {
     return this.getRequiredHeader(Message.ID);
+  }
+
+  get partition(): number {
+    return +this.getRequiredHeader(Message.PARTITION);
   }
 
   constructor(
