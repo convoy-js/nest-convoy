@@ -1,5 +1,7 @@
 import { Injectable, Type } from '@nestjs/common';
 
+import { ObjectLiteral } from '@nest-convoy/common';
+
 import { Snapshot, SerializedSnapshot, SnapshotManager } from '../snapshot';
 import {
   EventIdTypeAndData,
@@ -38,7 +40,7 @@ export class AggregateCrudMapping {
     return Object.assign(new type(), JSON.parse(ss.json) as S);
   }
 
-  toEventTypeAndData<E extends Record<string, unknown>>(
+  toEventTypeAndData<E extends ObjectLiteral>(
     event: E,
     metadata: Record<string, string> = {},
   ): EventTypeAndData<E> {
@@ -49,7 +51,7 @@ export class AggregateCrudMapping {
     };
   }
 
-  toEvent<E>(type: Type<E>, data: Record<string, unknown>): E {
+  toEvent<E>(type: Type<E>, data: ObjectLiteral): E {
     return Object.assign(new type(), data);
   }
 

@@ -83,7 +83,7 @@ export class ConvoyCommandDispatcher implements Dispatcher {
       this.commandHandlers.getHandlers().map(async handler => {
         await this.messageConsumer.subscribe(
           this.commandDispatcherId,
-          [`${handler.channel}-${handler.command.name}`],
+          [handler.channel], // [`${handler.channel}-${handler.command.name}`],
           this.handleMessage.bind(this),
         );
       }),

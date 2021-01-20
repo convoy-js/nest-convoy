@@ -8,5 +8,5 @@ exports_files([
     "tsconfig.json",
     ".eslintrc",
     "jest.config.js",
-    ".npmrc"
+    ".npmrc",
 ])

@@ -14,7 +14,7 @@ import {
 import { KafkaMessageBuilder } from './kafka-message-builder';
 import { KafkaMessageProducer } from './kafka-message-producer';
 import { KafkaMessageConsumer } from './kafka-message-consumer';
-import { KafkaProxy } from './kafka-proxy';
+import { Kafka } from './kafka';
 import { KAFKA_CONFIG } from './tokens';
 
 export interface ConvoyKafkaMessagingBrokerModuleOptions {
@@ -25,13 +25,13 @@ export interface ConvoyKafkaMessagingBrokerModuleOptions {
 
 @Global()
 @Module({})
-export class ConvoyKafkaMessagingModule {
+export class ConvoyKafkaBrokerModule {
   static register(
     config: Omit<KafkaConfig, 'logCreator'>,
     { database }: ConvoyKafkaMessagingBrokerModuleOptions,
   ): DynamicModule {
     return {
-      module: ConvoyKafkaMessagingModule,
+      module: ConvoyKafkaBrokerModule,
       imports: [
         ConvoyCoreModule.forRoot(database),
         ConvoyMessagingConsumerModule.register(
@@ -51,7 +51,7 @@ export class ConvoyKafkaMessagingModule {
           provide: KAFKA_CONFIG,
           useValue: config,
         },
-        KafkaProxy,
+        Kafka,
         KafkaMessageBuilder,
         KafkaMessageProducer,
         KafkaMessageConsumer,

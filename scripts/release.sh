@@ -3,12 +3,11 @@ set -u -e -o pipefail
 
 # Call the script with argument "pack" or "publish"
 readonly NPM_COMMAND=${1:-publish}
-# We need to resolve the Bazel binary in the node modules because running Bazel
-# through `yarn bazelisk` causes additional output that throws off the command stdout.
-BAZEL_BIN=$(yarn bin)/bazelisk
+# Don't rely on $PATH to have the right version
+readonly BAZEL_BIN=$(yarn bin)/bazelisk
 # Build into a distinct output location so that artifacts from previous builds are not reused
-BAZEL_OUTPUT_BASE=$(mktemp -d -t nest-convoy-latest.XXXXXXX)
-BAZEL="$BAZEL_BIN --output_base=$BAZEL_OUTPUT_BASE"
+readonly BAZEL_OUTPUT_BASE=$(mktemp -d -t nest-convoy-latest.XXXXXXX)
+readonly BAZEL="$BAZEL_BIN --output_base=$BAZEL_OUTPUT_BASE"
 # Find all the npm packages in the repo
 readonly PKG_NPM_LABELS=`$BAZEL query --output=label 'kind("pkg_npm", //...)'`
 # Build them in one command to maximize parallelism

@@ -7,7 +7,7 @@ import { EventIdTypeAndData } from '../interfaces';
 import { SerializedEvent } from '../serialized-event';
 import { AggregateSchema } from '../aggregate-schema';
 
-export const EVENT_SCHEMA_MANAGER = Symbol('__eventSchemaManager__');
+export const EVENT_SCHEMA_MANAGER = Symbol('EVENT_SCHEMA_MANAGER');
 
 export interface EventSchemaManager {
   currentSchemaMetadata<A>(
@@ -25,7 +25,7 @@ export class DefaultEventSchemaManager implements EventSchemaManager {
   static EVENT_SCHEMA_VERSION = 'convoy_schema_version';
 
   private readonly aggregateSchemaVersions = new WeakMap<
-    Type<any>,
+    Type,
     AggregateSchema<any>
   >();
 

@@ -1,0 +1,13 @@
+{
+  "name": "convoy-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "yb-tserver",
+    "database.port": "5433",
+    "database.user": "yugabyte",
+    "database.password": "",
+    "database.dbname": "yugabyte",
+    "database.server.name": "yb-tserver",
+    "schema.whitelist": "convoy"
+  }
+}

@@ -1,7 +1,7 @@
-import { AsyncLike } from '@nest-convoy/common';
+import { AsyncLike, ObjectLiteral } from '@nest-convoy/common';
 
-export abstract class AggregateRoot<T = Record<string, unknown>> {
-  abstract id: string | number;
+export abstract class AggregateRoot<T = ObjectLiteral> {
+  id?: string | number;
 
   constructor(values: Partial<T> = {}) {
     Object.assign(this, values);

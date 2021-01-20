@@ -1,9 +1,9 @@
 import { Injectable, Type } from '@nestjs/common';
 
-import { AsyncLikeFn } from '@nest-convoy/common';
+import type { AsyncLikeFn } from '@nest-convoy/common';
 
 import { AggregateRoot } from './aggregate-root';
-import { SerializedEvent } from './serialized-event';
+import type { SerializedEvent } from './serialized-event';
 
 export type AggregatesAndEvents = Map<
   string /*Type<AggregateRoot>*/,
@@ -28,7 +28,7 @@ export interface SubscriberOptions {
   readonly progressNotifications: boolean;
 }
 
-export const AGGREGATE_EVENTS = Symbol('__aggregateEvents__');
+export const AGGREGATE_EVENTS = Symbol('AGGREGATE_EVENTS');
 
 export interface AggregateEvents {
   subscribe(

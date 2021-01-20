@@ -33,7 +33,7 @@ export function getAggregateRepositoryToken<E>(aggregate: Type<E>) {
   return `${aggregate.name}AggregateRepository`;
 }
 
-class CommandOutcome<E extends readonly DomainEvent[]> {
+export class CommandOutcome<E extends readonly DomainEvent[]> {
   constructor(readonly events: E, readonly throwable?: RuntimeException) {}
 
   isFailure(): boolean {

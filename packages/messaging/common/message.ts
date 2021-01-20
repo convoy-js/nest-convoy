@@ -11,6 +11,10 @@ export class Message {
     return this.getRequiredHeader(Message.ID);
   }
 
+  get partition(): number {
+    return +this.getRequiredHeader(Message.PARTITION_ID);
+  }
+
   constructor(
     private payload: string,
     private headers = new MessageHeaders(),

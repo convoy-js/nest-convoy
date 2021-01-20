@@ -1,9 +1,11 @@
 import { Injectable, Type } from '@nestjs/common';
 
+import { RuntimeException } from '@nest-convoy/common';
 import { DomainEvent } from '@nest-convoy/events/common';
 
 import { DomainEventPublisher } from '../publisher';
 import { AggregateRoot } from './aggregate-root';
+import { getAggregateId } from './decorators';
 
 export interface AggregateDomainEventPublisher<AR extends AggregateRoot> {
   publish<E extends readonly DomainEvent[]>(
@@ -27,12 +29,11 @@ export function AggregateDomainEventPublisher<AR extends AggregateRoot>(
       aggregate: AR,
       events: E,
     ): Promise<void> {
-      // const id = await this.idSupplier(aggregate);
-      await this.domainEventPublisher.publish(
-        aggregateTypeName,
-        aggregate.id,
-        events,
-      );
+      const id = getAggregateId(aggregate) || aggregate.id;
+      if (!id) {
+        throw new RuntimeException('Missing @AggregateIdSupplier()');
+      }
+      await this.domainEventPublisher.publish(aggregateTypeName, id, events);
     }
   }
 

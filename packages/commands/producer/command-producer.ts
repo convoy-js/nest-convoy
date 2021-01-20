@@ -62,9 +62,9 @@ export class ConvoyCommandProducer extends CommandProducer {
       headers,
       resource,
     );
-    const destination = `${channel}-${message.getRequiredHeader(
+    const destination = channel; /*`${channel}-${message.getRequiredHeader(
       CommandMessageHeaders.COMMAND_TYPE,
-    )}`;
+    )}`*/
     await this.messageProducer.send(destination, message);
     return message.id;
   }

@@ -59,14 +59,14 @@ export class AggregateCrudAccess {
   }
 
   async save<AR extends AggregateRoot>(
-    aggregateType: AR,
+    aggregate: AR,
     events: readonly EventTypeAndData<any>[],
     options?: AggregateCrudSaveOptions,
   ): Promise<SaveUpdateResult<AR>> {
     const eventsWithIds = events.map(e => this.toEventId(e));
     const entityId = options?.entityId || uuidv4();
     const entityVersion = eventsWithIds[eventsWithIds.length - 1].eventId;
-    const entityType = aggregateType.constructor.name;
+    const entityType = aggregate.constructor.name;
 
     const entity = await this.entities.save({
       type: entityType,
@@ -97,7 +97,7 @@ export class AggregateCrudAccess {
         eventIds: eventsWithIds.map(e => e.eventId),
       },
       {
-        aggregateType,
+        aggregateType: aggregate.constructor as Type<AR>,
         entityId: entity.id,
         eventsWithIds,
       },
@@ -195,7 +195,7 @@ export class AggregateCrudAccess {
       .update(EntitiesEntity)
       .set({
         version: updatedEntityVersion,
-        type: entityIdAndType.entityType,
+        type: entityIdAndType.entityType.name,
         id: entityIdAndType.entityId,
       })
       .where(
@@ -249,8 +249,7 @@ export class AggregateCrudAccess {
         e => ({
           event: {
             ...e,
-            // TODO
-            eventType: class {},
+            eventType: entityIdAndType.entityType,
           },
           triggeringEvent: e.triggeringEvent!,
         }),
@@ -261,7 +260,8 @@ export class AggregateCrudAccess {
       );
 
       await this.snapshots.save({
-        ...entityIdAndType,
+        entityId: entityIdAndType.entityId,
+        entityType: entityIdAndType.entityType.name,
         entityVersion: updatedEntityVersion,
         snapshotType: previousSnapshot?.snapshotType,
         snapshotJson: previousSnapshot?.snapshotJson,
@@ -278,7 +278,8 @@ export class AggregateCrudAccess {
             eventType: event.eventType.name,
             triggeringEvent: options?.triggeringEvent?.eventToken,
             metadata: event.metadata,
-            ...entityIdAndType,
+            entityId: entityIdAndType.entityId,
+            entityType: entityIdAndType.entityType.name,
           }),
         ),
       ),
@@ -292,7 +293,7 @@ export class AggregateCrudAccess {
       },
       {
         // TODO
-        aggregateType: {} as AR,
+        aggregateType: entityIdAndType.entityType,
         entityId: entityIdAndType.entityId,
         eventsWithIds,
       },

@@ -1,23 +1,7 @@
-import { Type } from '@nestjs/common';
-
-import { Command } from '@nest-convoy/commands/common';
+import type { Command } from '@nest-convoy/commands/common';
 
 import { AggregateRoot } from './aggregate-root';
-
-export const APPLY_EVENT_METADATA = '__applyEvent__';
-export const PROCESS_COMMAND_METADATA = '__processCommand__';
-
-export function ApplyEvent<E>(event: Type<E>): MethodDecorator {
-  return (target: object, propertyKey: string | symbol) => {
-    Reflect.defineMetadata(APPLY_EVENT_METADATA, event, target, propertyKey);
-  };
-}
-
-export function ProcessCommand<C>(cmd: Type<C>): MethodDecorator {
-  return (target: object, propertyKey: string | symbol) => {
-    Reflect.defineMetadata(PROCESS_COMMAND_METADATA, cmd, target, propertyKey);
-  };
-}
+import { PROCESS_COMMAND_METADATA, APPLY_EVENT_METADATA } from './decorators';
 
 export abstract class CommandProcessingAggregate<
   T extends CommandProcessingAggregate<T, CT>,
@@ -26,7 +10,7 @@ export abstract class CommandProcessingAggregate<
   T extends CommandProcessingAggregate<T, C>,
   C extends Command
 > */ extends AggregateRoot<T> {
-  private handle<T>(target: any, metadataKey: string): T {
+  private handle<T>(target: any, metadataKey: symbol): T {
     const keys = Object.getOwnPropertyNames(this.constructor.prototype);
     const methodName = keys.find(key => {
       const meta = Reflect.getMetadata(metadataKey, this.constructor, key);

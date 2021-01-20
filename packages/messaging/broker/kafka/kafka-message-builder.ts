@@ -3,6 +3,7 @@ import type {
   KafkaMessage as ConsumerMessage,
   Message as ProducerMessage,
 } from 'kafkajs';
+import { EachMessagePayload } from 'kafkajs';
 
 import {
   Message,
@@ -17,13 +18,15 @@ export class KafkaMessageBuilder {
     return {
       key: message.id,
       value: message.getPayload(),
+      partition: parseFloat(message.getHeader(Message.PARTITION_ID)),
       headers: message.getHeaders().asRecord(),
     };
   }
 
-  from(message: ConsumerMessage): Message {
+  from({ message, partition }: EachMessagePayload): Message {
     return MessageBuilder.withPayload(message.value!.toString())
       .withHeader(Message.ID, message.key.toString())
+      .withHeader(Message.PARTITION_ID, partition)
       .withExtraHeaders(
         new MessageHeaders(
           message.headers

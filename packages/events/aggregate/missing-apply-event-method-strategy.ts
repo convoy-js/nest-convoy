@@ -4,7 +4,7 @@ import { AggregateRoot } from './aggregate-root';
 import { MissingApplyMethodException } from './exceptions';
 
 export const MISSING_APPLY_EVENT_METHOD_STRATEGY = Symbol(
-  '__missingApplyEventMethodStrategy__',
+  'MISSING_APPLY_EVENT_METHOD_STRATEGY',
 );
 
 @Injectable()

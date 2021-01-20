@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
-import { ConvoyKafkaMessagingModule } from '@nest-convoy/messaging/broker/kafka';
+import { ConvoyKafkaBrokerModule } from '@nest-convoy/messaging/broker/kafka';
 
 import { CreditReservation, Customer } from './entities';
 import { CustomerCommandHandlers } from './customer-command-handlers';
@@ -18,7 +18,7 @@ import { Channel, defaultOptions, TypeOrmModuleOptions } from '../common';
       schema: 'customers',
     } as TypeOrmModuleOptions),
     TypeOrmModule.forFeature([CreditReservation, Customer]),
-    ConvoyKafkaMessagingModule.register(
+    ConvoyKafkaBrokerModule.register(
       {
         clientId: Channel.CUSTOMER,
         brokers: ['localhost:9092'],

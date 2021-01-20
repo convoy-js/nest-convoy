@@ -1,7 +1,7 @@
-import { Type } from '@nestjs/common';
+import type { Type, ObjectLiteral } from '@nest-convoy/common';
 
 export interface EventUpcaster {
-  upcast(json: Record<string, unknown>): Record<string, unknown>;
+  upcast(json: ObjectLiteral): ObjectLiteral;
 }
 
 export class EventRename<A, B> {

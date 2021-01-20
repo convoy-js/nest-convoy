@@ -124,7 +124,7 @@ export class AggregateStoreCrud {
     events: E,
     options?: AggregateCrudUpdateOptions<AR, S>,
   ): Promise<EntityIdAndVersion> {
-    const entityType = aggregate.constructor.name;
+    const entityType = aggregate.constructor as Type<AR>;
     const serializedMetadata =
       options &&
       this.withSchemaMetadata(

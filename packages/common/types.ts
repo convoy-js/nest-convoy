@@ -1,19 +1,30 @@
 // import { Message } from '@nest-convoy/messaging/common';
-import { Type } from '@nestjs/common';
+import type { Type } from '@nestjs/common';
 
-import { Handlers } from './handlers';
-
-export function isType<T>(value: any): value is Type<T> {
-  return (
-    (typeof value === 'object' || typeof value === 'function') &&
-    value?.prototype?.constructor === value
-  );
-}
+import type { Handlers } from './handlers';
 
 export type Consumer<T, S = any, A extends unknown[] = unknown[]> = AsyncLikeFn<
   [data: T, ...args: A],
   S
 >;
+
+export type ObjectLiteral = Record<string, any>;
+
+export type ClassDecorator = <T extends Type>(target: T) => T | void;
+export type PropertyDecorator<T extends any> = <K extends keyof T>(
+  target: T,
+  propertyKey: K,
+) => void;
+export type MethodDecorator = <T extends any, K extends keyof T>(
+  target: T,
+  propertyKey: K,
+  descriptor: TypedPropertyDescriptor<T>,
+) => TypedPropertyDescriptor<T> | void;
+export type ParameterDecorator = <T extends any, K extends keyof T>(
+  target: T,
+  propertyKey: K,
+  parameterIndex: number,
+) => void;
 
 export type AsyncLikeFn<T extends any[] = any[], R = unknown> = (
   ...args: T
