@@ -1,8 +1,9 @@
-import { TopicPartitionOffsetAndMetadata } from 'kafkajs';
+import { EachMessagePayload, TopicPartitionOffsetAndMetadata } from 'kafkajs';
 
 import { Message, MessageHandler } from '@nest-convoy/messaging';
 
 import { TopicPartitionOffsetTracker } from './topic-partition-offset-tracker';
+import { TopicPartitionOffset } from './topic-partition-offsets';
 
 export class KafkaMessageProcessor {
   private readonly topicPartitionOffsetTracker = new TopicPartitionOffsetTracker();
@@ -15,22 +16,36 @@ export class KafkaMessageProcessor {
 
   async process(
     message: Message,
-    tpo: TopicPartitionOffsetAndMetadata,
-  ): Promise<TopicPartitionOffsetAndMetadata> {
+    payload: EachMessagePayload,
+  ): Promise<TopicPartitionOffset> {
+    const tpo: TopicPartitionOffset = {
+      topic: payload.topic,
+      offset: BigInt(payload.message.offset),
+      partition: payload.partition,
+    };
+    console.log('process', tpo);
     this.topicPartitionOffsetTracker.noteUnprocessed(tpo);
     await Promise.all(this.handlers.map(handle => handle(message)));
     this.topicPartitionOffsetTracker.noteProcessed(tpo);
     return tpo;
   }
 
-  noteTopicPartitionOffsetsCommitted(
-    tpo: TopicPartitionOffsetAndMetadata[],
-  ): void {
+  noteOffsetsCommitted(tpo: readonly TopicPartitionOffset[]): void {
     this.topicPartitionOffsetTracker.noteCommitted(tpo);
   }
 
-  topicPartitionOffsetsToCommit(): TopicPartitionOffsetAndMetadata[] {
-    return this.topicPartitionOffsetTracker.toCommit();
+  serializeOffsetsToCommit(
+    tpos: readonly TopicPartitionOffset[],
+  ): TopicPartitionOffsetAndMetadata[] {
+    return tpos.map(({ topic, offset, partition }) => ({
+      topic,
+      partition,
+      offset: offset.toString(),
+    }));
+  }
+
+  offsetsToCommit(): readonly TopicPartitionOffset[] {
+    return this.topicPartitionOffsetTracker.offsetsToCommit();
     // const offsets = this.offsetTracker.toCommit();
     // return offsets.topics.flatMap(({ topic, partitions }) =>
     //   partitions.map(({ partition, offset }) => ({

@@ -72,11 +72,12 @@ def nest_app(name, entry, deps = []):
     nest_library(
         name = "%s_lib" % name,
         srcs = [entry],
-        deps = ["@npm//@nestjs/core"] + deps,
+        deps = ["@npm//@nestjs/platform-express", "@npm//@nestjs/core"] + deps,
     )
 
     nodejs_binary(
         name = name,
         data = ["%s_lib" % name],
+        templated_args = ["--bazel_patch_module_resolver"],
         entry_point = entry,
     )

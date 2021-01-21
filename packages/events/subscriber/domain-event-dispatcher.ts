@@ -18,23 +18,23 @@ export class DomainEventDispatcher implements Dispatcher {
   ) {}
 
   async subscribe(): Promise<void> {
-    await Promise.all(
-      this.domainEventHandlers.getHandlers().map(async handler => {
-        await this.messageConsumer.subscribe(
-          this.eventDispatcherId,
-          [handler.aggregateType], // [`${handler.aggregateType}-${handler.event.name}`],
-          this.handleMessage.bind(this),
-          true,
-        );
-      }),
-    );
-
-    // await this.messageConsumer.subscribe(
-    //   this.eventDispatcherId,
-    //   this.domainEventHandlers.getAggregateTypesAndEvents(),
-    //   this.handleMessage.bind(this),
-    //   true,
+    // await Promise.all(
+    //   this.domainEventHandlers.getHandlers().map(async handler => {
+    //     await this.messageConsumer.subscribe(
+    //       this.eventDispatcherId,
+    //       [handler.aggregateType], // [`${handler.aggregateType}-${handler.event.name}`],
+    //       this.handleMessage.bind(this),
+    //       true,
+    //     );
+    //   }),
     // );
+
+    await this.messageConsumer.subscribe(
+      this.eventDispatcherId,
+      this.domainEventHandlers.getAggregateTypesAndEvents(),
+      this.handleMessage.bind(this),
+      true,
+    );
   }
   async handleMessage(message: Message): Promise<void> {
     const aggregateType = message.getRequiredHeader(

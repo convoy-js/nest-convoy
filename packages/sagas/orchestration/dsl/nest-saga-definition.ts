@@ -69,7 +69,7 @@ export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
   private async invokeReplyHandler(
     message: Message,
     data: Data,
-    replyType: Type<any>,
+    replyType: Type,
     handleReply: SagaStepReplyHandler<Data>,
   ): Promise<void> {
     const reply = Object.assign(new replyType(), message.parsePayload());

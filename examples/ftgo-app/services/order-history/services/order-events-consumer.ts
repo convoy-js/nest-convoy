@@ -1,10 +1,4 @@
 import {
-  DomainEventEnvelope,
-  DomainEventsConsumer,
-  OnEvent,
-} from '@nest-convoy/core';
-
-import {
   OrderAuthorized,
   OrderCancelled,
   OrderCreated,
@@ -12,7 +6,13 @@ import {
   OrderServiceChannel,
 } from '@ftgo-app/api/order';
 
-@DomainEventsConsumer(OrderServiceChannel.ORDER_EVENT)
+import {
+  DomainEventEnvelope,
+  DomainEventHandlers,
+  OnEvent,
+} from '@nest-convoy/core';
+
+@DomainEventHandlers(OrderServiceChannel.ORDER_EVENT)
 export class OrderEventsConsumer {
   @OnEvent(OrderCreated)
   created({ event }: DomainEventEnvelope<OrderCreated>) {}

@@ -2,7 +2,7 @@ import { COMMAND_HANDLER_METADATA } from '@nestjs/cqrs/dist/decorators/constants
 import { EventsHandler } from '@nestjs/cqrs';
 
 import { Type } from '@nest-convoy/common';
-import { AggregateRoot } from '@nest-convoy/events';
+import { AggregateRoot } from '@nest-convoy/events/aggregate';
 import {
   COMMAND_WITH_DESTINATION,
   CommandMessageHandlerOptions,
@@ -58,7 +58,7 @@ export function OnMessage<M, T>(
 }
 
 // TODO: Rename decorator to DomainEventHandlers
-export function DomainEventsConsumer<T extends AggregateRoot>(
+export function DomainEventHandlers<T extends AggregateRoot>(
   aggregateType: string | (() => Type<T>),
 ): ClassDecorator {
   return target => {

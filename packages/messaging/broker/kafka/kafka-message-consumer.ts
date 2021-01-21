@@ -1,9 +1,13 @@
 import {
   Injectable,
+  Logger,
   OnApplicationBootstrap,
   OnApplicationShutdown,
 } from '@nestjs/common';
+import { Runtime } from 'inspector';
+import { of } from 'rxjs';
 
+import { RuntimeException } from '@nest-convoy/common';
 import {
   MessageHandler,
   MessageConsumer,
@@ -23,6 +27,7 @@ Aggregates
 export class KafkaMessageConsumer
   extends MessageConsumer
   implements OnApplicationBootstrap, OnApplicationShutdown {
+  private readonly logger = new Logger(this.constructor.name);
   private readonly processors = new Map<string, KafkaMessageProcessor>();
   // private swimlaneDispatcher: SwimlaneDispatcher;
 
@@ -37,17 +42,23 @@ export class KafkaMessageConsumer
     channel: string,
     handler: MessageHandler,
   ): void {
-    const processor =
-      this.processors.get(channel) || new KafkaMessageProcessor();
-    processor.addHandler(handler);
+    if (!this.processors.has(channel)) {
+      this.processors.set(channel, new KafkaMessageProcessor());
+    }
+    this.processors.get(channel)!.addHandler(handler);
   }
 
   private async maybeCommitOffsets(
     processor: KafkaMessageProcessor,
   ): Promise<void> {
-    const tpos = processor.topicPartitionOffsetsToCommit();
-    await this.kafka.consumer.commitOffsets(tpos);
-    processor.noteTopicPartitionOffsetsCommitted(tpos);
+    const tpos = processor.offsetsToCommit();
+    const offsets = processor.serializeOffsetsToCommit(tpos);
+
+    this.logger.debug(`Committing offsets ${JSON.stringify(offsets)}`);
+    await this.kafka.consumer.commitOffsets(offsets);
+    this.logger.debug(`Committed offsets`);
+
+    processor.noteOffsetsCommitted(tpos);
   }
 
   async subscribe(
@@ -81,20 +92,21 @@ export class KafkaMessageConsumer
     await this.kafka.consumer.run({
       autoCommit: false,
       eachMessage: async payload => {
-        const processor = this.processors.get(payload.topic)!;
+        const processor = this.processors.get(payload.topic);
+        if (!processor) {
+          throw new RuntimeException(
+            `No KafkaMessageProcessor available for topic ${payload.topic}`,
+          );
+        }
         const message = this.message.from(payload);
 
-        await processor.process(message, {
-          topic: payload.topic,
-          offset: payload.message.offset,
-          partition: payload.partition,
-        });
-
+        await processor.process(message, payload);
         await this.maybeCommitOffsets(processor);
         // const handlers = this.getHandlersByChannel(payload.topic);
         //
         // await Promise.all(handlers.map(handle => handle(message)));
       },
+      eachBatch: async payload => console.log('eachBatch', payload),
     });
     await this.kafka.consumer.connect();
     // this.swimlaneDispatcher = new SwimlaneDispatcher(this.handlers);

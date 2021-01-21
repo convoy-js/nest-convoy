@@ -1,18 +1,18 @@
 import {
-  DomainEventEnvelope,
-  DomainEventsConsumer,
-  OnEvent,
-} from '@nest-convoy/core';
-
-import {
   RestaurantCreated,
   RestaurantServiceChannel,
   RestaurantMenuRevised,
 } from '@ftgo-app/api/restaurant';
 
+import {
+  DomainEventEnvelope,
+  DomainEventHandlers,
+  OnEvent,
+} from '@nest-convoy/core';
+
 import { KitchenService } from '../services';
 
-@DomainEventsConsumer(RestaurantServiceChannel.RESTAURANT_EVENT)
+@DomainEventHandlers(RestaurantServiceChannel.RESTAURANT_EVENT)
 export class KitchenServiceEventsConsumer {
   constructor(private readonly kitchen: KitchenService) {}
 

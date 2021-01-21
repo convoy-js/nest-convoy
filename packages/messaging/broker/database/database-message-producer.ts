@@ -28,7 +28,7 @@ export class DatabaseMessageProducer extends MessageProducer {
         messages.map(message =>
           manager.create(MessageEntity, {
             id: message.id,
-            partition: message.partition,
+            // partition: message.partition,
             headers: message.getHeaders(),
             payload: message.parsePayload(),
             destination,

@@ -26,13 +26,15 @@ export class Kafka {
 
   readonly producer: Producer = this.kafka.producer({
     idempotent: true,
+    allowAutoTopicCreation: true,
   });
   readonly consumer: Consumer = this.kafka.consumer({
     groupId: this.config.clientId || GROUP_ID,
-    partitionAssigners: [
-      (config: Parameters<PartitionAssigner>[0]) =>
-        new KafkaReplyPartitionAssigner(this, config),
-    ],
+    allowAutoTopicCreation: true,
+    // partitionAssigners: [
+    //   (config: Parameters<PartitionAssigner>[0]) =>
+    //     new KafkaReplyPartitionAssigner(this, config),
+    // ],
   });
 
   constructor(

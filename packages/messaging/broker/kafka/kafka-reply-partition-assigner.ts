@@ -184,7 +184,9 @@ export class KafkaReplyPartitionAssigner {
     const memberMetadata = AssignerProtocol.MemberMetadata.decode(
       member.memberMetadata,
     ) as MemberMetadata;
-    const memberUserData = JSON.parse(memberMetadata.userData.toString());
+    const memberUserData = JSON.parse(
+      memberMetadata.userData.toString(),
+    ) as any;
 
     return {
       memberId: member.memberId,

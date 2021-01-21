@@ -1,18 +1,17 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-load("//tools:defaults.bzl", "nest_library")
+load("//tools:defaults.bzl", "nest_app", "nest_library")
 
 nest_library(
     name = "src",
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["main.ts"],
+    ),
     deps = [
         "//examples/sagas-customers-orders/common",
         "//examples/sagas-customers-orders/customers:src",
         "//packages/common",
         "//packages/core",
         "//packages/messaging/broker/kafka",
-        "@npm//@nestjs/core",
-        "@npm//@nestjs/microservices",
-        "@npm//@nestjs/platform-express",
         "@npm//@nestjs/typeorm",
         "@npm//kafkajs",
         "@npm//pg",
@@ -21,10 +20,8 @@ nest_library(
     ],
 )
 
-nodejs_binary(
+nest_app(
     name = "orders",
-    data = [
-        ":src",
-    ],
-    entry_point = ":main.ts",
+    entry = ":main.ts",
+    deps = [":src"],
 )

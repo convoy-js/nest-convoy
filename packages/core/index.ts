@@ -20,8 +20,9 @@ export {
   Failure,
   CommandWithDestination,
 } from '@nest-convoy/commands';
+export { DomainEventEnvelope } from '@nest-convoy/events';
+export * from '@nest-convoy/events/aggregate';
 export * from '@nest-convoy/sagas';
-export * from '@nest-convoy/events';
 
 export * from './decorators';
 export * from './common.module';

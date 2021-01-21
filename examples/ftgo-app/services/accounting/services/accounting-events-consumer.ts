@@ -1,15 +1,15 @@
 import {
-  DomainEventEnvelope,
-  DomainEventsConsumer,
-  OnEvent,
-} from '@nest-convoy/core';
-
-import {
   CustomerCreated,
   CustomerServiceChannel,
 } from '@ftgo-app/api/customer';
 
-@DomainEventsConsumer(CustomerServiceChannel.COMMAND)
+import {
+  DomainEventEnvelope,
+  DomainEventHandlers,
+  OnEvent,
+} from '@nest-convoy/core';
+
+@DomainEventHandlers(CustomerServiceChannel.COMMAND)
 export class AccountingEventsConsumer {
   constructor() {}
 

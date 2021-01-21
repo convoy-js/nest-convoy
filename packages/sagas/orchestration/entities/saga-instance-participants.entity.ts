@@ -1,6 +1,6 @@
 import { Entity, PrimaryColumn, VersionColumn } from 'typeorm';
 
-@Entity('aga_instance_participants')
+@Entity('saga_instance_participants')
 export class SagaInstanceParticipantsEntity {
   @PrimaryColumn({ name: 'saga_id' })
   sagaId: string;

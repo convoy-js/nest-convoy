@@ -1,25 +1,34 @@
-export class TopicPartitionOffsets {
-  private unprocessed: readonly string[] = [];
-  private processed: readonly string[] = [];
+export interface TopicPartitionOffset {
+  readonly topic: string;
+  readonly partition: number;
+  // Offsets are represented as strings in kafkajs
+  // but the actual representation is int64, which V8 doesn't support
+  // so we just convert them into bigint
+  readonly offset: bigint;
+}
 
-  noteUnprocessed(offset: string): void {
+export class TopicPartitionOffsets {
+  private unprocessed: readonly bigint[] = [];
+  private processed: readonly bigint[] = [];
+
+  noteUnprocessed(offset: bigint): void {
     this.unprocessed = [...this.unprocessed, offset];
   }
 
-  noteProcessed(offset: string): void {
+  noteProcessed(offset: bigint): void {
     this.processed = [...this.processed, offset];
   }
 
-  toCommit(): string | undefined {
-    return this.unprocessed.find(x => !this.processed.includes(x));
+  toCommit(): bigint | undefined {
+    return this.unprocessed.find(x => this.processed.includes(x));
   }
 
-  noteCommitted(offset: string): void {
+  noteCommitted(offset: bigint): void {
     this.unprocessed = this.unprocessed.filter(x => x >= offset);
     this.processed = this.processed.filter(x => x >= offset);
   }
 
-  getPending(): readonly string[] {
-    return this.unprocessed.filter(x => !this.processed.includes(x));
+  getPending(): readonly bigint[] {
+    return this.unprocessed.filter(x => this.processed.includes(x));
   }
 }

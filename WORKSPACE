@@ -17,14 +17,14 @@ http_archive(
 load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
 
 node_repositories(
-    node_version = "14.15.0",
+    # We cannot use AggregateError since rules_nodejs doesn't support 15+
+    node_version = "14.15.3",
     yarn_version = "1.22.4",
 )
 
 yarn_install(
     name = "npm",
     data = [
-        "//:.npmrc",
         "//:patches/@bazel+typescript+2.0.3.patch",
         "//:patches/jest-haste-map+26.1.0.patch",
     ],

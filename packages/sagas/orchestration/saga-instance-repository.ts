@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
+import { RuntimeException, NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { SagaInstance } from './saga-instance';
 import { SagaInstanceEntity, SagaInstanceParticipantsEntity } from './entities';
@@ -88,7 +88,9 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     });
 
     if (!entity) {
-      throw new Error(`Cannot find saga instance ${sagaType} ${sagaId}`);
+      throw new RuntimeException(
+        `Cannot find saga instance ${sagaType} ${sagaId}`,
+      );
     }
 
     return new SagaInstance(

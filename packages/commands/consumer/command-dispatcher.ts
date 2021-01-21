@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 
 import { ConvoyMessageConsumer } from '@nest-convoy/messaging/consumer';
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
-import { Dispatcher } from '@nest-convoy/common';
+import { Dispatcher, RuntimeException } from '@nest-convoy/common';
 import {
   MessageBuilder,
   ConvoyMessageProducer,
@@ -69,32 +69,41 @@ export class ConvoyCommandDispatcher implements Dispatcher {
           : withSuccess(reply),
       );
     } catch (err) {
-      const errors = err instanceof AggregateError ? err.errors : [err];
-      return errors.map(reply =>
+      // if (!(err instanceof RuntimeException)) {
+      //   throw err;
+      // }
+      // rules_nodejs doesn't have 15.0.0+ version
+      return [err].map(reply =>
         commandHandler.options.withLock
           ? withLock(commandMessage.command).withFailure(reply)
           : withFailure(reply),
       );
+      // const errors = err instanceof AggregateError ? err.errors : [err];
+      // return errors.map(reply =>
+      //   commandHandler.options.withLock
+      //     ? withLock(commandMessage.command).withFailure(reply)
+      //     : withFailure(reply),
+      // );
     }
   }
 
   async subscribe(): Promise<void> {
-    await Promise.all(
-      this.commandHandlers.getHandlers().map(async handler => {
-        await this.messageConsumer.subscribe(
-          this.commandDispatcherId,
-          [handler.channel], // [`${handler.channel}-${handler.command.name}`],
-          this.handleMessage.bind(this),
-        );
-      }),
-    );
+    // await Promise.all(
+    //   this.commandHandlers.getHandlers().map(async handler => {
+    //     await this.messageConsumer.subscribe(
+    //       this.commandDispatcherId,
+    //       [handler.channel], // [`${handler.channel}-${handler.command.name}`],
+    //       this.handleMessage.bind(this),
+    //     );
+    //   }),
+    // );
 
     // TODO: We need a generic subscriber for channel ONLY, in case of multiple messages being sent to the same destination
-    // await this.messageConsumer.subscribe(
-    //   this.commandDispatcherId,
-    //   this.commandHandlers.getChannels(),
-    //   this.handleMessage.bind(this),
-    // );
+    await this.messageConsumer.subscribe(
+      this.commandDispatcherId,
+      this.commandHandlers.getChannels(),
+      this.handleMessage.bind(this),
+    );
   }
 
   async handleMessage(message: Message): Promise<void> {
