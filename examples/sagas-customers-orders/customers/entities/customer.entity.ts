@@ -7,11 +7,14 @@ import {
 } from 'typeorm';
 import { f, t } from '@deepkit/type';
 
-import { Money } from '../../common';
+import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
+
+import { Money, Namespace } from '../../common';
 import { CustomerCreditLimitExceeded } from '../api';
 import { CreditReservation } from './credit-reservation.entity';
 
 @Entity()
+@AvroSchema(Namespace.CUSTOMER)
 export class Customer {
   @PrimaryGeneratedColumn()
   @f
