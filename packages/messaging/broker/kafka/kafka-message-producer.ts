@@ -27,7 +27,9 @@ export class KafkaMessageProducer
   ): Promise<void> {
     await this.kafka.producer.send({
       topic: destination,
-      messages: messages.map(message => this.message.to(message)),
+      messages: await Promise.all(
+        messages.map(message => this.message.to(message)),
+      ),
     });
   }
 

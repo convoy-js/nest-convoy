@@ -1,3 +1,5 @@
+import { Type } from '@nestjs/common';
+
 import { MissingMessageHeaderException } from './exceptions';
 import { MessageHeaders } from './message-headers';
 
@@ -6,6 +8,7 @@ export class Message {
   static PARTITION_ID = 'partition_id';
   static DESTINATION = 'destination';
   static DATE = 'date';
+  static TYPE = 'type';
 
   get id(): string {
     return this.getRequiredHeader(Message.ID);
@@ -15,15 +18,20 @@ export class Message {
     return +this.getRequiredHeader(Message.PARTITION_ID);
   }
 
+  get type(): string {
+    return this.getRequiredHeader(Message.TYPE);
+  }
+
   constructor(
-    private payload: string,
-    private headers = new MessageHeaders(),
+    protected payload: string,
+    protected headers = new MessageHeaders(),
   ) {}
 
   toString(): string {
     return JSON.stringify({
       payload: this.payload,
       headers: this.getHeaders().asRecord(),
+      type: this.type,
     });
   }
 
@@ -45,8 +53,8 @@ export class Message {
     return this;
   }
 
-  setHeader(name: string, value: string): this {
-    this.headers.set(name, value);
+  setHeader(name: string, value: string | number): this {
+    this.headers.set(name, String(value));
     return this;
   }
 

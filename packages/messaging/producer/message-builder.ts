@@ -14,8 +14,9 @@ export class MessageBuilder {
         stack: payload.stack,
       };
     }
-    if (typeof payload !== 'string') payload = JSON.stringify(payload);
-
+    if (typeof payload !== 'string') {
+      payload = JSON.stringify(payload);
+    }
     return new MessageBuilder(payload as string);
   }
 
@@ -29,6 +30,11 @@ export class MessageBuilder {
     } else {
       this.body = messageOrPayload;
     }
+  }
+
+  withReference(reference: object): this {
+    this.headers.set(Message.TYPE, reference.constructor.name);
+    return this;
   }
 
   withHeader(name: string, value: string | number): this {

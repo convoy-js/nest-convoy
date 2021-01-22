@@ -13,6 +13,7 @@ export function withReply<T extends Reply>(
   outcome: CommandReplyOutcome,
 ): Message {
   return MessageBuilder.withPayload(reply)
+    .withReference(reply)
     .withHeader(ReplyMessageHeaders.REPLY_OUTCOME, outcome)
     .withHeader(ReplyMessageHeaders.REPLY_TYPE, reply.constructor.name)
     .build();

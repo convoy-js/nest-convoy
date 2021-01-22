@@ -1,1 +1,2 @@
 export const KAFKA_CONFIG = Symbol('KAFKA_CONFIG');
+export const KAFKA_SCHEMA_REGISTRY = Symbol('KAFKA_SCHEMA_REGISTRY');

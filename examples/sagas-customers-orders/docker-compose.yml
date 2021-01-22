@@ -34,3 +34,13 @@ services:
       - CONFIG_STORAGE_TOPIC=convoy_configs
       - OFFSET_STORAGE_TOPIC=convoy_offsets
       - STATUS_STORAGE_TOPIC=convoy_statuses
+  schema-registry:
+    image: confluentinc/cp-schema-registry:6.0.0
+    hostname: schema-registry
+    depends_on:
+      - kafka
+    ports:
+      - '8081:8081'
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:9092'

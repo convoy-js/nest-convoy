@@ -71,6 +71,7 @@ export class SagaManager<Data> {
 
   private createFailureMessage(): Message {
     return MessageBuilder.withPayload()
+      .withReference(new Failure())
       .withHeader(
         ReplyMessageHeaders.REPLY_OUTCOME,
         CommandReplyOutcome.FAILURE,
@@ -81,6 +82,7 @@ export class SagaManager<Data> {
 
   private createSuccessMessage(): Message {
     return MessageBuilder.withPayload()
+      .withReference(new Success())
       .withHeader(
         ReplyMessageHeaders.REPLY_OUTCOME,
         CommandReplyOutcome.SUCCESS,

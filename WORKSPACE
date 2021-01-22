@@ -26,6 +26,7 @@ yarn_install(
     name = "npm",
     data = [
         "//:patches/@bazel+typescript+2.0.3.patch",
+        "//:patches/@deepkit+type+1.0.1-alpha.12.patch",
         "//:patches/jest-haste-map+26.1.0.patch",
     ],
     package_json = "//:package.json",

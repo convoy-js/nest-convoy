@@ -1,0 +1,10 @@
+load("//tools:defaults.bzl", "nest_test")
+
+nest_test(
+    name = "schema",
+    srcs = ["schema.spec.ts"],
+    deps = [
+        "//packages/messaging/broker/kafka",
+        "@npm//@deepkit/type",
+    ],
+)

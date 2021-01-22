@@ -32,6 +32,7 @@ export class ConvoyCommandProducer extends CommandProducer {
     resource?: string,
   ): Message {
     const builder = MessageBuilder.withPayload(command)
+      .withReference(command)
       .withExtraHeaders(headers)
       .withHeader(CommandMessageHeaders.DESTINATION, channel)
       .withHeader(CommandMessageHeaders.COMMAND_TYPE, command.constructor.name)

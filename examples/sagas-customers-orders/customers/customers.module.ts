@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
-import { ConvoyKafkaBrokerModule } from '@nest-convoy/messaging/broker/kafka';
+import {
+  ConvoyKafkaBrokerModule,
+  SchemaRegistry,
+} from '@nest-convoy/messaging/broker/kafka';
 
 import { CreditReservation, Customer } from './entities';
 import { CustomerCommandHandlers } from './customer-command-handlers';
@@ -25,6 +28,10 @@ import { Channel, defaultOptions, TypeOrmModuleOptions } from '../common';
       },
       {
         database: defaultOptions,
+        schemaRegistry: new SchemaRegistry({
+          host: 'http://localhost:8081',
+          clientId: Channel.CUSTOMER,
+        }),
       },
     ),
     ConvoySagasModule,

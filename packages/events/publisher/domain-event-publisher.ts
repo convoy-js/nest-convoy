@@ -18,6 +18,7 @@ export class DomainEventPublisher {
     event: DomainEvent,
   ): Message {
     return MessageBuilder.withPayload(event)
+      .withReference(event)
       .withExtraHeaders(headers)
       .withHeader(Message.PARTITION_ID, aggregateId)
       .withHeader(EventMessageHeaders.AGGREGATE_ID, aggregateId)

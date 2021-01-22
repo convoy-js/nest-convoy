@@ -80,6 +80,7 @@ export class SagaExpectCommandTest<Data> {
     outcome: CommandReplyOutcome,
   ): Promise<void> {
     const message = MessageBuilder.withPayload(reply)
+      .withReference(reply)
       .withHeader(ReplyMessageHeaders.REPLY_OUTCOME, outcome)
       .withHeader(ReplyMessageHeaders.REPLY_TYPE, reply.constructor.name)
       .withHeader(SagaReplyHeaders.REPLY_SAGA_TYPE, this.sagaInstance.sagaType)

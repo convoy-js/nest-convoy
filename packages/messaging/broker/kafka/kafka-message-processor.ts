@@ -23,7 +23,6 @@ export class KafkaMessageProcessor {
       offset: BigInt(payload.message.offset),
       partition: payload.partition,
     };
-    console.log('process', tpo);
     this.topicPartitionOffsetTracker.noteUnprocessed(tpo);
     await Promise.all(this.handlers.map(handle => handle(message)));
     this.topicPartitionOffsetTracker.noteProcessed(tpo);

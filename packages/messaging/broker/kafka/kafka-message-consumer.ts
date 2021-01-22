@@ -98,7 +98,8 @@ export class KafkaMessageConsumer
             `No KafkaMessageProcessor available for topic ${payload.topic}`,
           );
         }
-        const message = this.message.from(payload);
+        const message = await this.message.from(payload);
+        console.log('eachMessage', message.toString());
 
         await processor.process(message, payload);
         await this.maybeCommitOffsets(processor);
