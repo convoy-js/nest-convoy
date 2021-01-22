@@ -42,6 +42,8 @@ export class KafkaMessageBuilder implements OnModuleInit {
           registryId = version
             ? await this.registry.getRegistryId(subject, version)
             : await this.registry.getLatestSchemaId(subject);
+        } else {
+          registryId = schemaId;
         }
 
         message.setHeader(KafkaMessage.SCHEMA_ID, registryId!);

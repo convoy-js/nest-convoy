@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   JoinTable,
 } from 'typeorm';
+import { f, t } from '@deepkit/type';
 
 import { Money } from '../../common';
 import { CustomerCreditLimitExceeded } from '../api';
@@ -13,12 +14,15 @@ import { CreditReservation } from './credit-reservation.entity';
 @Entity()
 export class Customer {
   @PrimaryGeneratedColumn()
+  @f
   id: number;
 
   @Column()
+  @f
   name: string;
 
   @Column(() => Money)
+  @t
   creditLimit: Money;
 
   @OneToMany(
@@ -30,6 +34,7 @@ export class Customer {
     },
   )
   @JoinTable()
+  @t.array(CreditReservation)
   creditReservations: CreditReservation[];
 
   availableCredit(): Money {
