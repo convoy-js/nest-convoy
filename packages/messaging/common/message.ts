@@ -1,4 +1,5 @@
 import { Type } from '@nestjs/common';
+import { plainToClass } from '@deepkit/type';
 
 import { MissingMessageHeaderException } from './exceptions';
 import { MessageHeaders } from './message-headers';
@@ -23,7 +24,7 @@ export class Message {
   }
 
   constructor(
-    protected payload: string,
+    protected payload: any,
     protected headers = new MessageHeaders(),
   ) {}
 
@@ -35,16 +36,17 @@ export class Message {
     });
   }
 
-  setPayload(payload: string): this {
+  setPayload(payload: object): this {
     this.payload = payload;
     return this;
   }
 
-  parsePayload<T = any>(): T {
-    return JSON.parse(this.payload) as T;
+  parsePayload<T>(type?: Type<T>): T {
+    // const plain = JSON.parse(this.payload) as T;
+    return type ? plainToClass(type, this.payload) : this.payload;
   }
 
-  getPayload(): string {
+  getPayload(): object {
     return this.payload;
   }
 

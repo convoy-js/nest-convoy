@@ -14,6 +14,7 @@ nest_library(
         "//packages/messaging/broker/kafka",
         "@npm//@nestjs/typeorm",
         "@npm//kafkajs",
+        "@npm//@deepkit/type",
         "@npm//pg",
         "@npm//redis",
         "@npm//typeorm",

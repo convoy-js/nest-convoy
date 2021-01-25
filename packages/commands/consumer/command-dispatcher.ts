@@ -120,10 +120,7 @@ export class ConvoyCommandDispatcher implements Dispatcher {
 
     let replies: readonly Message[];
     try {
-      const command = Object.assign(
-        new commandHandler.command(),
-        message.parsePayload(),
-      );
+      const command = message.parsePayload(commandHandler.command);
 
       const commandMessage = new CommandMessage(
         command,

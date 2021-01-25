@@ -6,5 +6,6 @@ nest_test(
     deps = [
         "//packages/messaging/broker/kafka",
         "@npm//@deepkit/type",
+        "@npm//avsc"
     ],
 )

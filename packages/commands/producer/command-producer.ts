@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Type } from '@nestjs/common';
 
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 import { Command, CommandMessageHeaders } from '@nest-convoy/commands/common';

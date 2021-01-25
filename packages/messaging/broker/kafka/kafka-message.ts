@@ -4,8 +4,8 @@ import type { schema } from 'avsc';
 import { Message, MessageHeaders } from '@nest-convoy/messaging';
 
 import {
-  AVRO_SCHEMA_METADATA,
   AvroSchemaMetadata,
+  getAvroSchemaMetadata,
   internalSchemaRegistry,
 } from './avro-schema';
 
@@ -24,7 +24,7 @@ export class KafkaMessage extends Message {
     return new KafkaMessage(message.getPayload(), message.getHeaders());
   }
 
-  private readonly _schema: schema.RecordType;
+  private readonly avroSchema: schema.RecordType;
 
   get schemaType(): Type | undefined {
     return internalSchemaRegistry.get(this.type);
@@ -39,11 +39,9 @@ export class KafkaMessage extends Message {
   constructor(payload: string, headers: MessageHeaders) {
     super(payload, headers);
 
-    const { namespace, version, schema } = Reflect.getMetadata(
-      AVRO_SCHEMA_METADATA,
+    const { namespace, version, schema } = getAvroSchemaMetadata(
       this.schemaType!,
-    ) as AvroSchemaMetadata;
-
+    );
     const subject = `${namespace}.${this.type}`;
 
     this.setHeaders(
@@ -55,7 +53,7 @@ export class KafkaMessage extends Message {
       ]),
     );
 
-    this._schema = schema;
+    this.avroSchema = schema;
   }
 
   get schema(): KafkaMessageSchema {
@@ -66,13 +64,11 @@ export class KafkaMessage extends Message {
     const version = this.hasHeader(KafkaMessage.SCHEMA_VERSION)
       ? +this.getRequiredHeader(KafkaMessage.SCHEMA_VERSION)
       : undefined;
-    // TODO
     const subject = this.getHeader(KafkaMessage.SCHEMA_SUBJECT);
-    const type = internalSchemaRegistry.get(this.type);
 
     return {
       subject,
-      schema: this._schema,
+      schema: this.avroSchema,
       namespace,
       version,
       id,

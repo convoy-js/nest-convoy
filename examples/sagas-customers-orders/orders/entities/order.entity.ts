@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { f, t } from '@deepkit/type';
 
-import { AvroSchema, Enum } from '@nest-convoy/messaging/broker/kafka';
+import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
 
 import { OrderDetails, OrderState, RejectionReason } from '../common';
 import { Namespace } from '../../common';
@@ -22,7 +22,7 @@ export class Order {
     enum: OrderState,
     default: OrderState.PENDING,
   })
-  @f.type(Enum)
+  @f.enum(OrderState)
   state: OrderState;
 
   @Column({
@@ -30,6 +30,6 @@ export class Order {
     enum: RejectionReason,
     nullable: true,
   })
-  @f.type(Enum)
+  @f.enum(RejectionReason)
   rejectionReason?: RejectionReason;
 }

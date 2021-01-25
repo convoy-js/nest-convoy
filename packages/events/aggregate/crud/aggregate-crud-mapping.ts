@@ -1,4 +1,5 @@
 import { Injectable, Type } from '@nestjs/common';
+import { plainToClass } from '@deepkit/type';
 
 import { ObjectLiteral } from '@nest-convoy/common';
 
@@ -52,7 +53,7 @@ export class AggregateCrudMapping {
   }
 
   toEvent<E>(type: Type<E>, data: ObjectLiteral): E {
-    return Object.assign(new type(), data);
+    return plainToClass(type, data);
   }
 
   toEventWithMetadata<E>({

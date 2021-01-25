@@ -44,10 +44,7 @@ export class DomainEventDispatcher implements Dispatcher {
     const handler = this.domainEventHandlers.findTargetMethod(message);
     if (!handler) return;
 
-    const event = Object.assign(
-      new handler.event(),
-      message.parsePayload<DomainEvent>(),
-    );
+    const event = message.parsePayload(handler.event);
     const aggregateId = message.getRequiredHeader(
       EventMessageHeaders.AGGREGATE_ID,
     );

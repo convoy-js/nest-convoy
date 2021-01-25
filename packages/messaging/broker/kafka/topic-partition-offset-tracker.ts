@@ -78,8 +78,7 @@ export class TopicPartitionOffsetTracker {
     topic,
     partition,
   }: TopicPartitionOffset): readonly bigint[] {
-    const tpo = this.fetch(topic, partition);
-    return tpo.getPending();
+    return this.fetch(topic, partition).getPending();
   }
 
   // topicPartitionOffsetsToCommit(): Offsets {

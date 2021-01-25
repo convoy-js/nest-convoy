@@ -1,6 +1,6 @@
 import type { EachMessagePayload, Message as ProducerMessage } from 'kafkajs';
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import {
   Message,
@@ -11,9 +11,8 @@ import {
 import { KafkaMessage } from './kafka-message';
 import { KAFKA_SCHEMA_REGISTRY } from './tokens';
 
-// TODO: Kafka Schema Registry
 @Injectable()
-export class KafkaMessageBuilder implements OnModuleInit {
+export class KafkaMessageBuilder {
   constructor(
     @Inject(KAFKA_SCHEMA_REGISTRY)
     private readonly registry: SchemaRegistry | undefined,
@@ -47,7 +46,7 @@ export class KafkaMessageBuilder implements OnModuleInit {
         }
 
         message.setHeader(KafkaMessage.SCHEMA_ID, registryId!);
-        value = await this.registry.encode(registryId!, message.parsePayload());
+        value = await this.registry.encode(registryId!, message.getPayload());
       }
     }
 
@@ -79,9 +78,5 @@ export class KafkaMessageBuilder implements OnModuleInit {
         .withExtraHeaders(headers)
         .build()
     );
-  }
-
-  onModuleInit(): void {
-    // TODO: https://kafkajs.github.io/confluent-schema-registry/docs/usage#uploading-schemas
   }
 }

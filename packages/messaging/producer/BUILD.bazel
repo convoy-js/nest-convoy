@@ -13,6 +13,7 @@ nest_library(
     deps = [
         "//packages/common",
         "//packages/messaging/common",
+        "@npm//@deepkit/type",
         "@npm//@types/uuid",
         "@npm//uuid",
     ],
