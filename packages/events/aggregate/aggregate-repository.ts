@@ -28,7 +28,9 @@ import {
 
 export function getAggregateRepositoryToken<E>(aggregate: Type<E>) {
   if (aggregate == null) {
-    throw new CircularDependencyException('@InjectAggregateRepository()');
+    throw new CircularDependencyException(
+      `@${InjectAggregateRepository.name}()`,
+    );
   }
   return `${aggregate.name}AggregateRepository`;
 }

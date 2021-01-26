@@ -5,7 +5,7 @@ import { DomainEvent } from '@nest-convoy/events/common';
 
 import { DomainEventPublisher } from '../publisher';
 import { AggregateRoot } from './aggregate-root';
-import { getAggregateId } from './decorators';
+import { AggregateId, getAggregateId } from './decorators';
 
 export interface AggregateDomainEventPublisher<AR extends AggregateRoot> {
   publish<E extends readonly DomainEvent[]>(
@@ -15,11 +15,8 @@ export interface AggregateDomainEventPublisher<AR extends AggregateRoot> {
 }
 
 export function AggregateDomainEventPublisher<AR extends AggregateRoot>(
-  aggregateType: Type<AR> | string,
+  aggregateType: Type<AR>,
 ): Type<AggregateDomainEventPublisher<AR>> {
-  const aggregateTypeName =
-    typeof aggregateType === 'string' ? aggregateType : aggregateType.name;
-
   @Injectable()
   class AbstractAggregateDomainEventPublisher
     implements AggregateDomainEventPublisher<AR> {
@@ -31,9 +28,9 @@ export function AggregateDomainEventPublisher<AR extends AggregateRoot>(
     ): Promise<void> {
       const id = getAggregateId(aggregate) || aggregate.id;
       if (!id) {
-        throw new RuntimeException('Missing @AggregateIdSupplier()');
+        throw new RuntimeException(`Missing @${AggregateId.name}()`);
       }
-      await this.domainEventPublisher.publish(aggregateTypeName, id, events);
+      await this.domainEventPublisher.publish(aggregateType.name, id, events);
     }
   }
 

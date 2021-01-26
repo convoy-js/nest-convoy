@@ -28,7 +28,7 @@ export class CreditReservation {
   amount: Money;
 
   @ManyToOne(() => Customer, customer => customer.creditReservations)
-  @t
+  @f.type(() => Customer)
   customer: Customer;
 
   constructor(orderId: number, amount: Money) {

@@ -30,7 +30,7 @@ export class DatabaseMessageProducer extends MessageProducer {
             id: message.id,
             // partition: message.partition,
             headers: message.getHeaders(),
-            payload: message.parsePayload(),
+            payload: message.getPayload(),
             destination,
           }),
         ),

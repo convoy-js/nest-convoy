@@ -14,7 +14,7 @@ import { Order } from '../entities';
 import { OrderNotFoundException, OrderRevision, RevisedOrder } from '../api';
 import { OrderDomainEventPublisher } from './order-domain-event-publisher';
 
-type MutateOrder = (order: Order) => DomainEvent[];
+type MutateOrder = (order: Order) => readonly DomainEvent[];
 
 @Injectable()
 export class OrderService {

@@ -37,7 +37,7 @@ export class Customer {
     },
   )
   @JoinTable()
-  @t.array(CreditReservation)
+  @f.array(f.type(() => CreditReservation))
   creditReservations: CreditReservation[];
 
   availableCredit(): Money {

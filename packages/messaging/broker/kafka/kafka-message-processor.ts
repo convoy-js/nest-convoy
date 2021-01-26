@@ -45,14 +45,6 @@ export class KafkaMessageProcessor {
 
   offsetsToCommit(): readonly TopicPartitionOffset[] {
     return this.topicPartitionOffsetTracker.offsetsToCommit();
-    // const offsets = this.offsetTracker.toCommit();
-    // return offsets.topics.flatMap(({ topic, partitions }) =>
-    //   partitions.map(({ partition, offset }) => ({
-    //     topic,
-    //     partition,
-    //     offset,
-    //   })),
-    // );
   }
 
   // TODO

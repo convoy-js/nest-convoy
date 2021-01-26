@@ -12,6 +12,8 @@ nest_library(
         "//packages/core",
         "//packages/messaging",
         "@npm//@deepkit/type",
+        "@npm//@nestjs/core",
+        "@npm//@golevelup/nestjs-discovery",
         "@npm//@kafkajs/confluent-schema-registry",
         "@npm//avsc",
         "@npm//kafkajs",

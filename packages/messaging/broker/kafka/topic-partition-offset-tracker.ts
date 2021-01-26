@@ -49,15 +49,6 @@ export class TopicPartitionOffsetTracker {
     });
   }
 
-  // noteCommitted(offsets: Offsets): void {
-  //   offsets.topics.forEach(({ topic, partitions }) => {
-  //     partitions.forEach(({ offset, partition }) => {
-  //       const tpo = this.fetch(topic, partition);
-  //       tpo.noteCommitted(offset);
-  //     });
-  //   });
-  // }
-
   offsetsToCommit(): TopicPartitionOffset[] {
     return [...this.state.entries()].flatMap(([topic, partitions]) =>
       partitions
@@ -80,27 +71,4 @@ export class TopicPartitionOffsetTracker {
   }: TopicPartitionOffset): readonly bigint[] {
     return this.fetch(topic, partition).getPending();
   }
-
-  // topicPartitionOffsetsToCommit(): Offsets {
-  //   const topics = [...this.state.entries()].map(
-  //     ([topic, partitions]): TopicOffsets => ({
-  //       topic,
-  //       partitions: [...partitions.entries()]
-  //         .map<[number, string | undefined]>(([partition, tpo]) => [
-  //           partition,
-  //           tpo.toCommit(),
-  //         ])
-  //         // .filter(([, offset]): offset is string => !!offset)
-  //         .filter((value): value is [number, string] => !!value[0])
-  //         .map(
-  //           ([partition, offset]): PartitionOffset => ({
-  //             partition,
-  //             offset,
-  //           }),
-  //         ),
-  //     }),
-  //   );
-  //
-  //   return { topics };
-  // }
 }

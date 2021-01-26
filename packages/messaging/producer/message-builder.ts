@@ -20,7 +20,7 @@ export class MessageBuilder {
       const plain = classToPlain(payload.constructor as Type, payload);
       return new MessageBuilder(plain, payload as object);
     } else {
-      payload = JSON.parse(payload);
+      payload = JSON.parse(payload) as any;
     }
 
     return new MessageBuilder(payload as object | Message);
@@ -48,7 +48,7 @@ export class MessageBuilder {
   }
 
   withHeader(name: string, value: string | number): this {
-    this.headers.set(name, String(value));
+    this.headers.set(name, value);
     return this;
   }
 

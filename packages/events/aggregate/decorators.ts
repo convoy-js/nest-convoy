@@ -1,4 +1,4 @@
-import { Type, ObjectLiteral, PropertyDecorator } from '@nest-convoy/common';
+import { Type, ObjectLiteral } from '@nest-convoy/common';
 
 import { AggregateRoot } from './aggregate-root';
 
@@ -25,7 +25,8 @@ export function getAggregateId(
   return (target as ObjectLiteral)[key];
 }
 
-export function AggregateId(): PropertyDecorator<AggregateRoot> {
-  return (target, propertyKey) =>
+export function AggregateId() {
+  return (target: AggregateRoot, propertyKey: string) => {
     Reflect.defineMetadata(AGGREGATE_ID_KEY_METADATA, propertyKey, target);
+  };
 }

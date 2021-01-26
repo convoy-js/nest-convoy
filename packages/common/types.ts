@@ -10,22 +10,6 @@ export type Consumer<T, S = any, A extends unknown[] = unknown[]> = AsyncLikeFn<
 
 export type ObjectLiteral = Record<string, any>;
 
-export type ClassDecorator = <T extends Type>(target: T) => T | void;
-export type PropertyDecorator<T extends any> = <K extends keyof T>(
-  target: T,
-  propertyKey: K,
-) => void;
-export type MethodDecorator = <T extends any, K extends keyof T>(
-  target: T,
-  propertyKey: K,
-  descriptor: TypedPropertyDescriptor<T>,
-) => TypedPropertyDescriptor<T> | void;
-export type ParameterDecorator = <T extends any, K extends keyof T>(
-  target: T,
-  propertyKey: K,
-  parameterIndex: number,
-) => void;
-
 export type AsyncLikeFn<T extends any[] = any[], R = unknown> = (
   ...args: T
 ) => AsyncLike<R>;

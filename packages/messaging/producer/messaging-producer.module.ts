@@ -1,10 +1,7 @@
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
+import { DiscoveryModule } from '@golevelup/nestjs-discovery';
 
-import {
-  MessageInterceptor,
-  ConvoyMessagingCommonModule,
-  NEST_CONVOY_MESSAGE_INTERCEPTORS,
-} from '@nest-convoy/messaging/common';
+import { ConvoyMessagingCommonModule } from '@nest-convoy/messaging/common';
 
 import { ConvoyMessageProducer, MessageProducer } from './message-producer';
 
@@ -13,17 +10,12 @@ import { ConvoyMessageProducer, MessageProducer } from './message-producer';
 export class ConvoyMessagingProducerModule {
   static register(
     provider: Omit<Provider<MessageProducer>, 'provide'>,
-    interceptors: MessageInterceptor[] = [],
   ): DynamicModule {
     return {
       module: ConvoyMessagingProducerModule,
-      imports: [ConvoyMessagingCommonModule],
+      imports: [ConvoyMessagingCommonModule, DiscoveryModule],
       providers: [
         ConvoyMessageProducer,
-        {
-          provide: NEST_CONVOY_MESSAGE_INTERCEPTORS,
-          useValue: interceptors,
-        },
         {
           provide: MessageProducer,
           ...provider,

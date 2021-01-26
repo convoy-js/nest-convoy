@@ -9,9 +9,9 @@ nest_library(
     module_name = "@nest-convoy/messaging/common",
     deps = [
         "//packages/common",
+        "@npm//@deepkit/type",
         "@npm//@nestjs/core",
         "@npm//@nestjs/typeorm",
-        "@npm//@deepkit/type",
         "@npm//typeorm",
     ],
 )

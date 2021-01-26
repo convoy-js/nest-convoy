@@ -12,7 +12,13 @@ import { CustomerServiceProxy } from './sagas/participants';
 import { Order } from './entities';
 import { OrderService } from './order.service';
 import { OrdersController } from './orders.controller';
-import { Channel, defaultOptions, TypeOrmModuleOptions } from '../common';
+import {
+  Channel,
+  defaultOptions,
+  Money,
+  TypeOrmModuleOptions,
+} from '../common';
+import { OrderDetails } from './common';
 
 @Module({
   imports: [
@@ -30,15 +36,22 @@ import { Channel, defaultOptions, TypeOrmModuleOptions } from '../common';
       },
       {
         database: defaultOptions,
-        schemaRegistry: new SchemaRegistry({
-          host: 'http://localhost:8081',
-          clientId: Channel.ORDER,
-        }),
+        // schemaRegistry: new SchemaRegistry({
+        //   host: 'http://localhost:8081',
+        //   clientId: Channel.ORDER,
+        // }),
       },
     ),
     ConvoySagasModule,
   ],
   controllers: [OrdersController],
-  providers: [CreateOrderSaga, OrderService, CustomerServiceProxy],
+  providers: [
+    CreateOrderSaga,
+    OrderService,
+    CustomerServiceProxy,
+    // OrderDetails,
+    // Order,
+    // Money,
+  ],
 })
 export class OrdersModule {}
