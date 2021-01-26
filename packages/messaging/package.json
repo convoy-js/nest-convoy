@@ -8,14 +8,18 @@
   "dependencies": {
     "@nest-convoy/core": "0.0.0-PLACEHOLDER",
     "@nest-convoy/common": "0.0.0-PLACEHOLDER",
+    "@golevelup/nestjs-discovery": "2.3.1",
     "uuid": "8.3.2",
     "tslib": "2.0.3"
   },
   "peerDependencies": {
-    "@nestjs/common": ">=7.3.0"
+    "@nestjs/common": ">=7.3.0",
+    "@deepkit/type": ">=1.0.1-alpha.13"
   },
   "optionalDependencies": {
-    "@nestjs/microservices": ">=7.3.0"
+    "kafkajs": "^1.15.0",
+    "@kafkajs/confluent-schema-registry": "^1.0.6",
+    "avsc": "5.5.3"
   },
   "keywords": [
     "nestjs",
