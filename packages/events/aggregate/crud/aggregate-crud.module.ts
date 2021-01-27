@@ -10,7 +10,7 @@ import { AggregateCrudAccess } from './aggregate-crud-access';
 import {
   DefaultEventSchemaManager,
   EVENT_SCHEMA_MANAGER,
-} from './event-schema-manager';
+} from '../schema/event-schema-manager';
 
 @Module({
   imports: [

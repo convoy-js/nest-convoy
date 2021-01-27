@@ -5,7 +5,7 @@ import { RuntimeException } from '@nest-convoy/common';
 import { AggregateRoot } from '../aggregate-root';
 import { EventIdTypeAndData } from '../interfaces';
 import { SerializedEvent } from '../serialized-event';
-import { AggregateSchema } from '../aggregate-schema';
+import { AggregateSchema } from './aggregate-schema';
 
 export const EVENT_SCHEMA_MANAGER = Symbol('EVENT_SCHEMA_MANAGER');
 

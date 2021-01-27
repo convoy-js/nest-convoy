@@ -10,6 +10,6 @@ export {
 } from './aggregate-repository';
 export { AggregateRoot } from './aggregate-root';
 export { CommandProcessingAggregate } from './command-processing-aggregate';
-export { AggregateSchema } from './aggregate-schema';
+export { AggregateSchema } from './schema/aggregate-schema';
 export { MissingApplyEventMethodStrategy } from './missing-apply-event-method-strategy';
 export { Aggregates } from './aggregates';

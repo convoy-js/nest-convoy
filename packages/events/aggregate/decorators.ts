@@ -25,6 +25,10 @@ export function getAggregateId(
   return (target as ObjectLiteral)[key];
 }
 
+// version field
+export function AggregateVersion(version: number) {}
+
+// id field
 export function AggregateId() {
   return (target: AggregateRoot, propertyKey: string) => {
     Reflect.defineMetadata(AGGREGATE_ID_KEY_METADATA, propertyKey, target);

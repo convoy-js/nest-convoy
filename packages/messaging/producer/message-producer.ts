@@ -34,7 +34,7 @@ export class ConvoyMessageProducer {
 
   constructor(
     private readonly channelMapping: ConvoyChannelMapping,
-    protected readonly target: MessageProducer,
+    private readonly target: MessageProducer,
     private readonly discovery: DiscoveryService,
   ) {}
 

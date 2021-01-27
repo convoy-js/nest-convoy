@@ -11,7 +11,7 @@ import {
 import {
   EVENT_SCHEMA_MANAGER,
   EventSchemaManager,
-} from './event-schema-manager';
+} from '../schema/event-schema-manager';
 import { AGGREGATE_CRUD, AggregateCrud } from './aggregate-crud';
 import { AggregateCrudMapping } from './aggregate-crud-mapping';
 import {
@@ -85,16 +85,18 @@ export class AggregateStoreCrud {
       options,
     );
 
-    const eventsWithIds = this.eventSchemaManager
-      .upcastEvents(aggregateType, outcome.events)
-      .map(event => this.aggregateCrudMapping.toEventWithMetadata(event));
+    const eventsWithIds = await Promise.all(
+      this.eventSchemaManager
+        .upcastEvents(aggregateType, outcome.events)
+        .map(event => this.aggregateCrudMapping.toEventWithMetadata(event)),
+    );
     const events = eventsWithIds.map(e => e.event);
 
     let entity: AR;
     if (outcome.snapshot) {
       const snapshot = await this.recreateFromSnapshot(
         aggregateType,
-        this.aggregateCrudMapping.toSnapshot(
+        await this.aggregateCrudMapping.toSnapshot(
           outcome.snapshot.serializedSnapshot,
         ),
       );

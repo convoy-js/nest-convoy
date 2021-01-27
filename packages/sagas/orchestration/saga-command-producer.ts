@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { MessageHeaders } from '@nest-convoy/messaging';
+import { Message, MessageHeaders } from '@nest-convoy/messaging';
 import { SagaCommandHeaders } from '@nest-convoy/sagas/common';
 import {
   CommandWithDestination,
@@ -17,25 +17,14 @@ export class SagaCommandProducer {
     commands: readonly CommandWithDestination[],
     sagaReplyChannel: string,
   ): Promise<string | undefined> {
-    let messageId: string | undefined;
-
-    // commands = commands.map(command => {
-    //   const headers = new MessageHeaders();
-    //   headers.set(SagaCommandHeaders.SAGA_TYPE, sagaType);
-    //   headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
-    //   command.withExtraHeaders(headers);
-    //
-    //   return command;
-    // });
-    //
-    // await this.commandProducer.sendBatch()
+    let message: Message | undefined;
 
     for (const command of commands) {
       const headers = new MessageHeaders();
       headers.set(SagaCommandHeaders.SAGA_TYPE, sagaType);
       headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
 
-      messageId = await this.commandProducer.send(
+      message = await this.commandProducer.send(
         command.channel,
         command.command,
         sagaReplyChannel,
@@ -44,6 +33,6 @@ export class SagaCommandProducer {
       );
     }
 
-    return messageId;
+    return message?.id;
   }
 }

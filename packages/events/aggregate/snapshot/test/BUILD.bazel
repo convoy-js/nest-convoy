@@ -1,0 +1,9 @@
+load("//tools:defaults.bzl", "nest_test")
+
+nest_test(
+    name = "test",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages/events/aggregate",
+    ],
+)

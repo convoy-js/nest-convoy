@@ -17,18 +17,14 @@ export class TopicPartitionOffsetTracker {
     return tpo;
   }
 
-  private putState(
-    topic: string,
-    partition: number,
-    tpo: TopicPartitionOffsets,
-  ) {
+  putState(topic: string, partition: number, tpo: TopicPartitionOffsets) {
     if (!this.state.has(topic)) {
       this.state.set(topic, []);
     }
     this.state.get(topic)![partition] = tpo;
   }
 
-  private getState(
+  getState(
     topic: string,
     partition: number,
   ): TopicPartitionOffsets | undefined {

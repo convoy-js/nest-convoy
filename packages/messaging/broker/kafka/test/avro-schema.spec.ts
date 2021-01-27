@@ -56,7 +56,7 @@ describe('AvroSchemaRegistry', () => {
 //     // TODO: Figure out how circular references work in AVRO
 //     describe.only('circular reference', () => {
 //       it('test', () => {
-//         // TODO: Cannot get circular references to work
+//         // TODO: Cannot create circular references to work
 //         @AvroSchema('b')
 //         class B {
 //           @f

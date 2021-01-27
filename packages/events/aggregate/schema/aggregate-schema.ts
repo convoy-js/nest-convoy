@@ -1,8 +1,8 @@
 import { Type } from '@nestjs/common';
 
-import { AggregateRoot } from './aggregate-root';
-import { EventIdTypeAndData } from './interfaces';
-import { DefaultEventSchemaManager } from './crud/event-schema-manager';
+import { AggregateRoot } from '../aggregate-root';
+import { EventIdTypeAndData } from '../interfaces';
+import { DefaultEventSchemaManager } from './event-schema-manager';
 import {
   AggregateSchemaVersion,
   EventUpcaster,
