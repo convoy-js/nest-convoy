@@ -515,7 +515,7 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@golevelup/nestjs-discovery@^2.3.1":
+"@golevelup/nestjs-discovery@2.3.1":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@golevelup/nestjs-discovery/-/nestjs-discovery-2.3.1.tgz#7e6f798888fb4b571ba413d3fc5c2bbc996800c7"
   integrity sha512-K3NG34hK1/UM1ardiUSS9c43AAdk6IBJHUMZbBGavqfgNo17N2wjygSDMHFd5Cf+jqTPkt+n5Vr9ua22yCLzlg==
