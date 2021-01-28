@@ -45,7 +45,7 @@ export class Message {
     return this;
   }
 
-  async parsePayload<T>(type?: Type<T>): Promise<T> {
+  async parsePayload<T = any>(type?: Type<T>): Promise<T> {
     return type
       ? await validatedPlainToClass(type, this.payload)
       : this.payload;

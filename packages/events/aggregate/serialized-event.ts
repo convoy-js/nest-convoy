@@ -1,6 +1,7 @@
 import { Type } from '@nestjs/common';
 
 import { EventContext } from './event-context';
+import { EventMetadata } from './interfaces';
 
 export class SerializedEvent<E> {
   constructor(
@@ -9,9 +10,9 @@ export class SerializedEvent<E> {
     readonly entityType: Type<unknown>,
     readonly eventData: Record<string, unknown>,
     readonly eventType: Type<E>,
-    readonly swimLane: number,
-    readonly offset: number,
+    readonly partition: number,
+    readonly offset: bigint,
     readonly eventContext: EventContext,
-    readonly metadata: Record<string, string>,
+    readonly metadata?: EventMetadata,
   ) {}
 }

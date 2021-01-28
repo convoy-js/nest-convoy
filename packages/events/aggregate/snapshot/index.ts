@@ -1,6 +1,7 @@
 export * from './snapshot-manager';
 export * from './snapshot-strategy';
 export * from './serialized-snapshot-with-version';
+export * from './etpo-event-context';
 export * from './serialized-snapshot';
 export * from './aggregate-snapshot.module';
 export * from './snapshot-triggering-events';

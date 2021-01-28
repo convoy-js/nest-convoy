@@ -8,6 +8,8 @@ export {
   InjectAggregateRepository,
   AggregateRepository,
 } from './aggregate-repository';
+export * from './serialized-event';
+export * from './aggregate-events';
 export { AggregateRoot } from './aggregate-root';
 export { CommandProcessingAggregate } from './command-processing-aggregate';
 export { AggregateSchema } from './schema/aggregate-schema';

@@ -90,7 +90,7 @@ abstract class DatabaseAggregateCrud implements AggregateCrud {
   }
 }
 
-class Subscription {
+export class Subscription {
   constructor(
     private readonly subscriberId: string,
     private readonly aggregatesAndEvents: AggregatesAndEvents,
@@ -101,7 +101,7 @@ class Subscription {
     aggregateType: string,
     eventType: Type<E>,
   ): boolean {
-    const events = this.aggregatesAndEvents.get(aggregateType);
+    const [, events] = this.aggregatesAndEvents.get(aggregateType) || [];
     return !!events?.has(eventType);
   }
 }
@@ -140,7 +140,8 @@ export class AggregateEventsCrud
                 eventData,
                 eventType,
                 hashCode(aggregateId) % 8,
-                this.eventOffset++,
+                // TODO: Fix this.eventOffset++,
+                BigInt(1),
                 new EventContext(eventId),
                 metadata,
               ),

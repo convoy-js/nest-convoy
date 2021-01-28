@@ -1,31 +1,31 @@
 import { DuplicateTriggeringEventException } from '../../exceptions';
 import { EventAndTrigger } from '../../interfaces';
 import {
-  EtopEventContext,
+  EtpoEventContext,
   SnapshotTriggeringEvents,
 } from '../snapshot-triggering-events';
 import { LoadedSnapshot } from '../loaded-snapshot';
 
 describe('SnapshotTriggeringEvents', () => {
-  const a_1_98 = new EtopEventContext({
+  const a_1_98 = new EtpoEventContext({
     id: 'eventid',
     topic: 'topica',
     partition: 1,
     offset: BigInt(98),
   });
-  const a_1_99 = new EtopEventContext({
+  const a_1_99 = new EtpoEventContext({
     id: 'eventid',
     topic: 'topica',
     partition: 1,
     offset: BigInt(99),
   });
-  const a_1_100 = new EtopEventContext({
+  const a_1_100 = new EtpoEventContext({
     id: 'eventid',
     topic: 'topica',
     partition: 1,
     offset: BigInt(100),
   });
-  const a_2_99 = new EtopEventContext({
+  const a_2_99 = new EtpoEventContext({
     id: 'eventid',
     topic: 'topica',
     partition: 2,
@@ -68,7 +68,7 @@ describe('SnapshotTriggeringEvents', () => {
   it('should create snapshot triggering events with previous snapshot', () => {
     const ste1 = new SnapshotTriggeringEvents();
     ste1.add(a_1_99);
-    const triggeringEvents = ste1.to();
+    const triggeringEvents = ste1.serialize();
 
     const previousSnapshot = new LoadedSnapshot(
       undefined as never,

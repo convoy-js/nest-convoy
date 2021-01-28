@@ -1,21 +1,23 @@
-import { EachMessagePayload, TopicPartitionOffsetAndMetadata } from 'kafkajs';
-
-import { Message, MessageHandler } from '@nest-convoy/messaging';
+import type {
+  EachMessagePayload,
+  TopicPartitionOffsetAndMetadata,
+} from 'kafkajs';
 
 import { TopicPartitionOffsetTracker } from './topic-partition-offset-tracker';
 import { TopicPartitionOffset } from './topic-partition-offsets';
+import { KafkaMessageHandler, KafkaMessage } from './kafka-message';
 
 export class KafkaMessageProcessor {
   private readonly topicPartitionOffsetTracker = new TopicPartitionOffsetTracker();
 
-  constructor(private handlers: readonly MessageHandler[] = []) {}
+  constructor(private handlers: readonly KafkaMessageHandler[] = []) {}
 
-  addHandler(handler: MessageHandler): void {
+  addHandler(handler: KafkaMessageHandler): void {
     this.handlers = [...this.handlers, handler];
   }
 
   async process(
-    message: Message,
+    message: KafkaMessage,
     payload: EachMessagePayload,
   ): Promise<TopicPartitionOffset> {
     const tpo: TopicPartitionOffset = {

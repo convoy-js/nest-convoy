@@ -2,7 +2,7 @@ import { Inject, Injectable, Type } from '@nestjs/common';
 
 import { Snapshot, SnapshotManager } from '../snapshot';
 import { AggregateRoot } from '../aggregate-root';
-import { EntityIdAndVersion } from '../interfaces';
+import { EntityIdAndVersion, EventMetadata } from '../interfaces';
 import { Aggregates } from '../aggregates';
 import {
   MISSING_APPLY_EVENT_METHOD_STRATEGY,
@@ -44,8 +44,8 @@ export class AggregateStoreCrud {
 
   private withSchemaMetadata<AR extends AggregateRoot>(
     aggregateType: Type<AR>,
-    eventMetadata: Record<string, string> = {},
-  ): Record<string, string> {
+    eventMetadata: EventMetadata = {},
+  ): EventMetadata {
     const schemaMetadata = this.eventSchemaManager.currentSchemaMetadata(
       aggregateType,
     );

@@ -24,7 +24,7 @@ export class SnapshotsEntity {
     type: 'simple-array',
     transformer: {
       from(ste: SnapshotTriggeringEvents): readonly string[] {
-        return ste.to();
+        return ste.serialize();
       },
       to(triggeringEvents: readonly string[]): SnapshotTriggeringEvents {
         return new SnapshotTriggeringEvents(triggeringEvents);

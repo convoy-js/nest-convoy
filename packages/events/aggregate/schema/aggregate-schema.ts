@@ -1,14 +1,14 @@
 import { Type } from '@nestjs/common';
 
 import { AggregateRoot } from '../aggregate-root';
-import { EventIdTypeAndData } from '../interfaces';
+import { EventIdTypeAndData, EventMetadata } from '../interfaces';
 import { DefaultEventSchemaManager } from './event-schema-manager';
 import {
   AggregateSchemaVersion,
   EventUpcaster,
 } from './aggregate-schema-version';
 
-export class NewEventNameAndUpcasters<E> {
+export class NewEventAndUpcasters<E> {
   constructor(
     readonly upcasters: readonly EventUpcaster[],
     readonly eventType?: Type<E>,
@@ -20,7 +20,7 @@ export class NewEventNameAndUpcasters<E> {
 }
 
 export class AggregateSchema<A extends AggregateRoot> {
-  get currentVersion(): string {
+  get currentVersion(): number {
     return this.versions[this.versions.length - 1].version;
   }
 
@@ -30,19 +30,19 @@ export class AggregateSchema<A extends AggregateRoot> {
   ) {}
 
   private maybeUpcast<E>(
-    latestVersion: string,
+    latestVersion: number,
     event: EventIdTypeAndData<E>,
   ): EventIdTypeAndData<E> {
     const actualVersion = this.eventVersion(event);
     return this.needsUpcast(latestVersion, actualVersion)
-      ? this.upcast(event, actualVersion, latestVersion)
+      ? this.upcast(event, latestVersion, actualVersion)
       : event;
   }
 
   private upcast<E>(
     event: EventIdTypeAndData<E>,
-    fromVersion: string,
-    toVersion: string,
+    toVersion: number,
+    fromVersion: number,
   ): EventIdTypeAndData<E> {
     const originalEventType = event.eventType;
     const newEventTypeAndUpcasters = this.findUpcasters(
@@ -69,13 +69,24 @@ export class AggregateSchema<A extends AggregateRoot> {
 
   private findUpcasters<E>(
     eventType: Type<E>,
-    fromVersion: string,
-    toVersion: string,
-  ): NewEventNameAndUpcasters<E> {
+    fromVersion: number,
+    toVersion: number,
+  ): NewEventAndUpcasters<E> {
     const originalEventType = eventType;
+    let versionIdx = 0;
+
+    // while (
+    //   fromVersion != null &&
+    //   this.versions[versionIdx++]?.version !== fromVersion
+    // ) {
+    //   console.log('keep looking', fromVersion, versionIdx);
+    //   break;
+    //   // keep looking
+    // }
+
     const upcasters: EventUpcaster[] = [];
 
-    for (let versionIdx = 0; versionIdx < this.versions.length; versionIdx++) {
+    for (; versionIdx < this.versions.length; versionIdx++) {
       const aggregateSchemaVersion = this.versions[versionIdx];
       eventType = aggregateSchemaVersion.maybeRename(eventType);
 
@@ -83,31 +94,34 @@ export class AggregateSchema<A extends AggregateRoot> {
       if (upcaster) upcasters.push(upcaster);
     }
 
-    return new NewEventNameAndUpcasters(
+    return new NewEventAndUpcasters(
       upcasters,
       eventType.name === originalEventType.name ? undefined : eventType,
     );
   }
 
   private withNewVersion(
-    currentVersion: string,
-    metadata: Record<string, string>,
-  ): Record<string, string> {
-    metadata[DefaultEventSchemaManager.EVENT_SCHEMA_VERSION] = currentVersion;
+    currentVersion: number,
+    metadata: EventMetadata = {},
+  ): EventMetadata {
+    metadata[DefaultEventSchemaManager.SCHEMA_VERSION] = currentVersion;
     return metadata;
   }
 
-  private eventVersion<E>(event: EventIdTypeAndData<E>): string {
-    return event.metadata[DefaultEventSchemaManager.EVENT_SCHEMA_VERSION];
+  private eventVersion<E>(event: EventIdTypeAndData<E>): number {
+    return event.metadata?.[DefaultEventSchemaManager.SCHEMA_VERSION] != null
+      ? (event.metadata[DefaultEventSchemaManager.SCHEMA_VERSION] as number)
+      : -1;
   }
 
-  private needsUpcast(latestVersion: string, actualVersion: string): boolean {
+  private needsUpcast(latestVersion: number, actualVersion: number): boolean {
     return latestVersion !== actualVersion;
   }
 
   upcastEvents<E>(
     events: readonly EventIdTypeAndData<E>[],
   ): readonly EventIdTypeAndData<E>[] {
-    return events.map(event => this.maybeUpcast(this.currentVersion, event));
+    const version = this.currentVersion;
+    return events.map(event => this.maybeUpcast(version, event));
   }
 }

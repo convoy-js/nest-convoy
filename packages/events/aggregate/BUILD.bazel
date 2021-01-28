@@ -10,7 +10,6 @@ nest_library(
     deps = [
         "//packages/commands/common",
         "//packages/common",
-        "//packages/events/aggregate/entities",
         "//packages/events/common",
         "//packages/events/publisher",
         "//packages/events/subscriber",

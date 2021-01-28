@@ -66,7 +66,10 @@ export class KafkaMessageBuilder {
     };
   }
 
-  async from({ message, partition }: EachMessagePayload): Promise<Message> {
+  async from({
+    message,
+    partition,
+  }: EachMessagePayload): Promise<KafkaMessage> {
     const headers = new MessageHeaders(
       message.headers
         ? Object.entries(message.headers).map(([key, value]) => [
@@ -79,12 +82,13 @@ export class KafkaMessageBuilder {
     const payload =
       (await this.registry?.decode(message.value!)) || message.value!;
 
-    return (
+    return KafkaMessage.from(
       MessageBuilder.withPayload(payload.toString())
         .withHeader(Message.ID, message.key!.toString())
         // .withHeader(Message.PARTITION_ID, partition)
         .withExtraHeaders(headers)
-        .build()
+        .build(),
+      arguments[0] as EachMessagePayload,
     );
   }
 }

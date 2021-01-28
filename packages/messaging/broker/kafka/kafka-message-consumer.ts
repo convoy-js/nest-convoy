@@ -5,16 +5,18 @@ import {
   OnApplicationShutdown,
 } from '@nestjs/common';
 
-import { RuntimeException } from '@nest-convoy/common';
+import { Consumer, RuntimeException } from '@nest-convoy/common';
 import {
   MessageHandler,
   MessageConsumer,
   MessageSubscription,
+  Message,
 } from '@nest-convoy/messaging';
 
 import { Kafka } from './kafka';
 import { KafkaMessageBuilder } from './kafka-message-builder';
 import { KafkaMessageProcessor } from './kafka-message-processor';
+import { KafkaMessageHandler } from './kafka-message';
 
 @Injectable()
 export class KafkaMessageConsumer
@@ -32,7 +34,7 @@ export class KafkaMessageConsumer
 
   private addHandlerToProcessor(
     channel: string,
-    handler: MessageHandler,
+    handler: KafkaMessageHandler,
   ): void {
     if (!this.processors.has(channel)) {
       this.processors.set(channel, new KafkaMessageProcessor());
@@ -55,12 +57,11 @@ export class KafkaMessageConsumer
 
   async subscribe(
     subscriberId: string,
-    channels: string[],
-    handler: MessageHandler,
-    isEventHandler?: boolean,
+    topics: string[],
+    handler: KafkaMessageHandler,
   ): MessageSubscription {
     await Promise.all(
-      channels.map(async channel => {
+      topics.map(async channel => {
         await this.kafka.consumer.subscribe({
           topic: channel,
           fromBeginning: true,
@@ -72,7 +73,7 @@ export class KafkaMessageConsumer
     return async () => {
       // TODO: Why is there not an unsubscribe option?
       // await this.kafka.consumer.pause(channels.map(topic => ({ topic })));
-      channels.forEach(channel => {
+      topics.forEach(channel => {
         this.processors.delete(channel);
       });
     };

@@ -1,57 +1,10 @@
 import { DuplicateTriggeringEventException } from '../exceptions';
-import { EventContext } from '../event-context';
 import { EventAndTrigger } from '../interfaces';
 
 // ????
 import { LoadedSnapshot } from './loaded-snapshot';
 import { Snapshot } from './snapshot-strategy';
-
-export interface DecodedEtopContext {
-  readonly id: string;
-  readonly topic: string;
-  readonly partition: number;
-  readonly offset: bigint;
-}
-
-export class EtopEventContext {
-  static readonly PREFIX = 'etpo:';
-
-  readonly eventToken: string;
-
-  constructor({ id, topic, partition, offset }: DecodedEtopContext) {
-    this.eventToken = `${EtopEventContext.PREFIX}${id}:${topic}:${partition}:${offset}`;
-  }
-
-  decode(): DecodedEtopContext | undefined {
-    return EtopEventContext.decode(this);
-  }
-
-  static decode(
-    triggeringEvent: EtopEventContext | string,
-  ): DecodedEtopContext | undefined {
-    triggeringEvent =
-      triggeringEvent instanceof EtopEventContext
-        ? triggeringEvent.eventToken
-        : triggeringEvent;
-
-    if (EtopEventContext.isEtpoEvent(triggeringEvent)) {
-      const elements = triggeringEvent
-        .substring(EtopEventContext.PREFIX.length)
-        .split(':');
-
-      return {
-        id: elements[0],
-        topic: elements[1],
-        partition: parseInt(elements[2]),
-        offset: BigInt(elements[3]),
-      };
-    }
-  }
-
-  static isEtpoEvent(triggeringEvent?: string): boolean {
-    return !!triggeringEvent?.startsWith(EtopEventContext.PREFIX);
-  }
-}
+import { DecodedEtpoContext, EtpoEventContext } from './etpo-event-context';
 
 export class SnapshotTriggeringEvents {
   private readonly topicPartitionOffsets = new Map<
@@ -65,22 +18,22 @@ export class SnapshotTriggeringEvents {
 
   static checkSnapshotForDuplicateEvent(
     previousSnapshot: LoadedSnapshot<any>,
-    eventContext: EtopEventContext,
+    eventContext: EtpoEventContext,
   ): void {
     if (previousSnapshot.triggeringEvents) {
-      const etop = EtopEventContext.decode(eventContext.eventToken);
-      if (etop) {
+      const tpo = EtpoEventContext.decode(eventContext.eventToken);
+      if (tpo) {
         const ste = new SnapshotTriggeringEvents(
           previousSnapshot.triggeringEvents,
         );
-        ste.checkForDuplicateEvent(etop);
+        ste.checkForDuplicateEvent(tpo);
       }
     }
   }
 
   static create<S extends Snapshot>(
     events: readonly EventAndTrigger<any>[],
-    eventContext?: EtopEventContext,
+    eventContext?: EtpoEventContext,
     previousSnapshot?: LoadedSnapshot<S>,
   ): SnapshotTriggeringEvents {
     const ste = new SnapshotTriggeringEvents(
@@ -88,10 +41,10 @@ export class SnapshotTriggeringEvents {
     );
 
     events
-      .filter(e => EtopEventContext.isEtpoEvent(e.triggeringEvent))
+      .filter(e => EtpoEventContext.isEtpoEvent(e.triggeringEvent))
       .forEach(e => ste.add(e.triggeringEvent));
 
-    if (EtopEventContext.isEtpoEvent(eventContext?.eventToken)) {
+    if (EtpoEventContext.isEtpoEvent(eventContext?.eventToken)) {
       ste.add(eventContext!.eventToken);
     }
 
@@ -102,12 +55,12 @@ export class SnapshotTriggeringEvents {
     return this.topicPartitionOffsets.size < 1;
   }
 
-  to(): readonly string[] {
+  serialize(): readonly string[] {
     return [...this.topicPartitionOffsets.entries()].flatMap(
       ([topic, po]): string[] =>
         [...po.entries()].map(
           ([partition, offset]) =>
-            new EtopEventContext({
+            new EtpoEventContext({
               id: '????',
               topic,
               partition,
@@ -117,13 +70,13 @@ export class SnapshotTriggeringEvents {
     );
   }
 
-  add(triggeringEvent: EtopEventContext | string): this {
+  add(triggeringEvent: EtpoEventContext | string): this {
     triggeringEvent =
-      triggeringEvent instanceof EtopEventContext
+      triggeringEvent instanceof EtpoEventContext
         ? triggeringEvent.eventToken
         : triggeringEvent;
 
-    const { topic, partition, offset } = EtopEventContext.decode(
+    const { topic, partition, offset } = EtpoEventContext.decode(
       triggeringEvent,
     )!;
     const pos = this.topicPartitionOffsets.get(topic);
@@ -144,7 +97,7 @@ export class SnapshotTriggeringEvents {
     topic,
     partition,
     offset,
-  }: DecodedEtopContext): void {
+  }: DecodedEtpoContext): void {
     const pos = this.topicPartitionOffsets.get(topic);
     const maxOffset = pos?.get(partition);
 

@@ -24,18 +24,18 @@ export class AggregateSchemaVersionBuilder<AR extends AggregateRoot>
     this.parent.addVersion(this._version, this.renames, this.transforms);
   }
 
-  rename(oldEventName: string, newEventType: Type): this {
+  rename(oldEventType: Type, newEventType: Type): this {
     this.renames = [
       ...this.renames,
-      new EventRename(oldEventName, newEventType),
+      new EventRename(oldEventType.name, newEventType),
     ];
     return this;
   }
 
-  transform(eventName: string, upcaster: EventUpcaster): this {
+  transform(eventType: Type, upcaster: EventUpcaster): this {
     this.transforms = [
       ...this.transforms,
-      new EventTransform(eventName, upcaster),
+      new EventTransform(eventType.name, upcaster),
     ];
     return this;
   }

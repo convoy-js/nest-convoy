@@ -1,6 +1,8 @@
-import { Type } from '@nestjs/common';
+import type { Type } from '@nestjs/common';
 import type { schema } from 'avsc';
+import type { EachMessagePayload } from 'kafkajs';
 
+import type { Consumer } from '@nest-convoy/common';
 import { Message, MessageHeaders } from '@nest-convoy/messaging';
 
 import {
@@ -16,14 +18,38 @@ export interface KafkaMessageSchema extends Partial<AvroSchemaMetadata> {
   readonly id?: number;
 }
 
+export type KafkaMessageHandler = Consumer<KafkaMessage, void>;
+
 export class KafkaMessage extends Message {
+  static PARTITION = 'kafka_partition';
+  static OFFSET = 'kafka_offset';
+  static TOPIC = 'kafka_topic';
   static SCHEMA_NAMESPACE = 'schema_namespace';
   static SCHEMA_VERSION = 'schema_version';
   static SCHEMA_ID = 'schema_id';
   static SCHEMA_SUBJECT = 'schema_subject';
 
-  static from(message: Message): KafkaMessage {
-    return new KafkaMessage(message.getPayload(), message.getHeaders());
+  static from(
+    message: Message,
+    kafkaPayload: EachMessagePayload,
+  ): KafkaMessage {
+    return new KafkaMessage(
+      message.getPayload(),
+      message.getHeaders(),
+      kafkaPayload,
+    );
+  }
+
+  get topic(): string {
+    return this.getRequiredHeader(KafkaMessage.TOPIC);
+  }
+
+  get partition(): number {
+    return +this.getRequiredHeader(KafkaMessage.PARTITION);
+  }
+
+  get offset(): bigint {
+    return BigInt(this.getRequiredHeader(KafkaMessage.OFFSET));
   }
 
   get schemaType(): Type | undefined {
@@ -38,20 +64,16 @@ export class KafkaMessage extends Message {
       : undefined;
   }
 
-  constructor(payload: any, headers: MessageHeaders) {
+  constructor(
+    payload: any,
+    headers: MessageHeaders,
+    { topic, partition, message: { offset } }: EachMessagePayload,
+  ) {
     super(payload, headers);
-    //
-    // const { namespace, version } = getAvroSchemaMetadata(this.schemaType!);
-    // const subject = `${namespace}.${this.type}`;
-    //
-    // this.setHeaders(
-    //   new MessageHeaders([
-    //     [KafkaMessage.SCHEMA_NAMESPACE, namespace],
-    //     [KafkaMessage.SCHEMA_VERSION, `${version}`],
-    //     [KafkaMessage.SCHEMA_SUBJECT, subject],
-    //     ...this.getHeaders(),
-    //   ]),
-    // );
+
+    this.setHeader(KafkaMessage.TOPIC, topic);
+    this.setHeader(KafkaMessage.PARTITION, partition);
+    this.setHeader(KafkaMessage.OFFSET, offset);
   }
 
   get schema(): KafkaMessageSchema {

@@ -6,6 +6,7 @@ import { ObjectLiteral } from '@nest-convoy/common';
 import { Snapshot, SerializedSnapshot, SnapshotManager } from '../snapshot';
 import {
   EventIdTypeAndData,
+  EventMetadata,
   EventTypeAndData,
   EventWithMetadata,
 } from '../interfaces';
@@ -43,12 +44,12 @@ export class AggregateCrudMapping {
 
   toEventTypeAndData<E extends ObjectLiteral>(
     event: E,
-    metadata: Record<string, string> = {},
+    metadata: EventMetadata = {},
   ): EventTypeAndData<E> {
     return {
       eventType: event.constructor as Type<E>,
       eventData: event,
-      metadata: metadata,
+      metadata,
     };
   }
 
