@@ -1,9 +1,7 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { ConsumerConfig, KafkaConfig, ProducerConfig } from 'kafkajs';
-import {
-  SchemaRegistry,
-  readAVSCAsync,
-} from '@kafkajs/confluent-schema-registry';
+import type { ConsumerConfig, KafkaConfig, ProducerConfig } from 'kafkajs';
+import { DiscoveryModule } from '@golevelup/nestjs-discovery';
+import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
 
 import {
   ConvoyCoreModule,
@@ -20,6 +18,7 @@ import { KafkaMessageProducer } from './kafka-message-producer';
 import { KafkaMessageConsumer } from './kafka-message-consumer';
 import { Kafka } from './kafka';
 import { KAFKA_CONFIG, KAFKA_SCHEMA_REGISTRY } from './tokens';
+import { AvroSchemaRegistry } from './avro-schema-registry';
 
 export interface ConvoyKafkaMessagingBrokerModuleOptions {
   readonly consumer?: Omit<ConsumerConfig, 'groupId'>;
@@ -50,6 +49,7 @@ export class ConvoyKafkaBrokerModule {
         ConvoyMessagingProducerModule.register({
           useExisting: KafkaMessageProducer,
         }),
+        DiscoveryModule,
       ],
       providers: [
         {
@@ -63,6 +63,7 @@ export class ConvoyKafkaBrokerModule {
         Kafka,
         KafkaMessageBuilder,
         KafkaMessageProducer,
+        AvroSchemaRegistry,
         KafkaMessageConsumer,
       ],
       exports: [

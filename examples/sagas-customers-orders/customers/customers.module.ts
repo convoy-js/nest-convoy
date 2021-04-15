@@ -28,15 +28,23 @@ import { Channel, defaultOptions, TypeOrmModuleOptions } from '../common';
       },
       {
         database: defaultOptions,
-        schemaRegistry: new SchemaRegistry({
-          host: 'http://localhost:8081',
-          clientId: Channel.CUSTOMER,
-        }),
+        // schemaRegistry: new SchemaRegistry({
+        //   host: 'http://localhost:8081',
+        //   clientId: Channel.CUSTOMER,
+        // }),
       },
     ),
     ConvoySagasModule,
   ],
   controllers: [CustomersController],
-  providers: [CustomerService, CustomerCommandHandlers],
+  providers: [
+    CustomerService,
+    CustomerCommandHandlers,
+    // Money,
+    // ReserveCreditCommand,
+    // CustomerCreditReserved,
+    // CustomerNotFound,
+    // CustomerCreditLimitExceeded,
+  ],
 })
 export class CustomersModule {}

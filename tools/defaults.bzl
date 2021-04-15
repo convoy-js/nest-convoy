@@ -28,6 +28,7 @@ def eslint(tags = ["lint"], **kwargs):
 
 def nest_library(name, srcs, deps = [], visibility = ["//:__subpackages__"], **kwargs):
     deps = [
+        "@npm//reflect-metadata",
         "@npm//@nestjs/common",
         "@npm//@types/node",
         "@npm//tslib",

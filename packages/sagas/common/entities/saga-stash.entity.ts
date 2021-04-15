@@ -33,8 +33,8 @@ export class SagaStashEntity<P = Record<string, unknown>> {
   })
   messageHeaders: MessageHeaders;
 
-  @Column({ name: 'message_payload' })
-  messagePayload: string;
+  @Column({ name: 'message_payload', type: 'simple-json' })
+  messagePayload: object;
 
   @VersionColumn()
   version: string;

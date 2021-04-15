@@ -17,18 +17,14 @@ export class TopicPartitionOffsetTracker {
     return tpo;
   }
 
-  private putState(
-    topic: string,
-    partition: number,
-    tpo: TopicPartitionOffsets,
-  ) {
+  putState(topic: string, partition: number, tpo: TopicPartitionOffsets) {
     if (!this.state.has(topic)) {
       this.state.set(topic, []);
     }
     this.state.get(topic)![partition] = tpo;
   }
 
-  private getState(
+  getState(
     topic: string,
     partition: number,
   ): TopicPartitionOffsets | undefined {
@@ -48,15 +44,6 @@ export class TopicPartitionOffsetTracker {
       this.fetch(topic, partition).noteCommitted(offset);
     });
   }
-
-  // noteCommitted(offsets: Offsets): void {
-  //   offsets.topics.forEach(({ topic, partitions }) => {
-  //     partitions.forEach(({ offset, partition }) => {
-  //       const tpo = this.fetch(topic, partition);
-  //       tpo.noteCommitted(offset);
-  //     });
-  //   });
-  // }
 
   offsetsToCommit(): TopicPartitionOffset[] {
     return [...this.state.entries()].flatMap(([topic, partitions]) =>
@@ -78,30 +65,6 @@ export class TopicPartitionOffsetTracker {
     topic,
     partition,
   }: TopicPartitionOffset): readonly bigint[] {
-    const tpo = this.fetch(topic, partition);
-    return tpo.getPending();
+    return this.fetch(topic, partition).getPending();
   }
-
-  // topicPartitionOffsetsToCommit(): Offsets {
-  //   const topics = [...this.state.entries()].map(
-  //     ([topic, partitions]): TopicOffsets => ({
-  //       topic,
-  //       partitions: [...partitions.entries()]
-  //         .map<[number, string | undefined]>(([partition, tpo]) => [
-  //           partition,
-  //           tpo.toCommit(),
-  //         ])
-  //         // .filter(([, offset]): offset is string => !!offset)
-  //         .filter((value): value is [number, string] => !!value[0])
-  //         .map(
-  //           ([partition, offset]): PartitionOffset => ({
-  //             partition,
-  //             offset,
-  //           }),
-  //         ),
-  //     }),
-  //   );
-  //
-  //   return { topics };
-  // }
 }

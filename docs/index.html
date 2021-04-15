@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nest Convoy</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<!--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">-->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css" />
+  <script src="//localhost:35729/livereload.js?snipver=1" async defer></script>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
+  <script>
+    // if (typeof navigator.serviceWorker !== 'undefined') {
+    //   navigator.serviceWorker.register('sw.js')
+    // }
+
+    const repo = 'https://github.com/marcus-sa/nest-convoy'
+    window.$docsify = {
+      name: 'nest-convoy',
+      repo,
+      homepage: 'index.md',
+      loadSidebar: true,
+      alias: {
+        '.*?/changelog': 'https://raw.githubusercontent.com/marcus-sa/nest-convoy/master/CHANGELOG.md',
+      },
+      plugins: [
+        EditOnGithubPlugin.create(`${repo}/blob/master/docs/`)
+      ]
+    }
+  </script>
+  <!-- Docsify v4 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-themeable@0/dist/js/docsify-themeable.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-typescript.min.js"></script>
+</body>
+</html>

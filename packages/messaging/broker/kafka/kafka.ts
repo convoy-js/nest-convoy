@@ -10,7 +10,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import { KAFKA_CONFIG } from './tokens';
 import { KafkaLogger } from './kafka-logger';
-import { KafkaReplyPartitionAssigner } from './kafka-reply-partition-assigner';
+// import { KafkaReplyPartitionAssigner } from './kafka-reply-partition-assigner';
 
 export type ConsumerAssignments = Record<string, number>;
 export const GROUP_ID = 'nest-convoy';

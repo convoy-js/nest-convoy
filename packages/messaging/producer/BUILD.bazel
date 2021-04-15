@@ -13,6 +13,8 @@ nest_library(
     deps = [
         "//packages/common",
         "//packages/messaging/common",
+        "@npm//@golevelup/nestjs-discovery",
+        "@npm//@deepkit/type",
         "@npm//@types/uuid",
         "@npm//uuid",
     ],

@@ -1,5 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
+import { SnapshotTriggeringEvents } from '../snapshot';
+
 @Entity('snapshots')
 export class SnapshotsEntity {
   @PrimaryColumn({ name: 'entity_type' })
@@ -19,7 +21,15 @@ export class SnapshotsEntity {
 
   @Column({
     name: 'triggering_events',
-    nullable: true,
+    type: 'simple-array',
+    transformer: {
+      from(ste: SnapshotTriggeringEvents): readonly string[] {
+        return ste.serialize();
+      },
+      to(triggeringEvents: readonly string[]): SnapshotTriggeringEvents {
+        return new SnapshotTriggeringEvents(triggeringEvents);
+      },
+    },
   })
-  triggeringEvents?: string;
+  triggeringEvents: SnapshotTriggeringEvents;
 }

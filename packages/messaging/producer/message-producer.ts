@@ -1,13 +1,14 @@
-import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import { DiscoveryService, withMetaAtKey } from '@golevelup/nestjs-discovery';
 
 import { RuntimeException } from '@nest-convoy/common';
 import {
   ConvoyChannelMapping,
   Message,
-  MessageInterceptor,
+  NestMessageInterceptor,
   MissingRequiredMessageIDException,
-  NEST_CONVOY_MESSAGE_INTERCEPTORS,
+  NEST_CONVOY_MESSAGE_INTERCEPTOR,
 } from '@nest-convoy/messaging/common';
 
 @Injectable()
@@ -33,14 +34,22 @@ export class ConvoyMessageProducer {
 
   constructor(
     private readonly channelMapping: ConvoyChannelMapping,
-    protected readonly target: MessageProducer,
-    @Optional()
-    @Inject(NEST_CONVOY_MESSAGE_INTERCEPTORS)
-    private readonly messageInterceptors: readonly MessageInterceptor[],
+    private readonly target: MessageProducer,
+    private readonly discovery: DiscoveryService,
   ) {}
 
+  private async getMessageInterceptors(): Promise<
+    readonly NestMessageInterceptor[]
+  > {
+    const providers = await this.discovery.providers(
+      withMetaAtKey(NEST_CONVOY_MESSAGE_INTERCEPTOR),
+    );
+
+    return providers.map(provider => provider.instance);
+  }
+
   private async preSend(message: Message): Promise<void> {
-    for (const interceptor of this.messageInterceptors || []) {
+    for (const interceptor of await this.getMessageInterceptors()) {
       await interceptor.preSend?.(message);
     }
   }
@@ -49,7 +58,7 @@ export class ConvoyMessageProducer {
     message: Message,
     error?: RuntimeException,
   ): Promise<void> {
-    for (const interceptor of this.messageInterceptors || []) {
+    for (const interceptor of await this.getMessageInterceptors()) {
       await interceptor.postSend?.(message, error);
     }
   }

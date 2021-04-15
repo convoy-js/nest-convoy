@@ -12,6 +12,7 @@ nest_library(
         "//packages/common",
         "//packages/core",
         "//packages/messaging/broker/kafka",
+        "@npm//@deepkit/type",
         "@npm//@nestjs/typeorm",
         "@npm//kafkajs",
         "@npm//pg",

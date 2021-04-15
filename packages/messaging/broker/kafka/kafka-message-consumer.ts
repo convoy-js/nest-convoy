@@ -4,24 +4,19 @@ import {
   OnApplicationBootstrap,
   OnApplicationShutdown,
 } from '@nestjs/common';
-import { Runtime } from 'inspector';
-import { of } from 'rxjs';
 
-import { RuntimeException } from '@nest-convoy/common';
+import { Consumer, RuntimeException } from '@nest-convoy/common';
 import {
   MessageHandler,
   MessageConsumer,
   MessageSubscription,
+  Message,
 } from '@nest-convoy/messaging';
 
 import { Kafka } from './kafka';
 import { KafkaMessageBuilder } from './kafka-message-builder';
 import { KafkaMessageProcessor } from './kafka-message-processor';
-
-/*
-Aggregates
-  Account [ AccountCreatedEvent, AccountDeletedEvent ]
- */
+import { KafkaMessageHandler } from './kafka-message';
 
 @Injectable()
 export class KafkaMessageConsumer
@@ -29,7 +24,6 @@ export class KafkaMessageConsumer
   implements OnApplicationBootstrap, OnApplicationShutdown {
   private readonly logger = new Logger(this.constructor.name);
   private readonly processors = new Map<string, KafkaMessageProcessor>();
-  // private swimlaneDispatcher: SwimlaneDispatcher;
 
   constructor(
     private readonly kafka: Kafka,
@@ -40,7 +34,7 @@ export class KafkaMessageConsumer
 
   private addHandlerToProcessor(
     channel: string,
-    handler: MessageHandler,
+    handler: KafkaMessageHandler,
   ): void {
     if (!this.processors.has(channel)) {
       this.processors.set(channel, new KafkaMessageProcessor());
@@ -63,27 +57,24 @@ export class KafkaMessageConsumer
 
   async subscribe(
     subscriberId: string,
-    channels: string[],
-    handler: MessageHandler,
-    isEventHandler?: boolean,
+    topics: string[],
+    handler: KafkaMessageHandler,
   ): MessageSubscription {
     await Promise.all(
-      channels.map(async channel => {
+      topics.map(async channel => {
         await this.kafka.consumer.subscribe({
           topic: channel,
           fromBeginning: true,
         });
         this.addHandlerToProcessor(channel, handler);
-        // this.addHandlerToChannel(channel, handler);
       }),
     );
 
     return async () => {
       // TODO: Why is there not an unsubscribe option?
       // await this.kafka.consumer.pause(channels.map(topic => ({ topic })));
-      channels.forEach(channel => {
+      topics.forEach(channel => {
         this.processors.delete(channel);
-        // this.handlers.delete(channel);
       });
     };
   }
@@ -99,18 +90,12 @@ export class KafkaMessageConsumer
           );
         }
         const message = await this.message.from(payload);
-        console.log('eachMessage', message.toString());
 
         await processor.process(message, payload);
         await this.maybeCommitOffsets(processor);
-        // const handlers = this.getHandlersByChannel(payload.topic);
-        //
-        // await Promise.all(handlers.map(handle => handle(message)));
       },
-      eachBatch: async payload => console.log('eachBatch', payload),
     });
     await this.kafka.consumer.connect();
-    // this.swimlaneDispatcher = new SwimlaneDispatcher(this.handlers);
   }
 
   async onApplicationShutdown(): Promise<void> {

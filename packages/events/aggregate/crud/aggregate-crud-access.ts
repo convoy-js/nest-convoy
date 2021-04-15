@@ -11,6 +11,7 @@ import { SaveUpdateResult } from '../save-update-result';
 import { LoadedEvents } from '../loaded-events';
 import {
   SerializedSnapshot,
+  SnapshotTriggeringEvents,
   SerializedSnapshotWithVersion,
   Snapshot,
 } from '../snapshot';
@@ -50,12 +51,6 @@ export class AggregateCrudAccess {
       eventId: uuidv4(),
       ...eventTypeAndData,
     };
-  }
-
-  protected async snapshotTriggeringEvents(
-    events: readonly EventAndTrigger<any>[],
-  ): Promise<string | undefined> {
-    return undefined;
   }
 
   async save<AR extends AggregateRoot>(
@@ -249,13 +244,14 @@ export class AggregateCrudAccess {
         e => ({
           event: {
             ...e,
-            eventType: entityIdAndType.entityType,
+            // TODO
+            eventType: class {},
           },
           triggeringEvent: e.triggeringEvent!,
         }),
       );
 
-      const triggeringEvents = await this.snapshotTriggeringEvents(
+      const triggeringEvents = SnapshotTriggeringEvents.create(
         eventsAndTriggers,
       );
 
@@ -292,7 +288,6 @@ export class AggregateCrudAccess {
         eventIds: eventsWithIds.map(e => e.eventId),
       },
       {
-        // TODO
         aggregateType: entityIdAndType.entityType,
         entityId: entityIdAndType.entityId,
         eventsWithIds,

@@ -72,7 +72,8 @@ export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
     replyType: Type,
     handleReply: SagaStepReplyHandler<Data>,
   ): Promise<void> {
-    const reply = Object.assign(new replyType(), message.parsePayload());
+    const reply = await message.parsePayload(replyType);
+    // const reply = Object.assign(new replyType(), message.parsePayload());
     await handleReply(data, reply);
   }
 

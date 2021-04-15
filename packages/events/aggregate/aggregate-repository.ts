@@ -3,6 +3,7 @@ import { from, Observable, of, throwError } from 'rxjs';
 import { map, retryWhen, take } from 'rxjs/operators';
 import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
 import { CircularDependencyException } from '@nestjs/core/errors/exceptions/circular-dependency.exception';
+import { plainToClass } from '@deepkit/type';
 
 import { Command, CommandProvider } from '@nest-convoy/commands/common';
 import { DomainEvent } from '@nest-convoy/events/common';
@@ -25,10 +26,15 @@ import {
   AggregateStoreCrud,
   AggregateCrudUpdateOptions,
 } from './crud';
+import { AggregateRoot } from './aggregate-root';
 
-export function getAggregateRepositoryToken<E>(aggregate: Type<E>) {
+export function getAggregateRepositoryToken<AR extends AggregateRoot>(
+  aggregate: Type<AR>,
+) {
   if (aggregate == null) {
-    throw new CircularDependencyException('@InjectAggregateRepository()');
+    throw new CircularDependencyException(
+      `@${InjectAggregateRepository.name}()`,
+    );
   }
   return `${aggregate.name}AggregateRepository`;
 }
@@ -208,7 +214,7 @@ export class AggregateRepository<
     cmd: C,
     options?: AggregateCrudSaveOptions,
   ): Promise<EntityIdAndVersion> {
-    const aggregate = new this.aggregateType();
+    const aggregate = plainToClass<Type<AR>>(this.aggregateType, {});
     const events = await aggregate.process(cmd);
     await this.aggregates.applyEvents(aggregate, events);
     return this.aggregateStore.save(aggregate, events, options);

@@ -6,7 +6,7 @@ import {
   ConvoyChannelMapping,
   Message,
   MessageHeaders,
-  MessageInterceptor,
+  NestMessageInterceptor,
   MissingRequiredMessageIDException,
   NEST_CONVOY_MESSAGE_INTERCEPTORS,
 } from '@nest-convoy/messaging/common';
@@ -29,7 +29,7 @@ class TestMessageProducer extends MessageProducer {
 }
 
 @Injectable()
-class TestMessageInterceptor implements MessageInterceptor {
+class TestMessageInterceptor implements NestMessageInterceptor {
   preSend(): void {}
   postSend(): void {}
 }
@@ -56,7 +56,7 @@ describe('ConvoyMessageProducer', () => {
           provide: NEST_CONVOY_MESSAGE_INTERCEPTORS,
           useFactory(
             messageInterceptor: TestMessageInterceptor,
-          ): readonly MessageInterceptor[] {
+          ): readonly NestMessageInterceptor[] {
             return [messageInterceptor];
           },
           inject: [TestMessageInterceptor],
@@ -106,16 +106,16 @@ describe('ConvoyMessageProducer', () => {
   });
 
   describe('preSend', () => {
-    it('should call "preSend" method on MessageInterceptor', async () => {
+    it('should call "preSend" method on NestMessageInterceptor', async () => {
       await messageProducer.preSend(message);
 
       expect(mockedMessageInterceptor.preSend).toHaveBeenCalledWith(message);
     });
   });
 
-  // TODO: Figure out why "postSend" doesn't get called on MessageInterceptor
+  // TODO: Figure out why "postSend" doesn't create called on NestMessageInterceptor
   // describe('postSend', () => {
-  //   it('should call "postSend" method on MessageInterceptor', async () => {
+  //   it('should call "postSend" method on NestMessageInterceptor', async () => {
   //     await messageProducer.postSend(message);
   //
   //     expect(mockedMessageInterceptor.postSend).toHaveBeenCalledWith(message);

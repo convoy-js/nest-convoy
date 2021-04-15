@@ -3,16 +3,14 @@ import { Injectable, Type } from '@nestjs/common';
 import { RuntimeException } from '@nest-convoy/common';
 
 import { AggregateRoot } from '../aggregate-root';
-import { EventIdTypeAndData } from '../interfaces';
+import { EventIdTypeAndData, EventMetadata } from '../interfaces';
 import { SerializedEvent } from '../serialized-event';
-import { AggregateSchema } from '../aggregate-schema';
+import { AggregateSchema } from './aggregate-schema';
 
 export const EVENT_SCHEMA_MANAGER = Symbol('EVENT_SCHEMA_MANAGER');
 
 export interface EventSchemaManager {
-  currentSchemaMetadata<A>(
-    aggregateType: Type<A>,
-  ): Record<string, string> | undefined;
+  currentSchemaMetadata<A>(aggregateType: Type<A>): EventMetadata | undefined;
   upcastEvents<A, E>(
     aggregateType: Type<A>,
     events: readonly EventIdTypeAndData<E>[],
@@ -22,7 +20,7 @@ export interface EventSchemaManager {
 
 @Injectable()
 export class DefaultEventSchemaManager implements EventSchemaManager {
-  static EVENT_SCHEMA_VERSION = 'convoy_schema_version';
+  static SCHEMA_VERSION = 'convoy_schema_version';
 
   private readonly aggregateSchemaVersions = new WeakMap<
     Type,
@@ -42,17 +40,15 @@ export class DefaultEventSchemaManager implements EventSchemaManager {
     );
   }
 
-  currentVersion<A>(aggregateType: Type<A>): string | undefined {
+  currentVersion<A>(aggregateType: Type<A>): number | undefined {
     const schema = this.aggregateSchemaVersions.get(aggregateType);
     return schema?.currentVersion;
   }
 
-  currentSchemaMetadata<A>(
-    aggregateType: Type<A>,
-  ): Record<string, string> | undefined {
+  currentSchemaMetadata<A>(aggregateType: Type<A>): EventMetadata | undefined {
     const version = this.currentVersion(aggregateType);
     return version
-      ? { [DefaultEventSchemaManager.EVENT_SCHEMA_VERSION]: version }
+      ? { [DefaultEventSchemaManager.SCHEMA_VERSION]: version }
       : undefined;
   }
 
@@ -71,7 +67,7 @@ export class DefaultEventSchemaManager implements EventSchemaManager {
       se.entityType,
       upcasted.eventData,
       upcasted.eventType,
-      se.swimLane,
+      se.partition,
       se.offset,
       se.eventContext,
       upcasted.metadata,

@@ -1,10 +1,12 @@
 import { Injectable, Type } from '@nestjs/common';
+import { plainToClass, validatedPlainToClass } from '@deepkit/type';
 
 import { ObjectLiteral } from '@nest-convoy/common';
 
 import { Snapshot, SerializedSnapshot, SnapshotManager } from '../snapshot';
 import {
   EventIdTypeAndData,
+  EventMetadata,
   EventTypeAndData,
   EventWithMetadata,
 } from '../interfaces';
@@ -30,39 +32,41 @@ export class AggregateCrudMapping {
     );
   }
 
-  toSnapshot<S extends Snapshot>(ss: SerializedSnapshot<S>): S {
+  async toSnapshot<S extends Snapshot>(ss: SerializedSnapshot<S>): Promise<S> {
     const type = this.snapshotManager
       .getSnapshots()
       .find(snapshot => snapshot.name === ss.type);
     if (!type) {
       throw new Error('Could not find snapshot ' + ss.type);
     }
-    return Object.assign(new type(), JSON.parse(ss.json) as S);
+    return validatedPlainToClass(type as Type<S>, JSON.parse(ss.json) as S);
   }
 
   toEventTypeAndData<E extends ObjectLiteral>(
     event: E,
-    metadata: Record<string, string> = {},
+    metadata: EventMetadata = {},
   ): EventTypeAndData<E> {
     return {
       eventType: event.constructor as Type<E>,
       eventData: event,
-      metadata: metadata,
+      metadata,
     };
   }
 
-  toEvent<E>(type: Type<E>, data: ObjectLiteral): E {
-    return Object.assign(new type(), data);
+  async toEvent<E>(type: Type<E>, data: ObjectLiteral): Promise<E> {
+    return validatedPlainToClass(type, data);
   }
 
-  toEventWithMetadata<E>({
+  async toEventWithMetadata<E>({
     eventId,
     metadata,
     eventType,
     eventData,
-  }: EventIdTypeAndData<E>): EventWithMetadata<E> {
+  }: EventIdTypeAndData<E>): Promise<EventWithMetadata<E>> {
+    const event = await this.toEvent(eventType, eventData);
+
     return {
-      event: this.toEvent(eventType, eventData),
+      event,
       eventId,
       metadata,
     };

@@ -1,23 +1,107 @@
 import { DuplicateTriggeringEventException } from '../exceptions';
+import { EventAndTrigger } from '../interfaces';
 
-export interface DecodedEtopContext {
-  readonly id: string;
-  readonly topic: string;
-  readonly partition: number;
-  readonly offset: number;
-}
+// ????
+import { LoadedSnapshot } from './loaded-snapshot';
+import { Snapshot } from './snapshot-strategy';
+import { DecodedEtpoContext, EtpoEventContext } from './etpo-event-context';
 
 export class SnapshotTriggeringEvents {
-  constructor(
-    readonly topicsToPartitionsAndOffsets: Map<string, Map<number, number>>,
-  ) {}
+  private readonly topicPartitionOffsets = new Map<
+    string,
+    Map<number, bigint>
+  >();
 
-  checkForDuplicateEvent(etop: DecodedEtopContext): void {
-    const pos = this.topicsToPartitionsAndOffsets.get(etop.topic);
-    const maxOffset = pos?.get(etop.partition);
-    if (!maxOffset) return;
+  constructor(triggeringEvents?: readonly string[]) {
+    triggeringEvents?.forEach(e => this.add(e));
+  }
 
-    if (etop.offset <= maxOffset) {
+  static checkSnapshotForDuplicateEvent(
+    previousSnapshot: LoadedSnapshot<any>,
+    eventContext: EtpoEventContext,
+  ): void {
+    if (previousSnapshot.triggeringEvents) {
+      const tpo = EtpoEventContext.decode(eventContext.eventToken);
+      if (tpo) {
+        const ste = new SnapshotTriggeringEvents(
+          previousSnapshot.triggeringEvents,
+        );
+        ste.checkForDuplicateEvent(tpo);
+      }
+    }
+  }
+
+  static create<S extends Snapshot>(
+    events: readonly EventAndTrigger<any>[],
+    eventContext?: EtpoEventContext,
+    previousSnapshot?: LoadedSnapshot<S>,
+  ): SnapshotTriggeringEvents {
+    const ste = new SnapshotTriggeringEvents(
+      previousSnapshot?.triggeringEvents,
+    );
+
+    events
+      .filter(e => EtpoEventContext.isEtpoEvent(e.triggeringEvent))
+      .forEach(e => ste.add(e.triggeringEvent));
+
+    if (EtpoEventContext.isEtpoEvent(eventContext?.eventToken)) {
+      ste.add(eventContext!.eventToken);
+    }
+
+    return ste;
+  }
+
+  isEmpty(): boolean {
+    return this.topicPartitionOffsets.size < 1;
+  }
+
+  serialize(): readonly string[] {
+    return [...this.topicPartitionOffsets.entries()].flatMap(
+      ([topic, po]): string[] =>
+        [...po.entries()].map(
+          ([partition, offset]) =>
+            new EtpoEventContext({
+              id: '????',
+              topic,
+              partition,
+              offset,
+            }).eventToken,
+        ),
+    );
+  }
+
+  add(triggeringEvent: EtpoEventContext | string): this {
+    triggeringEvent =
+      triggeringEvent instanceof EtpoEventContext
+        ? triggeringEvent.eventToken
+        : triggeringEvent;
+
+    const { topic, partition, offset } = EtpoEventContext.decode(
+      triggeringEvent,
+    )!;
+    const pos = this.topicPartitionOffsets.get(topic);
+
+    if (pos == null) {
+      this.topicPartitionOffsets.set(topic, new Map([[partition, offset]]));
+    } else {
+      const maxOffset = pos.get(partition);
+      if (maxOffset == null || offset > maxOffset) {
+        pos.set(partition, offset);
+      }
+    }
+
+    return this;
+  }
+
+  checkForDuplicateEvent({
+    topic,
+    partition,
+    offset,
+  }: DecodedEtpoContext): void {
+    const pos = this.topicPartitionOffsets.get(topic);
+    const maxOffset = pos?.get(partition);
+
+    if (maxOffset != null && offset <= maxOffset) {
       throw new DuplicateTriggeringEventException();
     }
   }

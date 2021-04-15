@@ -1,3 +1,6 @@
+import { classToPlain } from '@deepkit/type';
+import { Type } from '@nestjs/common';
+
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
 
 export class MessageBuilder {
@@ -13,22 +16,29 @@ export class MessageBuilder {
         message: payload.message,
         stack: payload.stack,
       };
+    } else if (typeof payload !== 'string') {
+      const plain = classToPlain(payload.constructor as Type, payload);
+      return new MessageBuilder(plain, payload as object);
+    } else {
+      payload = JSON.parse(payload) as any;
     }
-    if (typeof payload !== 'string') {
-      payload = JSON.stringify(payload);
-    }
-    return new MessageBuilder(payload as string);
+
+    return new MessageBuilder(payload as object | Message);
   }
 
-  protected readonly headers = new MessageHeaders();
-  protected body: string;
+  protected headers = new MessageHeaders();
+  protected body: object;
 
-  constructor(messageOrPayload: string | Message) {
+  constructor(messageOrPayload: object | Message, reference?: object) {
     if (messageOrPayload instanceof Message) {
       this.body = messageOrPayload.getPayload();
       this.headers = messageOrPayload.getHeaders();
     } else {
       this.body = messageOrPayload;
+    }
+
+    if (reference) {
+      this.withReference(reference);
     }
   }
 
@@ -38,15 +48,12 @@ export class MessageBuilder {
   }
 
   withHeader(name: string, value: string | number): this {
-    this.headers.set(name, String(value));
+    this.headers.set(name, value);
     return this;
   }
 
-  withExtraHeaders(headers: MessageHeaders, prefix = ''): this {
-    for (const [key, value] of headers.entries()) {
-      this.headers.set(`${prefix}${key}`, String(value));
-    }
-
+  withExtraHeaders(headers: MessageHeaders): this {
+    this.headers = new MessageHeaders([...this.headers, ...headers]);
     return this;
   }
 

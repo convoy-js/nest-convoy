@@ -1,4 +1,9 @@
 import { Type } from '@nestjs/common';
+import {
+  plainToClass,
+  validatedPlainToClass,
+  ValidationFailed,
+} from '@deepkit/type';
 
 import { MissingMessageHeaderException } from './exceptions';
 import { MessageHeaders } from './message-headers';
@@ -23,7 +28,7 @@ export class Message {
   }
 
   constructor(
-    protected payload: string,
+    protected payload: any,
     protected headers = new MessageHeaders(),
   ) {}
 
@@ -35,16 +40,18 @@ export class Message {
     });
   }
 
-  setPayload(payload: string): this {
+  setPayload(payload: object): this {
     this.payload = payload;
     return this;
   }
 
-  parsePayload<T = any>(): T {
-    return JSON.parse(this.payload) as T;
+  async parsePayload<T = any>(type?: Type<T>): Promise<T> {
+    return type
+      ? await validatedPlainToClass(type, this.payload)
+      : this.payload;
   }
 
-  getPayload(): string {
+  getPayload(): object {
     return this.payload;
   }
 
@@ -54,7 +61,7 @@ export class Message {
   }
 
   setHeader(name: string, value: string | number): this {
-    this.headers.set(name, String(value));
+    this.headers.set(name, value);
     return this;
   }
 

@@ -1,5 +1,5 @@
 diff --git a/node_modules/@deepkit/type/dist/cjs/src/model.js b/node_modules/@deepkit/type/dist/cjs/src/model.js
-index a2135ef..e7c598f 100644
+index 5f1fec9..f6cdbce 100644
 --- a/node_modules/@deepkit/type/dist/cjs/src/model.js
 +++ b/node_modules/@deepkit/type/dist/cjs/src/model.js
 @@ -20,11 +20,9 @@ var UnpopulatedCheck;
@@ -17,18 +17,3 @@ index a2135ef..e7c598f 100644
  function getGlobalStore() {
      return global;
  }
-diff --git a/node_modules/@deepkit/type/package.json b/node_modules/@deepkit/type/package.json
-index 14a3ff2..a080592 100644
---- a/node_modules/@deepkit/type/package.json
-+++ b/node_modules/@deepkit/type/package.json
-@@ -2,8 +2,8 @@
-   "name": "@deepkit/type",
-   "version": "1.0.1-alpha.12",
-   "description": "@deepkit/type, the fastest universal TypeScript serializer and validator with JIT engine for frontend, backend, http-transport, RPC, and database, with built-in validations, for Browser/NodeJS.",
--  "type": "module",
--  "main": "./dist/esm/index.js",
-+  "main": "./dist/cjs/index.js",
-+  "module": "./dist/esm/index.js",
-   "types": "./dist/esm/index.d.ts",
-   "exports": {
-     ".": {

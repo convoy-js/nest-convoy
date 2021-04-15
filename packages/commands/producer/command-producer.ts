@@ -8,21 +8,8 @@ import {
 } from '@nest-convoy/messaging/producer';
 
 @Injectable()
-export abstract class CommandProducer {
-  abstract send(
-    channel: string,
-    command: Command,
-    replyTo: string,
-    headers: MessageHeaders,
-    resource?: string,
-  ): Promise<string> | string;
-}
-
-@Injectable()
-export class ConvoyCommandProducer extends CommandProducer {
-  constructor(private readonly messageProducer: ConvoyMessageProducer) {
-    super();
-  }
+export class ConvoyCommandProducer {
+  constructor(private readonly messageProducer: ConvoyMessageProducer) {}
 
   createMessage(
     channel: string,
@@ -45,8 +32,21 @@ export class ConvoyCommandProducer extends CommandProducer {
     return builder.build();
   }
 
-  async sendBatch(channel: string, commands: Command[]): Promise<string[]> {
-    return [];
+  async sendBatch(
+    channel: string,
+    commands: Command[],
+    replyTo: string,
+    headers = new MessageHeaders(),
+    resource?: string,
+  ): Promise<readonly Message[]> {
+    const messages = commands.map(cmd =>
+      this.createMessage(channel, cmd, replyTo, headers, resource),
+    );
+    const destination = channel; /*`${channel}-${message.getRequiredHeader(
+      CommandMessageHeaders.COMMAND_TYPE,
+    )}`*/
+    await this.messageProducer.sendBatch(destination, messages);
+    return messages;
   }
 
   async send(
@@ -55,18 +55,14 @@ export class ConvoyCommandProducer extends CommandProducer {
     replyTo: string,
     headers = new MessageHeaders(),
     resource?: string,
-  ): Promise<string> {
-    const message = this.createMessage(
+  ): Promise<Message> {
+    const [message] = await this.sendBatch(
       channel,
-      command,
+      [command],
       replyTo,
       headers,
       resource,
     );
-    const destination = channel; /*`${channel}-${message.getRequiredHeader(
-      CommandMessageHeaders.COMMAND_TYPE,
-    )}`*/
-    await this.messageProducer.send(destination, message);
-    return message.id;
+    return message;
   }
 }

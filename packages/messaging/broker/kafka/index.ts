@@ -1,11 +1,6 @@
 export { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
+export * from './kafka-message-consumer';
+export * from './kafka-message-producer';
 export * from './kafka-messaging.module';
-export {
-  Int,
-  AvroSchema,
-  Bytes,
-  Double,
-  Enum,
-  Float,
-  Long,
-} from './avro-schema';
+export * from './kafka-message';
+export { Int, AvroSchema, Bytes, Double, Float, Long } from './avro-schema';

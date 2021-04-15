@@ -5,7 +5,7 @@ import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
 import { Money, Namespace } from '../../common';
 
 // TODO: Should be able to generate these from @deepkit/type framework
-@AvroSchema(Namespace.CUSTOMER, 2)
+@AvroSchema(Namespace.CUSTOMER)
 export class ReserveCreditCommand {
   constructor(
     @f readonly customerId: number,

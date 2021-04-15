@@ -23,7 +23,7 @@ jobs:
           node-version: 14.x
 
       - name: Get Date
-        id: get-date
+        id: create-date
         run: |
           echo "::set-output name=date::$(/bin/date)"
         shell: bash
@@ -36,7 +36,7 @@ jobs:
         id: bazel-repository-cache
         with:
           path: ~/.cache/bazel-repository-cache
-          key: ${{ runner.os }}-bazel-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/WORKSPACE') }}
+          key: ${{ runner.os }}-bazel-${{ steps.create-date.outputs.date }}-${{ hashFiles('**/WORKSPACE') }}
           restore-keys: |
             ${{ runner.os }}-bazel-
 

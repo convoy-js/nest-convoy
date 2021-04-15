@@ -1,4 +1,5 @@
 import { Inject, Injectable, Type } from '@nestjs/common';
+import { plainToClass } from '@deepkit/type';
 
 import { AggregateRoot } from './aggregate-root';
 import {
@@ -41,7 +42,7 @@ export class Aggregates {
     // missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<AR>,
   ): Promise<AR> {
     return this.applyEvents(
-      new aggregateType(),
+      plainToClass<Type<AR>>(aggregateType, {}),
       events,
       // missingApplyEventMethodStrategy,
     );

@@ -5,10 +5,10 @@ import type { AsyncLikeFn } from '@nest-convoy/common';
 import { AggregateRoot } from './aggregate-root';
 import type { SerializedEvent } from './serialized-event';
 
-export type AggregatesAndEvents = Map<
-  string /*Type<AggregateRoot>*/,
-  Set<Type<any>>
->;
+export class AggregatesAndEvents extends Map<
+  string,
+  [aggregate: Type, events: Set<Type>]
+> {}
 
 export type SubscriptionHandler = AsyncLikeFn<[SerializedEvent<any>], void>;
 

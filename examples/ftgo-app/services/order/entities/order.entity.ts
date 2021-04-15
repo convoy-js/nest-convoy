@@ -5,7 +5,11 @@ import {
   UnsupportedStateTransitionException,
 } from '@ftgo-app/libs/common';
 
-import { AggregateRoot, ResultWithDomainEvents } from '@nest-convoy/core';
+import {
+  AggregateId,
+  AggregateRoot,
+  ResultWithDomainEvents,
+} from '@nest-convoy/core';
 
 import {
   OrderAuthorized,
@@ -33,6 +37,7 @@ export enum OrderState {
 @Entity()
 export class Order extends AggregateRoot<Order> {
   @PrimaryGeneratedColumn()
+  @AggregateId()
   id: number;
 
   // @PrimaryColumn()

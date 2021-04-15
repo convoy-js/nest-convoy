@@ -1,11 +1,13 @@
 import { Type } from '@nestjs/common';
-import { ObjectLiteral } from 'typeorm';
+import { ObjectLiteral } from '@nest-convoy/common';
 
 import { AggregateRoot } from './aggregate-root';
 
 export interface EventIdTypeAndData<E> extends EventTypeAndData<E> {
   readonly eventId: string;
 }
+
+export type EventMetadata = Record<string, string | number>;
 
 export interface EventTypeAndData<E>
   extends Pick<EventWithMetadata<E>, 'metadata'> {
@@ -16,7 +18,7 @@ export interface EventTypeAndData<E>
 export interface EventWithMetadata<E> {
   readonly event: E;
   readonly eventId: string;
-  readonly metadata: Record<string, string>;
+  readonly metadata?: EventMetadata;
 }
 
 export interface EventAndTrigger<E> {

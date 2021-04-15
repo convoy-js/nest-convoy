@@ -10,10 +10,10 @@ nest_library(
     deps = [
         "//packages/commands/common",
         "//packages/common",
-        "//packages/events/aggregate/entities",
         "//packages/events/common",
         "//packages/events/publisher",
         "//packages/events/subscriber",
+        "@npm//@deepkit/type",
         "@npm//@nestjs/core",
         "@npm//@nestjs/cqrs",
         "@npm//@nestjs/typeorm",

@@ -3,14 +3,9 @@ import { Type } from '@nestjs/common';
 import { OnEvent, OnMessage } from '@nest-convoy/core';
 
 import { NestSnapshotStrategy, SnapshotStrategy } from '../snapshot-strategy';
-import { MissingApplyEventMethodStrategy } from '../../missing-apply-event-method-strategy';
 import { EventWithMetadata } from '../../interfaces';
 import { Aggregates } from '../../aggregates';
-import {
-  ApplyEvent,
-  ProcessCommand,
-  CommandProcessingAggregate,
-} from '../../command-processing-aggregate';
+import { CommandProcessingAggregate } from '../../command-processing-aggregate';
 
 class AccountSnapshot {
   constructor(readonly balance: number) {}
