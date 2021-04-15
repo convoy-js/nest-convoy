@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn'' } from 'typeorm';
 import { f, t } from '@deepkit/type';
 
 import { AvroSchema, Enum } from '@nest-convoy/messaging/broker/kafka';
