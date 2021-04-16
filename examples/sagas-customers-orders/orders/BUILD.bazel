@@ -11,6 +11,7 @@ nest_library(
         "//examples/sagas-customers-orders/customers:src",
         "//packages/common",
         "//packages/core",
+        "//packages/messaging/broker/database",
         "//packages/messaging/broker/kafka",
         "@npm//@deepkit/type",
         "@npm//@nestjs/typeorm",

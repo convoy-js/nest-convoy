@@ -9,8 +9,9 @@ import { DiscoveryService } from '@golevelup/nestjs-discovery';
 import { getClassSchema } from '@deepkit/type';
 import type { schema } from 'avsc';
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
-import { Message, MessageHeaders } from '@nest-convoy/messaging';
 import type { EachMessagePayload } from 'kafkajs';
+
+import { Message, MessageHeaders } from '@nest-convoy/messaging';
 
 import { KAFKA_SCHEMA_REGISTRY } from './tokens';
 import { KafkaMessage } from './kafka-message';
@@ -93,7 +94,7 @@ export class AvroSchemaRegistry implements OnModuleInit {
     message.setHeaders(
       new MessageHeaders([
         [KafkaMessage.SCHEMA_NAMESPACE, namespace],
-        [KafkaMessage.SCHEMA_VERSION, `${version}`],
+        [KafkaMessage.SCHEMA_VERSION, version.toString()],
         [KafkaMessage.SCHEMA_SUBJECT, subject],
         ...message.getHeaders(),
       ]),

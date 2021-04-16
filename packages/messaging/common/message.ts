@@ -9,10 +9,10 @@ import { MissingMessageHeaderException } from './exceptions';
 import { MessageHeaders } from './message-headers';
 
 export class Message {
-  static ID = 'id';
-  static PARTITION_ID = 'partition_id';
-  static DESTINATION = 'destination';
-  static DATE = 'date';
+  static ID = 'ID';
+  static PARTITION_ID = 'PARTITION_ID';
+  static DESTINATION = 'DESTINATION';
+  static DATE = 'DATE';
   static TYPE = 'type';
 
   get id(): string {

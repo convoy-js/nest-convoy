@@ -16,7 +16,7 @@ export class EventsEntity<
 
   @Column({
     name: 'event_data',
-    type: 'simple-json',
+    type: 'json',
   })
   eventData: Data;
 
@@ -29,7 +29,7 @@ export class EventsEntity<
   @Column({ name: 'triggering_event', nullable: true })
   triggeringEvent?: string;
 
-  @Column({ type: 'simple-json', nullable: true, default: {} })
+  @Column({ type: 'json', nullable: true, default: () => {} })
   metadata: Metadata;
 
   @Column()

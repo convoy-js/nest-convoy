@@ -1,39 +1,30 @@
 version: '3'
 services:
   zookeeper:
-    image: debezium/zookeeper:1.4
+    image: eventuateio/eventuate-zookeeper
     ports:
       - 2181:2181
       - 2888:2888
       - 3888:3888
+
   kafka:
-    image: debezium/kafka:1.4
+    image: eventuateio/eventuate-kafka
     ports:
       - 9092:9092
     depends_on:
       - zookeeper
     environment:
-      - ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_HEAP_OPTS=-Xmx320m -Xms320m
+      - ZOOKEEPER_SERVERS=zookeeper:2181
+
   postgres:
-    image: debezium/postgres:10-alpine
+    image: eventuateio/eventuate-postgres
     ports:
       - 5432:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-  connect:
-    image: debezium/connect:1.4
-    ports:
-      - 8083:8083
-    depends_on:
-      - kafka
-      - postgres
-    environment:
-      - BOOTSTRAP_SERVERS=kafka:9092
-      - GROUP_ID=1
-      - CONFIG_STORAGE_TOPIC=convoy_configs
-      - OFFSET_STORAGE_TOPIC=convoy_offsets
-      - STATUS_STORAGE_TOPIC=convoy_statuses
+
   schema-registry:
     image: confluentinc/cp-schema-registry:6.0.0
     hostname: schema-registry
@@ -44,3 +35,24 @@ services:
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:9092'
+
+  cdc:
+    image: eventuateio/eventuate-cdc-service
+    depends_on:
+      - postgres
+      - kafka
+      - zookeeper
+    ports:
+      - 8099:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres/postgres
+      SPRING_DATASOURCE_SCHEMA: eventuate
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_TEST_ON_BORROW: 'true'
+      SPRING_DATASOURCE_VALIDATION_QUERY: SELECT 1
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
+      EVENTUATELOCAL_CDC_READER_NAME: PostgresWalReader
+      SPRING_PROFILES_ACTIVE: PostgresWal

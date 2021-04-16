@@ -1,2 +1,3 @@
 export const NEST_CONVOY_CONNECTION = 'NestConvoyConnection';
-export const NEST_CONVOY_SCHEMA = 'nest-convoy';
+// TODO: Somehow Eventuate CDC doesn't support specifying schema
+export const NEST_CONVOY_SCHEMA = process.env.CONVOY_SCHEMA || 'eventuate';

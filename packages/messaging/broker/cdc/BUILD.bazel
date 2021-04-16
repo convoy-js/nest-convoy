@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "cdc",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@nest-convoy/messaging/broker/cdc",
+    deps = [
+        "//packages/common",
+        "@npm//@nestjs/typeorm",
+        "@npm//typeorm",
+    ],
+)

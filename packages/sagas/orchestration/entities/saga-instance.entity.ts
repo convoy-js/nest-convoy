@@ -28,7 +28,7 @@ export class SagaInstanceEntity<Data = any> {
 
   @Column({
     name: 'saga_data',
-    type: 'simple-json',
+    type: 'json',
   })
   sagaData: Data;
 

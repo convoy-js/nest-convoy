@@ -1,1 +1,0 @@
-Create connectors for Kafka

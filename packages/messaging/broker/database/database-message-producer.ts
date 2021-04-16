@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
-import { MessageEntity } from '@nest-convoy/messaging/common/entities';
-import { Message, MessageProducer } from '@nest-convoy/messaging';
+import { Message, MessageEntity } from '@nest-convoy/messaging/common';
+import { MessageProducer } from '@nest-convoy/messaging/producer';
 
 @Injectable()
 export class DatabaseMessageProducer extends MessageProducer {
@@ -26,7 +26,7 @@ export class DatabaseMessageProducer extends MessageProducer {
     await this.messageRepository.manager.transaction(manager =>
       Promise.all(
         messages.map(message =>
-          manager.create(MessageEntity, {
+          manager.save(MessageEntity, {
             id: message.id,
             // partition: message.partition,
             headers: message.getHeaders(),

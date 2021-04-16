@@ -9,44 +9,60 @@ import {
 
 import { MessageHeaders, MessageRecordHeaders } from '../message-headers';
 
-@Index('message_published_idx', ['published', 'id'])
+// @Index('message_pkey', ['id'], { unique: true })
 @Entity('message')
-export class MessageEntity<Payload> {
+export class MessageEntity<P> {
   @PrimaryColumn()
   id: string;
 
-  @Column()
+  @Column('text')
   destination: string;
 
-  @Column()
-  partition: number;
-
   @Column({
-    type: 'simple-json',
+    type: 'json',
+    nullable: true,
     transformer: {
-      to(headers: MessageRecordHeaders): MessageHeaders {
-        return MessageHeaders.fromRecord(headers);
-      },
-      from(headers: MessageHeaders): MessageRecordHeaders {
+      to(headers: MessageHeaders): MessageRecordHeaders {
         return headers.asRecord();
+      },
+      from(headers: MessageRecordHeaders): MessageHeaders {
+        return MessageHeaders.fromRecord(headers);
       },
     },
   })
   headers: MessageHeaders;
 
-  @Column({ type: 'simple-json' })
-  payload: Payload;
+  @Column({ type: 'json', nullable: true })
+  payload: P;
 
-  @Column()
-  published: boolean;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    name: 'creation_time',
-    default: () => 'LOCALTIMESTAMP',
+  @Column({
+    type: 'smallint',
+    // default: () => 0,
+    nullable: true,
+    transformer: {
+      to(value: boolean | undefined): number {
+        return value != null ? +value : 0;
+      },
+      from(value: number): boolean | null {
+        return value != null ? !!value : null;
+      },
+    },
   })
-  creationTime: string;
+  published?: boolean;
 
-  @VersionColumn()
-  version: string;
+  @Column({
+    type: 'bigint',
+    name: 'creation_time',
+    nullable: true,
+    // default: () => Date.now(),
+    transformer: {
+      from(value: Date | undefined): number {
+        return value instanceof Date ? +value : Date.now();
+      },
+      to(value: number): Date | null {
+        return value != null ? new Date(value) : null;
+      },
+    },
+  })
+  creationTime?: Date;
 }

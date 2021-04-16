@@ -8,7 +8,6 @@ export const defaultOptions: TypeOrmModuleOptions = {
   autoLoadEntities: true,
   port: 5432,
   synchronize: true,
-  migrationsRun: true,
 };
 
 export { TypeOrmModuleOptions };

@@ -16,12 +16,12 @@ export class SnapshotsEntity {
   @Column({ name: 'snapshot_type' })
   snapshotType: string;
 
-  @Column({ name: 'snapshot_json', type: 'simple-json' })
+  @Column({ name: 'snapshot_json', type: 'json' })
   snapshotJson: Record<string, unknown>;
 
   @Column({
     name: 'triggering_events',
-    type: 'simple-array',
+    type: 'array',
     transformer: {
       from(ste: SnapshotTriggeringEvents): readonly string[] {
         return ste.serialize();

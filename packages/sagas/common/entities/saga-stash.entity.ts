@@ -21,7 +21,7 @@ export class SagaStashEntity<P = Record<string, unknown>> {
 
   @Column({
     name: 'message_headers',
-    type: 'simple-json',
+    type: 'json',
     transformer: {
       to(headers: MessageRecordHeaders): MessageHeaders {
         return MessageHeaders.fromRecord(headers);
@@ -33,7 +33,7 @@ export class SagaStashEntity<P = Record<string, unknown>> {
   })
   messageHeaders: MessageHeaders;
 
-  @Column({ name: 'message_payload', type: 'simple-json' })
+  @Column({ name: 'message_payload', type: 'json' })
   messagePayload: object;
 
   @VersionColumn()

@@ -71,6 +71,7 @@ export class ConvoyMessageProducer {
     if (!id && !message.hasHeader(Message.ID)) {
       throw new MissingRequiredMessageIDException(message);
     } else {
+      // message.setHeader(Message.PARTITION_ID, id);
       message.setHeader(Message.ID, id);
     }
 

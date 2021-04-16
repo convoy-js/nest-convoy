@@ -10,7 +10,6 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import { KAFKA_CONFIG } from './tokens';
 import { KafkaLogger } from './kafka-logger';
-// import { KafkaReplyPartitionAssigner } from './kafka-reply-partition-assigner';
 
 export type ConsumerAssignments = Record<string, number>;
 export const GROUP_ID = 'nest-convoy';
@@ -31,10 +30,6 @@ export class Kafka {
   readonly consumer: Consumer = this.kafka.consumer({
     groupId: this.config.clientId || GROUP_ID,
     allowAutoTopicCreation: true,
-    // partitionAssigners: [
-    //   (config: Parameters<PartitionAssigner>[0]) =>
-    //     new KafkaReplyPartitionAssigner(this, config),
-    // ],
   });
 
   constructor(
@@ -42,10 +37,10 @@ export class Kafka {
     private readonly config: KafkaConfig,
   ) {
     // set member assignments on join and rebalance
-    this.consumer.on(
-      this.consumer.events.GROUP_JOIN,
-      this.setConsumerAssignments.bind(this),
-    );
+    // this.consumer.on(
+    //   this.consumer.events.GROUP_JOIN,
+    //   this.setConsumerAssignments.bind(this),
+    // );
   }
 
   private setConsumerAssignments(data: ConsumerGroupJoinEvent): void {

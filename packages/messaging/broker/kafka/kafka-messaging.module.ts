@@ -1,8 +1,10 @@
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import type { ConsumerConfig, KafkaConfig, ProducerConfig } from 'kafkajs';
 import { DiscoveryModule } from '@golevelup/nestjs-discovery';
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
 
+import { DatabaseMessageProducer } from '@nest-convoy/messaging/broker/database';
+import { ConvoyCdcModule } from '@nest-convoy/messaging/broker/cdc';
 import {
   ConvoyCoreModule,
   ConvoyTypeOrmOptions,
@@ -11,6 +13,7 @@ import {
   ConvoyMessagingConsumerModule,
   ConvoyMessagingProducerModule,
   DatabaseDuplicateMessageDetector,
+  MessageProducer,
 } from '@nest-convoy/messaging';
 
 import { KafkaMessageBuilder } from './kafka-message-builder';
@@ -24,7 +27,33 @@ export interface ConvoyKafkaMessagingBrokerModuleOptions {
   readonly consumer?: Omit<ConsumerConfig, 'groupId'>;
   readonly producer?: Omit<ProducerConfig, 'idempotent'>;
   readonly schemaRegistry?: SchemaRegistry;
+  readonly messageProducerProvider?: Omit<Provider<MessageProducer>, 'provide'>;
   readonly database: ConvoyTypeOrmOptions;
+}
+
+@Global()
+@Module({})
+export class ConvoyKafkaCdcBrokerModule {
+  static register(
+    config: Omit<KafkaConfig, 'logCreator'>,
+    options: Omit<
+      ConvoyKafkaMessagingBrokerModuleOptions,
+      'messageProducerProvider'
+    >,
+  ): DynamicModule {
+    return {
+      module: ConvoyKafkaCdcBrokerModule,
+      imports: [
+        ConvoyKafkaBrokerModule.register(config, {
+          ...options,
+          messageProducerProvider: {
+            useClass: DatabaseMessageProducer,
+          },
+        }),
+        ConvoyCdcModule,
+      ],
+    };
+  }
 }
 
 @Global()
@@ -32,7 +61,11 @@ export interface ConvoyKafkaMessagingBrokerModuleOptions {
 export class ConvoyKafkaBrokerModule {
   static register(
     config: Omit<KafkaConfig, 'logCreator'>,
-    { database, schemaRegistry }: ConvoyKafkaMessagingBrokerModuleOptions,
+    {
+      database,
+      schemaRegistry,
+      messageProducerProvider,
+    }: ConvoyKafkaMessagingBrokerModuleOptions,
   ): DynamicModule {
     return {
       module: ConvoyKafkaBrokerModule,
@@ -46,9 +79,11 @@ export class ConvoyKafkaBrokerModule {
             useClass: DatabaseDuplicateMessageDetector,
           },
         ),
-        ConvoyMessagingProducerModule.register({
-          useExisting: KafkaMessageProducer,
-        }),
+        ConvoyMessagingProducerModule.register(
+          messageProducerProvider || {
+            useExisting: KafkaMessageProducer,
+          },
+        ),
         DiscoveryModule,
       ],
       providers: [

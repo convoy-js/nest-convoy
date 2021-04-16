@@ -13,9 +13,9 @@ import {
 } from './avro-schema';
 
 export interface KafkaMessageSchema extends Partial<AvroSchemaMetadata> {
+  readonly id?: number;
   readonly schema: schema.RecordType;
   readonly subject: string;
-  readonly id?: number;
 }
 
 export type KafkaMessageHandler = Consumer<KafkaMessage, void>;

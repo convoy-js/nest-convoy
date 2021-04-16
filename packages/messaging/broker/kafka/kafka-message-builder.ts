@@ -1,4 +1,8 @@
-import type { EachMessagePayload, Message as ProducerMessage } from 'kafkajs';
+import type {
+  EachMessagePayload,
+  IHeaders,
+  Message as ProducerMessage,
+} from 'kafkajs';
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
 import { Inject, Injectable, Optional } from '@nestjs/common';
 
@@ -58,11 +62,17 @@ export class KafkaMessageBuilder {
       value = JSON.stringify(message.getPayload());
     }
 
+    const headers = message.getHeaders().asRecord();
+
     return {
       key: message.id,
-      value: value!,
+      // Need to do this for compatibility with eventuate cdc
+      value: JSON.stringify({
+        payload: message.getPayload(),
+        headers,
+      }),
       // partition: parseFloat(message.getHeader(Message.PARTITION_ID)),
-      headers: message.getHeaders().asRecord(),
+      headers,
     };
   }
 
@@ -70,24 +80,30 @@ export class KafkaMessageBuilder {
     message,
     partition,
   }: EachMessagePayload): Promise<KafkaMessage> {
-    const headers = new MessageHeaders(
-      message.headers
-        ? Object.entries(message.headers).map(([key, value]) => [
-            key,
-            value!.toString(),
-          ])
-        : null,
-    );
-
     const payload =
       (await this.registry?.decode(message.value!)) || message.value!;
 
+    const data = JSON.parse(payload.toString()) as {
+      headers: IHeaders;
+      payload: Record<string, unknown>;
+    };
+
+    const headers = new MessageHeaders(
+      message.headers
+        ? Object.entries({
+            ...message.headers,
+            ...data.headers,
+          }).map(([key, value]) => [key, value!.toString()])
+        : null,
+    );
+
     return KafkaMessage.from(
-      MessageBuilder.withPayload(payload.toString())
+      MessageBuilder.withPayload(data.payload)
         .withHeader(Message.ID, message.key!.toString())
         // .withHeader(Message.PARTITION_ID, partition)
         .withExtraHeaders(headers)
         .build(),
+      // eslint-disable-next-line prefer-rest-params
       arguments[0] as EachMessagePayload,
     );
   }

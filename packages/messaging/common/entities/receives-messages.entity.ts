@@ -3,8 +3,11 @@ import {
   PrimaryColumn,
   Entity,
   VersionColumn,
+  Index,
+  Column,
 } from 'typeorm';
 
+// @Index('received_messages_pkey', ['consumerId', 'messageId'], { unique: true })
 @Entity('received_messages')
 export class ReceivedMessagesEntity {
   @PrimaryColumn({ name: 'consumer_id' })
@@ -13,13 +16,6 @@ export class ReceivedMessagesEntity {
   @PrimaryColumn({ name: 'message_id' })
   messageId: string;
 
-  @CreateDateColumn({
-    type: 'timestamp',
-    name: 'creation_time',
-    default: () => 'LOCALTIMESTAMP',
-  })
-  creationTime: string;
-
-  @VersionColumn()
-  version: string;
+  @Column('bigint', { name: 'creation_time', nullable: true })
+  creationTime?: string;
 }

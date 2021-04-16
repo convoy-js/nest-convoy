@@ -8,9 +8,9 @@ export class CommandMessageHeaders {
   static readonly RESOURCE =
     CommandMessageHeaders.COMMAND_HEADER_PREFIX + 'resource';
   static readonly DESTINATION =
-    CommandMessageHeaders.COMMAND_HEADER_PREFIX + 'destination';
+    CommandMessageHeaders.COMMAND_HEADER_PREFIX + '_destination';
 
-  static readonly COMMAND_REPLY_PREFIX = 'command_reply_';
+  static readonly COMMAND_REPLY_PREFIX = 'commandreply_';
   static readonly REPLY_TO =
     CommandMessageHeaders.COMMAND_HEADER_PREFIX + 'reply_to';
 

@@ -2,10 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
-import {
-  ConvoyKafkaBrokerModule,
-  SchemaRegistry,
-} from '@nest-convoy/messaging/broker/kafka';
+import { ConvoyKafkaCdcBrokerModule } from '@nest-convoy/messaging/broker/kafka';
 
 import { CreateOrderSaga } from './sagas/create-order';
 import { CustomerServiceProxy } from './sagas/participants';
@@ -29,7 +26,7 @@ import { OrderDetails } from './common';
       entities: [Order],
     } as TypeOrmModuleOptions),
     TypeOrmModule.forFeature([Order]),
-    ConvoyKafkaBrokerModule.register(
+    ConvoyKafkaCdcBrokerModule.register(
       {
         clientId: Channel.ORDER,
         brokers: ['localhost:9092'],
