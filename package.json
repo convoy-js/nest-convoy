@@ -79,7 +79,7 @@
     "change-case": "4.1.2",
     "kafkajs": "1.15.0",
     "reflect-metadata": "0.1.13",
-    "rxjs": "6.6.3",
+    "rxjs": "6.6.7",
     "tslib": "2.1.0",
     "typeorm": "0.2.30",
     "uuid": "8.3.2"
