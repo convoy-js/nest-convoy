@@ -81,7 +81,7 @@
     "reflect-metadata": "0.1.13",
     "rxjs": "6.6.3",
     "tslib": "2.1.0",
-    "typeorm": "0.2.30",
+    "typeorm": "0.2.32",
     "uuid": "8.3.2"
   }
 }
