@@ -479,20 +479,12 @@
   resolved "https://registry.yarnpkg.com/@commitlint/types/-/types-9.1.2.tgz#d05f66db03e3a3638a654e8badf2deb489eb220d"
   integrity sha512-r3fwVbVH+M8W0qYlBBZFsUwKe6NT5qvz+EmU7sr8VeN1cQ63z+3cfXyTo7WGGEMEgKiT0jboNAK3b1FZp8k9LQ==
 
-"@deepkit/core@^1.0.1-alpha.13":
-  version "1.0.1-alpha.13"
-  resolved "https://registry.yarnpkg.com/@deepkit/core/-/core-1.0.1-alpha.13.tgz#ed69c49cee3b26a3ec2e2e0d9699c5958fde70ff"
-  integrity sha512-j3nzcIQNNAcQ+PkiFVRJZe8ddlYyuMvQ4s+kvw8n/uriytFJ7DKuVT6yBMPXtvM6KB/3eihGUAQMKaH4SUpAcw==
+"@deepkit/type@1.0.1-alpha.29":
+  version "1.0.1-alpha.29"
+  resolved "https://registry.yarnpkg.com/@deepkit/type/-/type-1.0.1-alpha.29.tgz#ae5e0b28c92c719d101418de0c9c27ea02a0da4c"
+  integrity sha512-PxFrErHbrwZIXbQiiX63FgM3gB6kkvnQdIT6DSn7dFCM9comeeJ7ml3jnn2F+vdQHVOXy+1ulUwtkkiiNgT+Vg==
   dependencies:
-    dot-prop "^5.1.1"
-    to-fast-properties "^3.0.1"
-
-"@deepkit/type@1.0.1-alpha.13":
-  version "1.0.1-alpha.13"
-  resolved "https://registry.yarnpkg.com/@deepkit/type/-/type-1.0.1-alpha.13.tgz#f58ce74dc1154cfb26becd2a5d809f7cdac58975"
-  integrity sha512-0k5vZJ99Hbya/oSsICI5ibU/TD14O3ZrzGkztY01zokj139lwn+DuzHgomz/JRQ5BDSE5UeqR99h+GBW8L7GCA==
-  dependencies:
-    "@deepkit/core" "^1.0.1-alpha.13"
+    "@types/uuid" "^8.3.0"
     "@types/validator" "^13.1.0"
     buffer "^5.2.1"
     clone "^2.1.1"
@@ -1028,7 +1020,7 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.0.tgz#7036640b4e21cc2f259ae826ce843d277dad8cff"
   integrity sha512-RJJrrySY7A8havqpGObOB4W92QXKJo63/jFLLgpvOtsGUqbQZ9Sbgl35KMm1DjC6j7AvmmU2bIno+3IyEaemaw==
 
-"@types/uuid@8.3.0":
+"@types/uuid@8.3.0", "@types/uuid@^8.3.0":
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.0.tgz#215c231dff736d5ba92410e6d602050cce7e273f"
   integrity sha512-eQ9qFW/fhfGJF8WKHGEHZEyVWfZxrT+6CLIJGBcZPfxUh/+BnEj+UCGYMlr9qZuX/2AltsvwrGqp0LhEW8D0zQ==
@@ -2577,7 +2569,7 @@ dot-prop@^5.1.0:
   dependencies:
     is-obj "^2.0.0"
 
-dot-prop@^5.1.1, dot-prop@^5.2.0:
+dot-prop@^5.2.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-5.3.0.tgz#90ccce708cd9cd82cc4dc8c3ddd9abdd55b20e88"
   integrity sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==
@@ -7086,11 +7078,6 @@ to-fast-properties@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-2.0.0.tgz#dc5e698cbd079265bc73e0377681a4e4e83f616e"
   integrity sha1-3F5pjL0HkmW8c+A3doGk5Og/YW4=
-
-to-fast-properties@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-3.0.1.tgz#c7d507fdccc306c1e6782069db6b0e6fcc1a93f5"
-  integrity sha512-/wtNi1tW1F3nf0OL6AqVxGw9Tr1ET70InMhJuVxPwFdGqparF0nQ4UWGLf2DsoI2bFDtthlBnALncZpUzOnsUw==
 
 to-object-path@^0.3.0:
   version "0.3.0"
