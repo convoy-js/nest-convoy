@@ -1,5 +1,5 @@
 diff --git a/node_modules/@bazel/typescript/internal/tsc_wrapped/tsconfig.js b/node_modules/@bazel/typescript/internal/tsc_wrapped/tsconfig.js
-index 62f83dc..bfd6362 100755
+index e049d15..f091646 100755
 --- a/node_modules/@bazel/typescript/internal/tsc_wrapped/tsconfig.js
 +++ b/node_modules/@bazel/typescript/internal/tsc_wrapped/tsconfig.js
 @@ -3,6 +3,7 @@
@@ -10,7 +10,7 @@ index 62f83dc..bfd6362 100755
   * Licensed under the Apache License, Version 2.0 (the "License");
   * you may not use this file except in compliance with the License.
   *
-@@ -91,7 +92,7 @@ function parseTsconfig(tsconfigFile, host = ts.sys) {
+@@ -92,7 +93,7 @@ function parseTsconfig(tsconfigFile, host = ts.sys) {
          return [null, errors, { target }];
      }
      // Override the devmode target if devmodeTargetOverride is set
