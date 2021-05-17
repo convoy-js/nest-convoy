@@ -480,6 +480,14 @@
   resolved "https://registry.yarnpkg.com/@commitlint/types/-/types-9.1.2.tgz#d05f66db03e3a3638a654e8badf2deb489eb220d"
   integrity sha512-r3fwVbVH+M8W0qYlBBZFsUwKe6NT5qvz+EmU7sr8VeN1cQ63z+3cfXyTo7WGGEMEgKiT0jboNAK3b1FZp8k9LQ==
 
+"@deepkit/core@1.0.1-alpha.29":
+  version "1.0.1-alpha.29"
+  resolved "https://registry.yarnpkg.com/@deepkit/core/-/core-1.0.1-alpha.29.tgz#20d4046e58f488324e0dfba2ae5e76fcb174f03e"
+  integrity sha512-g/8RbELTwHZhLQQ3plkNEbUYafQaHhMYT+/iaOf2rDza59FKJEwtRx7W88SAFJqG0nzd1dwu8uny77YhyYEwhw==
+  dependencies:
+    dot-prop "^5.1.1"
+    to-fast-properties "^3.0.1"
+
 "@deepkit/type@1.0.1-alpha.29":
   version "1.0.1-alpha.29"
   resolved "https://registry.yarnpkg.com/@deepkit/type/-/type-1.0.1-alpha.29.tgz#ae5e0b28c92c719d101418de0c9c27ea02a0da4c"
@@ -2601,7 +2609,7 @@ dot-prop@^5.1.0:
   dependencies:
     is-obj "^2.0.0"
 
-dot-prop@^5.2.0:
+dot-prop@^5.1.1, dot-prop@^5.2.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-5.3.0.tgz#90ccce708cd9cd82cc4dc8c3ddd9abdd55b20e88"
   integrity sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==
@@ -7247,6 +7255,11 @@ to-fast-properties@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-2.0.0.tgz#dc5e698cbd079265bc73e0377681a4e4e83f616e"
   integrity sha1-3F5pjL0HkmW8c+A3doGk5Og/YW4=
+
+to-fast-properties@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-3.0.1.tgz#c7d507fdccc306c1e6782069db6b0e6fcc1a93f5"
+  integrity sha512-/wtNi1tW1F3nf0OL6AqVxGw9Tr1ET70InMhJuVxPwFdGqparF0nQ4UWGLf2DsoI2bFDtthlBnALncZpUzOnsUw==
 
 to-object-path@^0.3.0:
   version "0.3.0"

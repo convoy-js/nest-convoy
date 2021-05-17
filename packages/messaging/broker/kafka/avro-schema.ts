@@ -1,11 +1,12 @@
 import { Injectable, Type } from '@nestjs/common';
 import { PropertySchema, getClassSchema, ClassSchema } from '@deepkit/type';
-import type { schema } from 'avsc';
 import { CircularDependencyException } from '@nestjs/core/errors/exceptions/circular-dependency.exception';
 import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
 import { COMPATIBILITY } from '@kafkajs/confluent-schema-registry';
 
 import { AvroSchemaRegistry } from './avro-schema-registry';
+
+import type { schema } from 'avsc';
 
 export const AVRO_SCHEMA_METADATA = Symbol('AVRO_SCHEMA_METADATA');
 
@@ -28,9 +29,7 @@ export function lazyLoadAvroSchema(
   { namespace }: AvroSchemaMetadata,
 ): schema.RecordType {
   const index = AvroSchemaRegistry.INTERNAL.findIndex(
-    registry =>
-      registry.target.name ===
-      target /*&&
+    registry => registry.target.name === target /*&&
       registry.namespace === namespace &&
       registry.version === version,*/,
   );
@@ -116,7 +115,7 @@ export function createAvroSchema(
         : ['null', value]
       : value;
   } else {
-    const props = schema.getClassProperties();
+    const props = schema.getPropertiesMap();
     const meta = Reflect.getMetadata(AVRO_SCHEMA_METADATA, schema.classType) as
       | AvroSchemaMetadata
       | undefined;
