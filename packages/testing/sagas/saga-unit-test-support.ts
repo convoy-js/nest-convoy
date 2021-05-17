@@ -41,8 +41,8 @@ export class SagaTestInstanceRepository extends SagaInstanceRepository {
   }
 
   async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
+    sagaInstance.sagaId = uuidv4();
     this.sagaUnitTestSupport.sagaInstance = sagaInstance;
-    sagaInstance.sagaId = SagaUnitTestSupport.SAGA_ID;
     return sagaInstance;
   }
 
@@ -144,8 +144,6 @@ export class SagaExpectCommandTest<Data> {
 
 @Injectable()
 export class SagaUnitTestSupport<Data> {
-  static readonly SAGA_ID = '1';
-
   private readonly expectations: SagaExpectationTest[][] = [];
   private sagaManager: SagaManager<Data>;
   private createException?: Error;
@@ -238,12 +236,10 @@ export class SagaUnitTestSupport<Data> {
     this.runExpectations();
     this.assertNoCommands();
 
-    // expect(this.sagaInstance.endState).toBeTruthy();
     if (!this.sagaInstance.endState) {
       fail('Expected ' + this.sagaInstance.sagaType + ' to have end state');
     }
 
-    // expect(this.sagaInstance.compensating).toBeTruthy();
     if (!this.sagaInstance.compensating) {
       fail('Expected ' + this.sagaInstance.sagaType + ' to be compensating');
     }

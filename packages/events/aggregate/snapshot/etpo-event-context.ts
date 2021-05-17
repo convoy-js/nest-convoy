@@ -8,14 +8,8 @@ export interface DecodedEtpoContext {
 export class EtpoEventContext {
   static readonly PREFIX = 'etpo:';
 
-  readonly eventToken: string;
-
-  constructor({ id, topic, partition, offset }: DecodedEtpoContext) {
-    this.eventToken = `${EtpoEventContext.PREFIX}${id}:${topic}:${partition}:${offset}`;
-  }
-
-  decode(): DecodedEtpoContext | undefined {
-    return EtpoEventContext.decode(this);
+  static isEtpoEvent(triggeringEvent?: string): boolean {
+    return !!triggeringEvent?.startsWith(EtpoEventContext.PREFIX);
   }
 
   static decode(
@@ -27,20 +21,26 @@ export class EtpoEventContext {
         : triggeringEvent;
 
     if (EtpoEventContext.isEtpoEvent(triggeringEvent)) {
-      const elements = triggeringEvent
+      const [id, topic, partition, offset] = triggeringEvent
         .substring(EtpoEventContext.PREFIX.length)
         .split(':');
 
       return {
-        id: elements[0],
-        topic: elements[1],
-        partition: parseInt(elements[2]),
-        offset: BigInt(elements[3]),
+        partition: parseInt(partition),
+        offset: BigInt(offset),
+        id,
+        topic,
       };
     }
   }
 
-  static isEtpoEvent(triggeringEvent?: string): boolean {
-    return !!triggeringEvent?.startsWith(EtpoEventContext.PREFIX);
+  readonly eventToken: string;
+
+  constructor({ id, topic, partition, offset }: DecodedEtpoContext) {
+    this.eventToken = `${EtpoEventContext.PREFIX}${id}:${topic}:${partition}:${offset}`;
+  }
+
+  decode(): DecodedEtpoContext | undefined {
+    return EtpoEventContext.decode(this);
   }
 }

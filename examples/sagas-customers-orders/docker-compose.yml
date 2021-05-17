@@ -18,7 +18,7 @@ services:
       - ZOOKEEPER_SERVERS=zookeeper:2181
 
   postgres:
-    image: eventuateio/eventuate-postgres
+    image: debezium/postgres:13
     ports:
       - 5432:5432
     environment:

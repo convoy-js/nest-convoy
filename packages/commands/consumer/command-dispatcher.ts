@@ -102,7 +102,6 @@ export class ConvoyCommandDispatcher implements Dispatcher {
     }
 
     const correlationHeaders = correlateMessageHeaders(message.getHeaders());
-
     const defaultReplyChannel = message.getRequiredHeader(
       CommandMessageHeaders.REPLY_TO,
     );
@@ -123,7 +122,7 @@ export class ConvoyCommandDispatcher implements Dispatcher {
         } ${replies.map(reply => reply.toString())}`,
       );
     } catch (err) {
-      // TODO: This will never be called (unless payload cannot be parsed) as "invoke" handles errors as well
+      // TODO: This will never be executed (unless payload cannot be parsed), as "invoke" handles errors as well
       this.logger.error(
         `Generated error ${this.commandDispatcherId} ${message.toString()}`,
       );

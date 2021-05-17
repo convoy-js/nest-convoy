@@ -51,13 +51,12 @@ export class SagaCommandDispatcher extends ConvoyCommandDispatcher {
     if (commandHandler instanceof SagaCommandHandler) {
       if (typeof commandHandler.preLock === 'function') {
         lockedTarget = (await commandHandler.preLock(commandMessage)).target;
-        if (
-          !(await this.sagaLockManager.claimLock(
-            sagaType,
-            sagaId,
-            lockedTarget!,
-          ))
-        ) {
+        const hasClaimedLock = await this.sagaLockManager.claimLock(
+          sagaType,
+          sagaId,
+          lockedTarget!,
+        );
+        if (!hasClaimedLock) {
           throw new StashMessageRequiredException(lockedTarget!);
         }
       }
@@ -70,13 +69,12 @@ export class SagaCommandDispatcher extends ConvoyCommandDispatcher {
     } else {
       const lockTarget = getLock(messages);
       if (lockTarget) {
-        if (
-          !(await this.sagaLockManager.claimLock(
-            sagaType,
-            sagaId,
-            lockTarget.target,
-          ))
-        ) {
+        const hasClaimedLock = await this.sagaLockManager.claimLock(
+          sagaType,
+          sagaId,
+          lockTarget.target,
+        );
+        if (!hasClaimedLock) {
           throw new CannotClaimLockException(
             sagaType,
             sagaId,

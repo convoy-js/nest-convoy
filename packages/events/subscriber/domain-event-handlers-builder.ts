@@ -15,7 +15,7 @@ export class DomainEventHandlersBuilder
     return new DomainEventHandlersBuilder(aggregateType);
   }
 
-  private readonly handlers: DomainEventHandler[] = [];
+  private handlers: readonly DomainEventHandler[] = [];
 
   constructor(private aggregateType: string) {}
 
@@ -28,7 +28,7 @@ export class DomainEventHandlersBuilder
       handler,
       this.aggregateType,
     );
-    this.handlers.push(eventHandler);
+    this.handlers = [...this.handlers, eventHandler];
 
     return this;
   }
