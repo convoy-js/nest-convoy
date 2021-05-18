@@ -1,4 +1,4 @@
-import { Command } from '@nest-convoy/commands';
+import type { Command } from '@nest-convoy/commands';
 
 export class PendingSagaCommand {
   constructor(

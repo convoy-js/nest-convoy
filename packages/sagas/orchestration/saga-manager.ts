@@ -25,7 +25,7 @@ import {
   StateMachineEmptyException,
 } from '@nest-convoy/sagas/common';
 
-import { SagaInstance } from './saga-instance';
+import { NestSagaInstance } from './saga-instance';
 import { SagaInstanceRepository } from './saga-instance-repository';
 import { SagaCommandProducer } from './saga-command-producer';
 import { Saga, SagaLifecycleHooks } from './saga';
@@ -92,7 +92,7 @@ export class SagaManager<Data> {
   }
 
   private updateState(
-    sagaInstance: SagaInstance<Data>,
+    sagaInstance: NestSagaInstance<Data>,
     actions: SagaActions<Data>,
   ): void {
     if (actions.updatedState) {
@@ -104,7 +104,7 @@ export class SagaManager<Data> {
 
   private async performEndStateActions(
     sagaId: string,
-    sagaInstance: SagaInstance<Data>,
+    sagaInstance: NestSagaInstance<Data>,
     compensating: boolean,
     sagaData: Data,
   ): Promise<void> {
@@ -132,7 +132,7 @@ export class SagaManager<Data> {
   }
 
   private async processActions(
-    sagaInstance: SagaInstance<Data>,
+    sagaInstance: NestSagaInstance<Data>,
     sagaData: Data,
     actions: SagaActions<Data>,
   ): Promise<void> {
@@ -145,12 +145,13 @@ export class SagaManager<Data> {
         );
       } else {
         // only do this if successful
-        sagaInstance.lastRequestId = await this.sagaCommandProducer.sendCommands(
-          this.sagaType,
-          sagaInstance.sagaId,
-          actions.commands,
-          this.sagaReplyChannel,
-        );
+        sagaInstance.lastRequestId =
+          await this.sagaCommandProducer.sendCommands(
+            this.sagaType,
+            sagaInstance.sagaId,
+            actions.commands,
+            this.sagaReplyChannel,
+          );
 
         this.updateState(sagaInstance, actions);
 
@@ -235,22 +236,22 @@ export class SagaManager<Data> {
     );
   }
 
-  create(data: Data): Promise<SagaInstance<Data>>;
-  create(data: Data, lockTarget?: string): Promise<SagaInstance<Data>>;
+  create(data: Data): Promise<NestSagaInstance<Data>>;
+  create(data: Data, lockTarget?: string): Promise<NestSagaInstance<Data>>;
   create(
     data: Data,
     targetType: Instance,
     targetId: string,
-  ): Promise<SagaInstance<Data>>;
+  ): Promise<NestSagaInstance<Data>>;
   async create(
     sagaData: Data,
     target?: string | Instance,
     targetId?: string,
-  ): Promise<SagaInstance<Data>> {
+  ): Promise<NestSagaInstance<Data>> {
     const lockTarget = new LockTarget(target, targetId);
     const resource = lockTarget.target;
 
-    let sagaInstance = new SagaInstance<Data>(
+    let sagaInstance = new NestSagaInstance<Data>(
       this.sagaType,
       null as never,
       '????',

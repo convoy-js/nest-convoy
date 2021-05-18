@@ -1,8 +1,6 @@
-import type { Builder } from '@nest-convoy/common';
-import { Type } from '@nestjs/common';
+import { Builder, Type } from '@nest-convoy/common';
 
 import { AggregateRoot } from '../aggregate-root';
-
 import { ConfigurableEventSchema } from './configurable-event-schema';
 import { AggregateSchemaVersionBuilder } from './aggregate-schema-version-builder';
 import {
@@ -12,7 +10,8 @@ import {
 } from './aggregate-schema-version';
 
 export class AggregateSchemaBuilder<AR extends AggregateRoot>
-  implements Builder<void> {
+  implements Builder<void>
+{
   private versions: readonly AggregateSchemaVersion[] = [];
 
   constructor(
@@ -22,8 +21,8 @@ export class AggregateSchemaBuilder<AR extends AggregateRoot>
 
   addVersion(
     version: number,
-    renames: readonly EventRename<any, any>[],
-    transforms: readonly EventTransform<any>[],
+    renames: readonly EventRename[],
+    transforms: readonly EventTransform[],
   ): void {
     this.versions = [
       ...this.versions,

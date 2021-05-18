@@ -19,14 +19,15 @@ export function AggregateDomainEventPublisher<AR extends AggregateRoot>(
 ): Type<AggregateDomainEventPublisher<AR>> {
   @Injectable()
   class AbstractAggregateDomainEventPublisher
-    implements AggregateDomainEventPublisher<AR> {
+    implements AggregateDomainEventPublisher<AR>
+  {
     constructor(private readonly domainEventPublisher: DomainEventPublisher) {}
 
     async publish<E extends readonly DomainEvent[]>(
       aggregate: AR,
       events: E,
     ): Promise<void> {
-      const id = getAggregateId(aggregate) || aggregate.id;
+      const id = getAggregateId(aggregate);
       if (!id) {
         throw new RuntimeException(`Missing @${AggregateId.name}()`);
       }

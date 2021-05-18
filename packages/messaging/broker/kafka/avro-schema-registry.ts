@@ -7,9 +7,7 @@ import {
 } from '@nestjs/common';
 import { DiscoveryService } from '@golevelup/nestjs-discovery';
 import { getClassSchema } from '@deepkit/type';
-import type { schema } from 'avsc';
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
-import type { EachMessagePayload } from 'kafkajs';
 
 import { Message, MessageHeaders } from '@nest-convoy/messaging';
 
@@ -20,6 +18,9 @@ import {
   AvroSchemaMetadata,
   createAvroSchema,
 } from './avro-schema';
+
+import type { EachMessagePayload } from 'kafkajs';
+import type { schema } from 'avsc';
 
 @Injectable()
 export class AvroSchemaRegistry implements OnModuleInit {
@@ -37,9 +38,10 @@ export class AvroSchemaRegistry implements OnModuleInit {
   private async createAvroSchemaRecords(): Promise<
     readonly [string, AvroSchemaMetadata][]
   > {
-    const providers = await this.discovery.providersWithMetaAtKey<AvroSchemaMetadata>(
-      AVRO_SCHEMA_METADATA,
-    );
+    const providers =
+      await this.discovery.providersWithMetaAtKey<AvroSchemaMetadata>(
+        AVRO_SCHEMA_METADATA,
+      );
 
     return providers.map(({ meta, discoveredClass: { dependencyType } }) => [
       dependencyType.name,

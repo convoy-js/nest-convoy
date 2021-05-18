@@ -1,17 +1,14 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
-
-import { OffsetStore, CdcMonitoringEntity } from './entities';
+import { OffsetStore, CdcMonitoring } from './entities';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature(
-      [CdcMonitoringEntity, OffsetStore],
-      NEST_CONVOY_CONNECTION,
-    ),
+    MikroOrmModule.forFeature({
+      entities: [CdcMonitoring, OffsetStore],
+    }),
   ],
-  exports: [TypeOrmModule],
+  exports: [MikroOrmModule],
 })
 export class ConvoyCdcModule {}

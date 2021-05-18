@@ -1,9 +1,10 @@
 import { Entity, JsonType, PrimaryKey, Property } from '@mikro-orm/core';
+import { uuid } from '@deepkit/type';
 
-@Entity({ tableName: 'saga_instance' })
-export class SagaInstanceEntity<Data = any> {
-  @PrimaryKey({ unique: true })
-  sagaId: string;
+@Entity()
+export class SagaInstance<Data = any> {
+  @PrimaryKey()
+  sagaId = uuid();
 
   @PrimaryKey()
   sagaType: string;

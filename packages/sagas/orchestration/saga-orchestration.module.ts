@@ -6,7 +6,7 @@ import { ConvoyCommandsProducerModule } from '@nest-convoy/commands';
 import { SagaCommonModule } from '@nest-convoy/sagas/common';
 import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
-import { SagaInstanceEntity, SagaInstanceParticipants } from './entities';
+import { SagaInstance, SagaInstanceParticipants } from './entities';
 import { SagaInstanceFactory } from './saga-instance-factory';
 import { SagaManagerFactory } from './saga-manager-factory';
 import { SagaCommandProducer } from './saga-command-producer';
@@ -19,7 +19,7 @@ import {
   imports: [
     SagaCommonModule,
     MikroOrmModule.forFeature({
-      entities: [SagaInstanceEntity, SagaInstanceParticipants],
+      entities: [SagaInstance, SagaInstanceParticipants],
     }),
     ConvoyCommandsProducerModule,
   ],

@@ -1,12 +1,11 @@
-import { AsyncLikeFn, Predicate } from '@nest-convoy/common';
-import { CommandWithDestination } from '@nest-convoy/commands/consumer';
-import { Command, CommandProvider } from '@nest-convoy/commands/common';
-
-import { CommandEndpoint } from './command-endpoint';
+import type { AsyncLikeFn, Predicate } from '@nest-convoy/common';
+import type { CommandWithDestination } from '@nest-convoy/commands/consumer';
+import type { Command, CommandProvider } from '@nest-convoy/commands/common';
+import type { CommandEndpoint } from './command-endpoint';
 
 export type Compensation<
   T,
-  C extends Command = Command | CommandWithDestination
+  C extends Command = Command | CommandWithDestination,
 > = AsyncLikeFn<[data: T], C>;
 
 export type WithEndpointArgs<Data, C extends Command> = [
@@ -17,7 +16,7 @@ export type WithEndpointArgs<Data, C extends Command> = [
 
 export type WithoutEndpointArgs<
   Data,
-  C extends Command | CommandWithDestination<C>
+  C extends Command | CommandWithDestination<C>,
 > = [CommandProvider<Data, C>, Predicate<Data>?];
 
 export type WithDestinationArgs<Data, C extends Command> = WithoutEndpointArgs<

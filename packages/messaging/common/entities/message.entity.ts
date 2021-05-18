@@ -6,10 +6,12 @@ import {
   Property,
 } from '@mikro-orm/core';
 
+import { ObjectLiteral } from '@nest-convoy/common';
+
 import { MessageHeaders, MessageHeadersType } from '../message-headers';
 
 @Entity({ tableName: 'message' })
-export class MessageEntity<P> {
+export class MessageEntity<P extends ObjectLiteral = ObjectLiteral> {
   @PrimaryKey()
   id: string;
 

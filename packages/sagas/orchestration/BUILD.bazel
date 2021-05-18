@@ -16,7 +16,7 @@ nest_library(
         "//packages/sagas/orchestration/entities",
         "@npm//@nestjs/core",
         "@npm//@nestjs/cqrs",
-        "@npm//@nestjs/typeorm",
-        "@npm//typeorm",
+        "@npm//@mikro-orm/nestjs",
+        "@npm//@mikro-orm/core",
     ],
 )

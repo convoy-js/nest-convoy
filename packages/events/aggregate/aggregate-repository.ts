@@ -1,15 +1,17 @@
 import { Inject, Type } from '@nestjs/common';
-import { firstValueFrom, from, Observable, of, throwError } from 'rxjs';
+import { firstValueFrom, from, of, throwError } from 'rxjs';
 import { map, retryWhen, take } from 'rxjs/operators';
 import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
 import { CircularDependencyException } from '@nestjs/core/errors/exceptions/circular-dependency.exception';
 import { plainToClass } from '@deepkit/type';
 
+import { Instance } from '@nest-convoy/common';
 import { Command, CommandProvider } from '@nest-convoy/commands/common';
 import { DomainEvent } from '@nest-convoy/events/common';
 
 import { EntityIdAndVersion, EventWithMetadata } from './interfaces';
 import { CommandProcessingAggregate } from './command-processing-aggregate';
+import { AggregateRoot } from './aggregate-root';
 import { Snapshot } from './snapshot';
 import { Aggregates } from './aggregates';
 import {
@@ -26,7 +28,6 @@ import {
   AggregateStoreCrud,
   AggregateCrudUpdateOptions,
 } from './crud';
-import { AggregateRoot } from './aggregate-root';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function getAggregateRepositoryToken<AR extends AggregateRoot>(
@@ -51,7 +52,7 @@ export class CommandOutcome<E extends readonly DomainEvent[]> {
 export function InjectAggregateRepository<
   AR extends CommandProcessingAggregate<AR, any>,
 >(aggregate: Type<AR>): PropertyDecorator {
-  return (target: object, key: string | symbol, index?: number) =>
+  return (target: Instance, key: string | symbol, index?: number) =>
     Inject(getAggregateRepositoryToken(aggregate))(target, key, index);
 }
 
@@ -59,7 +60,9 @@ export class AggregateRepository<
   AR extends CommandProcessingAggregate<AR, CT>,
   CT extends Command,
 > {
-  find = this.aggregateStore.find;
+  find: AggregateStoreCrud['find'] = this.aggregateStore.find.bind(
+    this.aggregateStore,
+  );
 
   constructor(
     private readonly aggregateType: Type<AR>,

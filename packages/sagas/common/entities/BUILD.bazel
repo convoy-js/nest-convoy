@@ -13,6 +13,6 @@ nest_library(
     ],
     deps = [
         "//packages/messaging/common",
-        "@npm//typeorm",
+        "@npm//@mikro-orm/core",
     ],
 )

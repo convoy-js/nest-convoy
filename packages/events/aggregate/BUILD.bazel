@@ -16,10 +16,9 @@ nest_library(
         "@npm//@deepkit/type",
         "@npm//@nestjs/core",
         "@npm//@nestjs/cqrs",
-        "@npm//@nestjs/typeorm",
-        "@npm//@types/uuid",
+        "@npm//@mikro-orm/nestjs",
+        "@npm//@mikro-orm/knex",
         "@npm//rxjs",
-        "@npm//typeorm",
-        "@npm//uuid",
+        "@npm//@mikro-orm/core",
     ],
 )

@@ -13,7 +13,7 @@ nest_library(
         "//packages/messaging/common",
         "//packages/sagas/common/entities",
         "@npm//@nestjs/cqrs",
-        "@npm//@nestjs/typeorm",
-        "@npm//typeorm",
+        "@npm//@mikro-orm/nestjs",
+        "@npm//@mikro-orm/core",
     ],
 )

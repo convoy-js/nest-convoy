@@ -2,6 +2,16 @@ import { Type } from '@nestjs/common';
 
 import { RuntimeException } from '@nest-convoy/common';
 
+export class AggregateException extends RuntimeException {}
+
+export class MissingCommandProcessingAggregateException<
+  E,
+> extends AggregateException {
+  constructor(readonly event: E) {
+    super();
+  }
+}
+
 export class MissingApplyMethodException<E> extends RuntimeException {
   constructor(readonly event: E) {
     super();

@@ -11,7 +11,7 @@ nest_library(
         "//packages/common",
         "@npm//@deepkit/type",
         "@npm//@nestjs/core",
-        "@npm//@nestjs/typeorm",
-        "@npm//typeorm",
+        "@npm//@mikro-orm/nestjs",
+        "@npm//@mikro-orm/core",
     ],
 )

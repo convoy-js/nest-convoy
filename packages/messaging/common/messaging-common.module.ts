@@ -1,19 +1,16 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 
 import { ConvoyChannelMapping } from './channel-mapping';
 import { MessageEntity, ReceivedMessages } from './entities';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature(
-      [MessageEntity, ReceivedMessages],
-      NEST_CONVOY_CONNECTION,
-    ),
+    MikroOrmModule.forFeature({
+      entities: [MessageEntity, ReceivedMessages],
+    }),
   ],
   providers: [ConvoyChannelMapping],
-  exports: [ConvoyChannelMapping, TypeOrmModule],
+  exports: [ConvoyChannelMapping, MikroOrmModule],
 })
 export class ConvoyMessagingCommonModule {}

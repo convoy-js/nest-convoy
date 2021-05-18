@@ -1,9 +1,6 @@
-import { Type } from '@nestjs/common';
-
-import { Message } from '@nest-convoy/messaging/common';
-import { AsyncLike, AsyncLikeFn } from '@nest-convoy/common';
-
-import { StepOutcome } from './step-outcome';
+import type { Type, AsyncLike, AsyncLikeFn } from '@nest-convoy/common';
+import type { Message } from '@nest-convoy/messaging/common';
+import type { StepOutcome } from './step-outcome';
 
 // T should be a registered Event?
 export type SagaStepReplyHandler<Data, R = unknown> = AsyncLikeFn<

@@ -1,4 +1,10 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  VersionColumn,
+} from 'typeorm';
 import {
   LineItemQuantityChange,
   Money,
@@ -8,6 +14,7 @@ import {
 import {
   AggregateId,
   AggregateRoot,
+  AggregateVersion,
   ResultWithDomainEvents,
 } from '@nest-convoy/core';
 
@@ -67,6 +74,10 @@ export class Order extends AggregateRoot<Order> {
 
   @Column(() => Money)
   minimum = new Money(20);
+
+  @VersionColumn()
+  @AggregateVersion()
+  version: number;
 
   cancel(): [] {
     switch (this.state) {

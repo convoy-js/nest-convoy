@@ -1,8 +1,6 @@
-import { Instance } from '@nest-convoy/common';
-
 import { DestinationAndResource } from './destination-and-resource';
 
-export class SagaInstance<Data = any> {
+export class NestSagaInstance<Data = any> {
   constructor(
     public sagaType: string,
     // TODO: This is auto generated

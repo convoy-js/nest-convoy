@@ -1,5 +1,4 @@
-import { Type } from '@nestjs/common';
-import { ObjectLiteral } from '@nest-convoy/common';
+import { Instance, Type, ObjectLiteral } from '@nest-convoy/common';
 
 import { AggregateRoot } from './aggregate-root';
 
@@ -15,7 +14,7 @@ export interface EventTypeAndData<E>
   readonly eventData: ObjectLiteral;
 }
 
-export interface EventWithMetadata<E> {
+export interface EventWithMetadata<E extends Instance> {
   readonly event: E;
   readonly eventId: string;
   readonly metadata?: EventMetadata;

@@ -95,8 +95,10 @@ export class KafkaMessageConsumer
           );
         }
         const message = await this.message.from(payload);
-        await new Promise(resolve =>
-          this.storage.run(this.orm.em.fork(true, true), resolve),
+        console.log(
+          await new Promise(resolve =>
+            this.storage.run(this.orm.em.fork(true, true), resolve),
+          ),
         );
 
         await processor.process(message, payload);

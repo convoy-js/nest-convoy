@@ -1,12 +1,13 @@
 import { Property, Entity, PrimaryKey, JsonType } from '@mikro-orm/core';
 
+import { ObjectLiteral } from '@nest-convoy/common';
 import {
   MessageHeaders,
   MessageHeadersType,
 } from '@nest-convoy/messaging/common';
 
 @Entity()
-export class SagaStash<P = Record<string, unknown>> {
+export class SagaStash<P = ObjectLiteral> {
   @PrimaryKey()
   messageId: string;
 
@@ -25,7 +26,7 @@ export class SagaStash<P = Record<string, unknown>> {
   messageHeaders: MessageHeaders;
 
   @Property({ type: JsonType })
-  messagePayload: object;
+  messagePayload: P;
 
   @Property({ version: true })
   version: number;

@@ -5,6 +5,8 @@ import {
   ValidationFailed,
 } from '@deepkit/type';
 
+import { ObjectLiteral } from '@nest-convoy/common';
+
 import { MissingMessageHeaderException } from './exceptions';
 import { MessageHeaders } from './message-headers';
 
@@ -40,7 +42,7 @@ export class Message {
     });
   }
 
-  setPayload(payload: object): this {
+  setPayload(payload: ObjectLiteral): this {
     this.payload = payload;
     return this;
   }
@@ -51,7 +53,7 @@ export class Message {
       : this.payload;
   }
 
-  getPayload(): object {
+  getPayload(): ObjectLiteral {
     return this.payload;
   }
 

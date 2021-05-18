@@ -24,7 +24,7 @@ export function SnapshotStrategy<AR extends AggregateRoot, S extends Snapshot>(
 
 export interface NestSnapshotStrategy<
   AR extends AggregateRoot,
-  S extends Snapshot
+  S extends Snapshot,
 > {
   possibleSnapshot(
     aggregate: AR,

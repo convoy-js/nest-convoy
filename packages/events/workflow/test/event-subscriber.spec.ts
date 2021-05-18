@@ -1,8 +1,9 @@
-import { EventSubscriber } from '../event-subscriber';
-import { CommandProcessingAggregate } from '@nest-convoy/events/aggregate';
-import { Entity } from 'typeorm';
-import { OnEvent } from '@nest-convoy/core';
+import { Entity } from '@mikro-orm/core';
 
+import { CommandProcessingAggregate } from '@nest-convoy/events/aggregate';
+import { OnEvent, ProcessCommand } from '@nest-convoy/core';
+
+import { EventSubscriber } from '../event-subscriber';
 import { EventAggregate } from '../event-aggregate';
 import { EventHandlerContext } from '../event-handler-context';
 
@@ -17,5 +18,7 @@ class AccountCreatedEvent extends AccountEvent {}
 @EventSubscriber()
 class AccountEventHandler {
   @OnEvent(AccountCreatedEvent)
-  accountCreated(ctx: EventHandlerContext<AccountCreatedEvent>) {}
+  accountCreated(ctx: EventHandlerContext<AccountCreatedEvent>) {
+    ctx.update();
+  }
 }

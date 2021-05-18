@@ -1,6 +1,6 @@
 import { Injectable, Type } from '@nestjs/common';
 
-import { hashCode } from '@nest-convoy/common';
+import { hashCode, increment } from '@nest-convoy/common';
 
 import { AggregateCrudAccess } from './aggregate-crud-access';
 import { LoadedEvents } from '../loaded-events';
@@ -109,12 +109,13 @@ export class Subscription {
 @Injectable()
 export class AggregateEventsCrud
   extends DatabaseAggregateCrud
-  implements AggregateEvents {
+  implements AggregateEvents
+{
   private readonly aggregateSubscriptions = new Map<
     string,
     Set<Subscription>
   >();
-  private eventOffset = 0;
+  private eventOffset = BigInt(0);
 
   async publish<AR extends AggregateRoot>({
     eventsWithIds,
@@ -132,6 +133,11 @@ export class AggregateEventsCrud
           metadata,
         } of eventsWithIds) {
           if (subscription.isInterestedIn(aggregateType.name, eventType)) {
+            // TODO: Fix eventOffset
+            this.eventOffset = increment(this.eventOffset);
+            // TODO: Fix partition
+            const partition = Math.abs(hashCode(aggregateId) % 8);
+
             await subscription.handler(
               new SerializedEvent(
                 eventId,
@@ -139,9 +145,8 @@ export class AggregateEventsCrud
                 aggregateType,
                 eventData,
                 eventType,
-                hashCode(aggregateId) % 8,
-                // TODO: Fix this.eventOffset++,
-                BigInt(1),
+                partition,
+                this.eventOffset,
                 new EventContext(eventId),
                 metadata,
               ),

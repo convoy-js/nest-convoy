@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 
 import { AggregateSnapshotModule } from '../snapshot';
 import { AggregateCrudMapping } from './aggregate-crud-mapping';
@@ -11,7 +11,9 @@ import { AggregateCrudAccess } from './aggregate-crud-access';
 @Module({
   imports: [
     AggregateSnapshotModule,
-    TypeOrmModule.forFeature([Entities, Events, Snapshots]),
+    MikroOrmModule.forFeature({
+      entities: [Entities, Events, Snapshots],
+    }),
   ],
   providers: [
     AggregateCrudMapping,

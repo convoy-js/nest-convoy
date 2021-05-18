@@ -59,10 +59,11 @@ export class EventDispatcherInitializer implements OnModuleInit {
       p => p.discoveredClass.name,
     );
 
-    const eventHandlerMethods = await this.discovery.providerMethodsWithMetaAtKey(
-      DOMAIN_EVENT_HANDLER,
-      item => eventSubscriberNames.includes(item.name),
-    );
+    const eventHandlerMethods =
+      await this.discovery.providerMethodsWithMetaAtKey(
+        DOMAIN_EVENT_HANDLER,
+        item => eventSubscriberNames.includes(item.name),
+      );
 
     await Promise.all(
       eventSubscribers.map(async es => {

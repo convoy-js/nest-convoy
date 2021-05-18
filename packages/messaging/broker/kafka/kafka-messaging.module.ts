@@ -1,5 +1,5 @@
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
-import type { ConsumerConfig, KafkaConfig, ProducerConfig } from 'kafkajs';
+import { ConsumerConfig, KafkaConfig, ProducerConfig } from 'kafkajs';
 import { DiscoveryModule } from '@golevelup/nestjs-discovery';
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
 
@@ -7,7 +7,7 @@ import { DatabaseMessageProducer } from '@nest-convoy/messaging/broker/database'
 import { ConvoyCdcModule } from '@nest-convoy/messaging/broker/cdc';
 import {
   ConvoyCoreModule,
-  ConvoyTypeOrmOptions,
+  ConvoyMikroOrmOptions,
 } from '@nest-convoy/core/core.module';
 import {
   ConvoyMessagingConsumerModule,
@@ -28,14 +28,14 @@ export interface ConvoyKafkaMessagingBrokerModuleOptions {
   readonly producer?: Omit<ProducerConfig, 'idempotent'>;
   readonly schemaRegistry?: SchemaRegistry;
   readonly messageProducerProvider?: Omit<Provider<MessageProducer>, 'provide'>;
-  readonly database: ConvoyTypeOrmOptions;
+  readonly database: ConvoyMikroOrmOptions;
 }
 
 @Global()
 @Module({})
 export class ConvoyKafkaCdcBrokerModule {
   static register(
-    config: Omit<KafkaConfig, 'logCreator'>,
+    kafkaConfig: Omit<KafkaConfig, 'logCreator'>,
     options: Omit<
       ConvoyKafkaMessagingBrokerModuleOptions,
       'messageProducerProvider'
@@ -44,7 +44,7 @@ export class ConvoyKafkaCdcBrokerModule {
     return {
       module: ConvoyKafkaCdcBrokerModule,
       imports: [
-        ConvoyKafkaBrokerModule.register(config, {
+        ConvoyKafkaBrokerModule.register(kafkaConfig, {
           ...options,
           messageProducerProvider: {
             useClass: DatabaseMessageProducer,
@@ -60,7 +60,7 @@ export class ConvoyKafkaCdcBrokerModule {
 @Module({})
 export class ConvoyKafkaBrokerModule {
   static register(
-    config: Omit<KafkaConfig, 'logCreator'>,
+    kafkaConfig: Omit<KafkaConfig, 'logCreator'>,
     {
       database,
       schemaRegistry,
@@ -89,7 +89,7 @@ export class ConvoyKafkaBrokerModule {
       providers: [
         {
           provide: KAFKA_CONFIG,
-          useValue: config,
+          useValue: kafkaConfig,
         },
         {
           provide: KAFKA_SCHEMA_REGISTRY,

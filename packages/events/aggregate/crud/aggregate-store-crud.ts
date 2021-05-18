@@ -46,9 +46,8 @@ export class AggregateStoreCrud {
     aggregateType: Type<AR>,
     eventMetadata: EventMetadata = {},
   ): EventMetadata {
-    const schemaMetadata = this.eventSchemaManager.currentSchemaMetadata(
-      aggregateType,
-    );
+    const schemaMetadata =
+      this.eventSchemaManager.currentSchemaMetadata(aggregateType);
 
     return schemaMetadata
       ? { ...schemaMetadata, ...eventMetadata }
@@ -119,7 +118,7 @@ export class AggregateStoreCrud {
   async update<
     AR extends AggregateRoot,
     E extends readonly any[],
-    S extends Snapshot
+    S extends Snapshot,
   >(
     aggregate: AR,
     { entityVersion, entityId }: EntityIdAndVersion,

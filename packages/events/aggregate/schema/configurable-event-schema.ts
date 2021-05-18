@@ -1,7 +1,6 @@
 import { Injectable, Type } from '@nestjs/common';
 
 import { AggregateRoot } from '../aggregate-root';
-
 import { AggregateSchemaBuilder } from './aggregate-schema-builder';
 import { AggregateSchemaVersion } from './aggregate-schema-version';
 import { AggregateSchema } from './aggregate-schema';

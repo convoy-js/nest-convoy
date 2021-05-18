@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { DiscoveryService, withMetaAtKey } from '@golevelup/nestjs-discovery';
+import { uuid } from '@deepkit/type';
 
 import { RuntimeException } from '@nest-convoy/common';
 import {
@@ -24,7 +24,7 @@ export abstract class MessageProducer {
     isEvent: boolean,
   ): Promise<void>;
   generateMessageId(): string {
-    return uuidv4();
+    return uuid();
   }
 }
 

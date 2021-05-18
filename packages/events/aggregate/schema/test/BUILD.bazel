@@ -5,8 +5,6 @@ nest_test(
     srcs = glob(["*.ts"]),
     deps = [
         "//packages/events/aggregate",
-        "@npm//@types/uuid",
         "@npm//@deepkit/type",
-        "@npm//uuid"
     ],
 )

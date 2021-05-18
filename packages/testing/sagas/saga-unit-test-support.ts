@@ -1,13 +1,13 @@
 import { forwardRef, Inject, Injectable, Module } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { ModuleRef } from '@nestjs/core';
+import { uuid } from '@deepkit/type';
 
 import { Instance, Reply } from '@nest-convoy/common';
 import { SagaManager, NestSaga } from '@nest-convoy/sagas';
 import { SagaLockManager, SagaReplyHeaders } from '@nest-convoy/sagas/common';
 import {
   SagaCommandProducer,
-  SagaInstance,
+  NestSagaInstance,
   SagaInstanceRepository,
 } from '@nest-convoy/sagas/orchestration';
 import {
@@ -40,13 +40,13 @@ export class SagaTestInstanceRepository extends SagaInstanceRepository {
     return this.moduleRef.get(SagaUnitTestSupport);
   }
 
-  async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
-    sagaInstance.sagaId = uuidv4();
+  async save(sagaInstance: NestSagaInstance): Promise<NestSagaInstance> {
+    sagaInstance.sagaId = uuid();
     this.sagaUnitTestSupport.sagaInstance = sagaInstance;
     return sagaInstance;
   }
 
-  async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
+  async find(sagaType: string, sagaId: string): Promise<NestSagaInstance> {
     if (sagaId !== this.sagaUnitTestSupport.sagaInstance.sagaId) {
       throw new Error('some stuff');
     }
@@ -54,7 +54,7 @@ export class SagaTestInstanceRepository extends SagaInstanceRepository {
     return this.sagaUnitTestSupport.sagaInstance;
   }
 
-  async update(sagaInstance: SagaInstance): Promise<void> {
+  async update(sagaInstance: NestSagaInstance): Promise<void> {
     this.sagaUnitTestSupport.sagaInstance = sagaInstance;
   }
 }
@@ -72,7 +72,7 @@ export class SagaExpectCommandTest<Data> {
     private readonly sentCommandIdx: number,
     private readonly expects: SagaExpectationTest[],
     private readonly sagaManager: SagaManager<Data>,
-    private readonly sagaInstance: SagaInstance<Data>,
+    private readonly sagaInstance: NestSagaInstance<Data>,
   ) {}
 
   private async sendReply<T extends Instance>(
@@ -87,7 +87,7 @@ export class SagaExpectCommandTest<Data> {
       .withHeader(SagaReplyHeaders.REPLY_SAGA_ID, this.sagaInstance.sagaId)
       .build();
 
-    message.setHeader(Message.ID, uuidv4());
+    message.setHeader(Message.ID, uuid());
     await this.sagaManager.handleMessage(message);
   }
 
@@ -148,7 +148,7 @@ export class SagaUnitTestSupport<Data> {
   private sagaManager: SagaManager<Data>;
   private createException?: Error;
   public readonly sentCommands: MessageWithDestination[] = [];
-  public sagaInstance: SagaInstance;
+  public sagaInstance: NestSagaInstance;
 
   constructor(
     private readonly messageConsumer: ConvoyMessageConsumer,
@@ -259,7 +259,7 @@ export class TestMessageProducer {
   ) {}
 
   async send(destination: string, message: Message): Promise<void> {
-    message.setHeader(Message.ID, uuidv4());
+    message.setHeader(Message.ID, uuid());
     this.sagaUnitTestSupport.sentCommands.push(
       new MessageWithDestination(destination, message),
     );

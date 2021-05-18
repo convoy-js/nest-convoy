@@ -16,7 +16,7 @@ export interface AggregateCrudSaveOptions {
 
 export interface AggregateCrudUpdateOptions<
   AR extends AggregateRoot,
-  S extends Snapshot
+  S extends Snapshot,
 > extends Omit<AggregateCrudSaveOptions, 'entityId'> {
   // readonly snapshot?: SerializedSnapshot<S>;
   readonly snapshot?: S;

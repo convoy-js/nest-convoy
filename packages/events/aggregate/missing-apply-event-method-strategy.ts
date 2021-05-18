@@ -9,7 +9,8 @@ export const MISSING_APPLY_EVENT_METHOD_STRATEGY = Symbol(
 
 @Injectable()
 export class DefaultMissingApplyEventMethodStrategy<AR extends AggregateRoot>
-  implements MissingApplyEventMethodStrategy<AR> {
+  implements MissingApplyEventMethodStrategy<AR>
+{
   supports<E>(aggregate: AR, error: MissingApplyMethodException<E>): boolean {
     return true;
   }
@@ -21,8 +22,10 @@ export class DefaultMissingApplyEventMethodStrategy<AR extends AggregateRoot>
 
 @Injectable()
 export class CompositeMissingApplyEventMethodStrategy<AR extends AggregateRoot>
-  implements MissingApplyEventMethodStrategy<AR> {
-  private readonly defaultStrategy = new DefaultMissingApplyEventMethodStrategy();
+  implements MissingApplyEventMethodStrategy<AR>
+{
+  private readonly defaultStrategy =
+    new DefaultMissingApplyEventMethodStrategy();
 
   constructor(
     private readonly strategies: MissingApplyEventMethodStrategy<AR>[] = [],

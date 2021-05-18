@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository, LockMode, MikroORM } from '@mikro-orm/core';
+import { EntityRepository, LockMode, MikroORM, wrap } from '@mikro-orm/core';
 
 import { Message } from '@nest-convoy/messaging/common';
 import { RuntimeException } from '@nest-convoy/common';
@@ -94,7 +94,8 @@ export class SagaDatabaseLockManager extends SagaLockManager {
       sagaId,
       target,
     });
-    await this.sagaStashRepository.persistAndFlush(sagaStash);
+    // await this.sagaStashRepository.persistAndFlush(sagaStash);
+    this.sagaStashRepository.persist(sagaStash);
   }
 
   async unlock(sagaId: string, target: string): Promise<Message | void> {
@@ -118,8 +119,10 @@ export class SagaDatabaseLockManager extends SagaLockManager {
         return;
       }
 
-      owningSaga.sagaType = stashedMessage.sagaType;
-      owningSaga.sagaId = stashedMessage.sagaId;
+      wrap(owningSaga).assign({
+        sagaType: stashedMessage.sagaType,
+        sagaId: stashedMessage.sagaId,
+      });
       em.persist(owningSaga);
 
       em.remove(stashedMessage);

@@ -1,6 +1,5 @@
-import { AsyncLike } from '@nest-convoy/common';
-
-import { SagaDefinition } from './saga-definition';
+import type { AsyncLike } from '@nest-convoy/common';
+import type { SagaDefinition } from './saga-definition';
 
 export type SagaLifecycleHooks<Data> = Partial<
   OnSagaRolledBack<Data> & OnSagaCompletedSuccessfully<Data> & OnStarting<Data>

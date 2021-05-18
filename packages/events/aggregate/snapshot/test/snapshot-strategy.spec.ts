@@ -57,7 +57,8 @@ export class Account extends CommandProcessingAggregate<
 
 @SnapshotStrategy(Account, AccountSnapshot)
 export class AccountSnapshotStrategy
-  implements NestSnapshotStrategy<Account, AccountSnapshot> {
+  implements NestSnapshotStrategy<Account, AccountSnapshot>
+{
   constructor(private readonly aggregates: Aggregates) {}
 
   possibleSnapshot(

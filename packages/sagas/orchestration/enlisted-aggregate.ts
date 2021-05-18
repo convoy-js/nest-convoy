@@ -1,8 +1,5 @@
-import { Type } from '@nestjs/common';
+import type { Type } from '@nestjs/common';
 
 export class EnlistedAggregate {
-  constructor(
-    readonly aggregateType: Type<object>,
-    readonly aggregateId: string,
-  ) {}
+  constructor(readonly aggregateType: Type, readonly aggregateId: string) {}
 }
