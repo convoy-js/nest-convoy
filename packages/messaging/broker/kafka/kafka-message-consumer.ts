@@ -1,17 +1,18 @@
+import { AsyncLocalStorage } from 'async_hooks';
+import { EntityManager, MikroORM } from '@mikro-orm/core';
 import {
+  Inject,
   Injectable,
   Logger,
   OnApplicationBootstrap,
   OnApplicationShutdown,
 } from '@nestjs/common';
 
-import { Consumer, RuntimeException } from '@nest-convoy/common';
+import { MessageConsumer, MessageSubscription } from '@nest-convoy/messaging';
 import {
-  MessageHandler,
-  MessageConsumer,
-  MessageSubscription,
-  Message,
-} from '@nest-convoy/messaging';
+  NEST_CONVOY_ASYNC_LOCAL_STORAGE,
+  RuntimeException,
+} from '@nest-convoy/common';
 
 import { Kafka } from './kafka';
 import { KafkaMessageBuilder } from './kafka-message-builder';
@@ -21,13 +22,17 @@ import { KafkaMessageHandler } from './kafka-message';
 @Injectable()
 export class KafkaMessageConsumer
   extends MessageConsumer
-  implements OnApplicationBootstrap, OnApplicationShutdown {
+  implements OnApplicationBootstrap, OnApplicationShutdown
+{
   private readonly logger = new Logger(this.constructor.name);
   private readonly processors = new Map<string, KafkaMessageProcessor>();
 
   constructor(
     private readonly kafka: Kafka,
     private readonly message: KafkaMessageBuilder,
+    private readonly orm: MikroORM,
+    @Inject(NEST_CONVOY_ASYNC_LOCAL_STORAGE)
+    private readonly storage: AsyncLocalStorage<EntityManager>,
   ) {
     super();
   }
@@ -90,6 +95,9 @@ export class KafkaMessageConsumer
           );
         }
         const message = await this.message.from(payload);
+        await new Promise(resolve =>
+          this.storage.run(this.orm.em.fork(true, true), resolve),
+        );
 
         await processor.process(message, payload);
         await this.maybeCommitOffsets(processor);

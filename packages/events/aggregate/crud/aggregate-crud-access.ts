@@ -1,11 +1,10 @@
 import { Type } from '@nestjs/common';
-import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository, MikroORM, QueryOrder } from '@mikro-orm/core';
+import { AbstractSqlDriver } from '@mikro-orm/knex';
 import { v4 as uuidv4 } from 'uuid';
 
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
-
-import { EntitiesEntity, EventsEntity, SnapshotsEntity } from '../entities';
+import { Entities, Events, Snapshots } from '../entities';
 import { AggregateRoot } from '../aggregate-root';
 import { SaveUpdateResult } from '../save-update-result';
 import { LoadedEvents } from '../loaded-events';
@@ -34,14 +33,13 @@ import {
 
 export class AggregateCrudAccess {
   constructor(
-    @InjectRepository(EntitiesEntity)
-    private readonly entities: Repository<EntitiesEntity>,
-    @InjectRepository(EventsEntity)
-    private readonly events: Repository<EventsEntity>,
-    @InjectRepository(EventsEntity)
-    private readonly snapshots: Repository<SnapshotsEntity>,
-    @InjectConnection(NEST_CONVOY_CONNECTION)
-    private readonly connection: Connection,
+    private readonly orm: MikroORM<AbstractSqlDriver>,
+    @InjectRepository(Entities)
+    private readonly entities: EntityRepository<Entities>,
+    @InjectRepository(Events)
+    private readonly events: EntityRepository<Events>,
+    @InjectRepository(Snapshots)
+    private readonly snapshots: EntityRepository<Snapshots>,
   ) {}
 
   private toEventId(
@@ -63,27 +61,27 @@ export class AggregateCrudAccess {
     const entityVersion = eventsWithIds[eventsWithIds.length - 1].eventId;
     const entityType = aggregate.constructor.name;
 
-    const entity = await this.entities.save({
+    const entity = this.entities.create({
       type: entityType,
       id: entityId,
       version: entityVersion,
     });
+    this.entities.persist(entity);
 
-    await this.connection.transaction(manager =>
-      Promise.all(
-        eventsWithIds.map(event =>
-          manager.create(EventsEntity, {
-            eventId: event.eventId,
-            eventData: event.eventData,
-            eventType: event.eventType.name,
-            triggeringEvent: options?.triggeringEvent?.eventToken,
-            metadata: event.metadata,
-            entityType,
-            entityId,
-          }),
-        ),
-      ),
-    );
+    await this.orm.em.transactional(async em => {
+      eventsWithIds.forEach(event => {
+        const entity = this.events.create({
+          eventId: event.eventId,
+          eventData: event.eventData,
+          eventType: event.eventType.name,
+          triggeringEvent: options?.triggeringEvent?.eventToken,
+          metadata: event.metadata,
+          entityType,
+          entityId,
+        });
+        em.persist(entity);
+      });
+    });
 
     return new SaveUpdateResult(
       {
@@ -106,13 +104,11 @@ export class AggregateCrudAccess {
   ): Promise<LoadedEvents> {
     const entityType = aggregateType.name;
     const snapshot = await this.snapshots.findOne({
-      where: {
-        entityType,
-        entityId,
-      },
+      entityType,
+      entityId,
     });
 
-    let events: readonly EventsEntity<any, any>[];
+    let events: readonly Events<any, any>[];
     let serializedSnapshot: SerializedSnapshotWithVersion<any> | undefined;
 
     if (snapshot) {
@@ -123,27 +119,25 @@ export class AggregateCrudAccess {
         ),
         snapshot.entityVersion,
       );
-      events = await this.events
-        .createQueryBuilder()
-        .where(
-          'entityType = :entityType and entityId = :entityId and eventId > :eventId',
-        )
-        .orderBy('eventId', 'ASC')
-        .setParameters({
-          eventId: snapshot.entityVersion,
+
+      events = await this.orm.em
+        .createQueryBuilder(Events)
+        .where({
           entityType,
           entityId,
+          eventId: {
+            $gt: snapshot.entityVersion,
+          },
         })
-        .getMany();
+        .orderBy({
+          eventId: QueryOrder.ASC,
+        })
+        .getResult();
     } else {
-      events = await this.events
-        .createQueryBuilder()
-        .where('entityType = :entityType and entityId = :entityId')
-        .setParameters({
-          entityType,
-          entityId,
-        })
-        .getMany();
+      events = await this.events.find({
+        entityType,
+        entityId,
+      });
     }
 
     const eventsAndTriggers: readonly EventAndTrigger<any>[] = events.map(
@@ -185,59 +179,84 @@ export class AggregateCrudAccess {
     const updatedEntityVersion =
       eventsWithIds[eventsWithIds.length - 1].eventId;
 
-    const result = await this.connection
-      .createQueryBuilder()
-      .update(EntitiesEntity)
-      .set({
+    // TODO - check if it's correct
+    const result = await this.orm.em
+      .createQueryBuilder(Entities)
+      .where({
+        type: entityIdAndType.entityType.name,
+        id: entityIdAndType.entityId,
+        entityVersion,
+      })
+      .update({
         version: updatedEntityVersion,
         type: entityIdAndType.entityType.name,
         id: entityIdAndType.entityId,
       })
-      .where(
-        'id = :entityId AND type = :entityType AND version = :entityVersion',
-        {
-          ...entityIdAndType,
-          entityVersion,
-        },
-      )
-      .execute();
+      .getSingleResult();
 
-    if (result?.affected != 1) {
+    // const result = await this.connection
+    //   .createQueryBuilder()
+    //   .update(Entities)
+    //   .set({
+    //     version: updatedEntityVersion,
+    //     type: entityIdAndType.entityType.name,
+    //     id: entityIdAndType.entityId,
+    //   })
+    //   .where(
+    //     'id = :entityId AND type = :entityType AND version = :entityVersion',
+    //     {
+    //       ...entityIdAndType,
+    //       entityVersion,
+    //     },
+    //   )
+    //   .execute();
+
+    if (!result) {
       throw new OptimisticLockingException();
     }
 
     if (options?.snapshot) {
-      const previousSnapshot = await this.connection
-        .createQueryBuilder()
-        .select('*')
-        .from(SnapshotsEntity, 'user')
-        .where(
-          'snapshots.entityType = :entityType and snapshots.entityId = :entityId',
-        )
-        .orderBy('entityVersion', 'DESC')
-        .setParameters(entityIdAndType)
+      const previousSnapshot = await this.orm.em
+        .createQueryBuilder(Snapshots)
+        .where(entityIdAndType)
+        .orderBy({
+          entityVersion: QueryOrder.DESC,
+        })
         .limit(1)
-        .getOne();
+        .getSingleResult();
 
-      let oldEvents: readonly EventsEntity<any, any>[];
+      // const previousSnapshot = await this.connection
+      //   .createQueryBuilder()
+      //   .select('*')
+      //   .from(Snapshots, 'user')
+      //   .where(
+      //     'snapshots.entityType = :entityType and snapshots.entityId = :entityId',
+      //   )
+      //   .orderBy('entityVersion', 'DESC')
+      //   .setParameters(entityIdAndType)
+      //   .limit(1)
+      //   .getOne();
+
+      let oldEvents: readonly Events<any, any>[];
       if (previousSnapshot) {
-        oldEvents = await this.events
-          .createQueryBuilder()
-          .where(
-            'entityType = :entityType AND entityId = :entityId AND eventId > :eventId',
-          )
-          .orderBy('eventId', 'ASC')
-          .setParameters({
-            eventId: previousSnapshot.entityVersion,
-            ...entityIdAndType,
+        oldEvents = await this.orm.em
+          .createQueryBuilder(Events)
+          .where({
+            entityType: entityIdAndType.entityType.name,
+            entityId: entityIdAndType.entityId,
+            eventId: {
+              $gt: previousSnapshot.entityVersion,
+            },
           })
-          .getMany();
+          .orderBy({
+            eventId: QueryOrder.ASC,
+          })
+          .getResult();
       } else {
-        oldEvents = await this.events
-          .createQueryBuilder()
-          .where('entityType = :entityType and entityId = :entityId')
-          .setParameters(entityIdAndType)
-          .getMany();
+        oldEvents = await this.events.find({
+          entityType: entityIdAndType.entityType.name,
+          entityId: entityIdAndType.entityId,
+        });
       }
 
       const eventsAndTriggers: readonly EventAndTrigger<any>[] = oldEvents.map(
@@ -251,11 +270,11 @@ export class AggregateCrudAccess {
         }),
       );
 
-      const triggeringEvents = SnapshotTriggeringEvents.create(
-        eventsAndTriggers,
-      );
+      const triggeringEvents =
+        SnapshotTriggeringEvents.create(eventsAndTriggers);
 
-      await this.snapshots.save({
+      // persistAndFlush ?
+      this.snapshots.persist({
         entityId: entityIdAndType.entityId,
         entityType: entityIdAndType.entityType.name,
         entityVersion: updatedEntityVersion,
@@ -265,21 +284,21 @@ export class AggregateCrudAccess {
       });
     }
 
-    await this.connection.transaction(manager =>
-      Promise.all(
-        eventsWithIds.map(event =>
-          manager.create(EventsEntity, {
-            eventId: event.eventId,
-            eventData: event.eventData,
-            eventType: event.eventType.name,
-            triggeringEvent: options?.triggeringEvent?.eventToken,
-            metadata: event.metadata,
-            entityId: entityIdAndType.entityId,
-            entityType: entityIdAndType.entityType.name,
-          }),
-        ),
-      ),
-    );
+    await this.orm.em.transactional(async em => {
+      eventsWithIds.forEach(event => {
+        const entity = this.events.create({
+          eventId: event.eventId,
+          eventData: event.eventData,
+          eventType: event.eventType.name,
+          triggeringEvent: options?.triggeringEvent?.eventToken,
+          metadata: event.metadata,
+          entityId: entityIdAndType.entityId,
+          entityType: entityIdAndType.entityType.name,
+        });
+
+        em.persist(entity);
+      });
+    });
 
     return new SaveUpdateResult(
       {

@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { RuntimeException, NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { SagaInstance } from './saga-instance';
-import { SagaInstanceEntity, SagaInstanceParticipantsEntity } from './entities';
+import { SagaInstanceEntity, SagaInstanceParticipants } from './entities';
 import { DestinationAndResource } from './destination-and-resource';
 
 @Injectable()
@@ -35,8 +35,8 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
   constructor(
     @InjectRepository(SagaInstanceEntity, NEST_CONVOY_CONNECTION)
     private readonly sagaInstanceRepository: Repository<SagaInstanceEntity>,
-    @InjectRepository(SagaInstanceParticipantsEntity, NEST_CONVOY_CONNECTION)
-    private readonly sagaInstanceParticipantsRepository: Repository<SagaInstanceParticipantsEntity>,
+    @InjectRepository(SagaInstanceParticipants, NEST_CONVOY_CONNECTION)
+    private readonly sagaInstanceParticipantsRepository: Repository<SagaInstanceParticipants>,
   ) {
     super();
   }
@@ -49,7 +49,7 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     await this.sagaInstanceParticipantsRepository.manager.transaction(manager =>
       Promise.all(
         destinationsAndResources.map(dr =>
-          manager.create(SagaInstanceParticipantsEntity, {
+          manager.create(SagaInstanceParticipants, {
             sagaId,
             sagaType,
             ...dr,
@@ -63,12 +63,11 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     sagaType: string,
     sagaId: string,
   ): Promise<DestinationAndResource[]> {
-    const sagaInstanceParticipants = await this.sagaInstanceParticipantsRepository.find(
-      {
+    const sagaInstanceParticipants =
+      await this.sagaInstanceParticipantsRepository.find({
         sagaType,
         sagaId,
-      },
-    );
+      });
 
     return sagaInstanceParticipants.map(
       ({ destination, resource }) =>

@@ -1,19 +1,19 @@
-import { Entity, PrimaryColumn, VersionColumn } from 'typeorm';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
-@Entity('saga_instance_participants')
-export class SagaInstanceParticipantsEntity {
-  @PrimaryColumn({ name: 'saga_id' })
+@Entity()
+export class SagaInstanceParticipants {
+  @PrimaryKey()
   sagaId: string;
 
-  @PrimaryColumn({ name: 'saga_type' })
+  @PrimaryKey()
   sagaType: string;
 
-  @PrimaryColumn({ name: 'destination' })
+  @PrimaryKey()
   destination: string;
 
-  @PrimaryColumn({ name: 'resource' })
+  @PrimaryKey()
   resource: string;
 
-  @VersionColumn()
-  version: string;
+  @Property({ version: true })
+  version: number;
 }

@@ -1,40 +1,31 @@
-import {
-  PrimaryGeneratedColumn,
-  Column,
-  Entity,
-  PrimaryColumn,
-  VersionColumn,
-} from 'typeorm';
+import { Entity, JsonType, PrimaryKey, Property } from '@mikro-orm/core';
 
-@Entity('saga_instance')
+@Entity({ tableName: 'saga_instance' })
 export class SagaInstanceEntity<Data = any> {
-  @PrimaryGeneratedColumn({ name: 'saga_id' })
+  @PrimaryKey({ unique: true })
   sagaId: string;
 
-  @PrimaryColumn({ name: 'saga_type' })
+  @PrimaryKey()
   sagaType: string;
 
-  @Column({ name: 'state_name' })
+  @Property()
   stateName: string;
 
-  @Column({ name: 'compensating', default: false })
-  compensating: boolean;
+  @Property()
+  compensating = false;
 
-  @Column({ name: 'end_state', default: false })
-  endState: boolean;
+  @Property()
+  endState = false;
 
-  @Column({ name: 'saga_data_type' })
+  @Property()
   sagaDataType: string;
 
-  @Column({
-    name: 'saga_data',
-    type: 'json',
-  })
+  @Property({ type: JsonType })
   sagaData: Data;
 
-  @Column({ name: 'last_request_id', nullable: true })
+  @Property({ nullable: true })
   lastRequestId?: string;
 
-  @VersionColumn()
-  version: string;
+  @Property({ version: true })
+  version: number;
 }

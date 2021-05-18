@@ -1,13 +1,16 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryKey, PrimaryKeyType, Property } from '@mikro-orm/core';
+import { v4 as uuidv4 } from 'uuid';
 
-@Entity('entities')
-export class EntitiesEntity {
-  @PrimaryColumn()
-  id: string;
+@Entity({ tableName: 'entities' })
+export class Entities {
+  @PrimaryKey()
+  id = uuidv4();
 
-  @PrimaryColumn()
+  @PrimaryKey()
   type: string;
 
-  @Column()
+  [PrimaryKeyType]: [string, string];
+
+  @Property()
   version: string;
 }

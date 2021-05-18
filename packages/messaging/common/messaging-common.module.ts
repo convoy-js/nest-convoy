@@ -4,12 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { ConvoyChannelMapping } from './channel-mapping';
-import { MessageEntity, ReceivedMessagesEntity } from './entities';
+import { MessageEntity, ReceivedMessages } from './entities';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature(
-      [MessageEntity, ReceivedMessagesEntity],
+      [MessageEntity, ReceivedMessages],
       NEST_CONVOY_CONNECTION,
     ),
   ],

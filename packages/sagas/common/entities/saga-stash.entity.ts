@@ -1,41 +1,32 @@
-import { Column, Entity, PrimaryColumn, VersionColumn } from 'typeorm';
+import { Property, Entity, PrimaryKey, JsonType } from '@mikro-orm/core';
 
 import {
   MessageHeaders,
-  MessageRecordHeaders,
+  MessageHeadersType,
 } from '@nest-convoy/messaging/common';
 
-@Entity('saga_stash')
-export class SagaStashEntity<P = Record<string, unknown>> {
-  @PrimaryColumn({ name: 'message_id' })
+@Entity()
+export class SagaStash<P = Record<string, unknown>> {
+  @PrimaryKey()
   messageId: string;
 
-  @Column()
+  @Property()
   target: string;
 
-  @Column({ name: 'saga_type' })
+  @Property()
   sagaType: string;
 
-  @Column({ name: 'saga_id' })
+  @Property()
   sagaId: string;
 
-  @Column({
-    name: 'message_headers',
-    type: 'json',
-    transformer: {
-      to(headers: MessageRecordHeaders): MessageHeaders {
-        return MessageHeaders.fromRecord(headers);
-      },
-      from(headers: MessageHeaders): MessageRecordHeaders {
-        return headers.asRecord();
-      },
-    },
+  @Property({
+    type: MessageHeadersType,
   })
   messageHeaders: MessageHeaders;
 
-  @Column({ name: 'message_payload', type: 'json' })
+  @Property({ type: JsonType })
   messagePayload: object;
 
-  @VersionColumn()
-  version: string;
+  @Property({ version: true })
+  version: number;
 }

@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 import {
   Message,
-  ReceivedMessagesEntity,
+  ReceivedMessages,
   MessageHandler,
 } from '@nest-convoy/messaging/common';
 
@@ -15,8 +15,8 @@ import { DuplicateMessageDetector } from './duplicate-message-detector';
 @Injectable()
 export class DatabaseDuplicateMessageDetector extends DuplicateMessageDetector {
   constructor(
-    @InjectRepository(ReceivedMessagesEntity, NEST_CONVOY_CONNECTION)
-    private readonly receivedMessagesRepository: Repository<ReceivedMessagesEntity>,
+    @InjectRepository(ReceivedMessages, NEST_CONVOY_CONNECTION)
+    private readonly receivedMessagesRepository: Repository<ReceivedMessages>,
   ) {
     super();
   }

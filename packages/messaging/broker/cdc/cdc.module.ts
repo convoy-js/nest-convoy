@@ -3,12 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
-import { OffsetStoreEntity, CdcMonitoringEntity } from './entities';
+import { OffsetStore, CdcMonitoringEntity } from './entities';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature(
-      [CdcMonitoringEntity, OffsetStoreEntity],
+      [CdcMonitoringEntity, OffsetStore],
       NEST_CONVOY_CONNECTION,
     ),
   ],

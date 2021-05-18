@@ -1,16 +1,16 @@
-import { Column, Entity, PrimaryColumn, VersionColumn } from 'typeorm';
+import { Property, Entity, PrimaryKey } from '@mikro-orm/core';
 
-@Entity('saga_lock')
-export class SagaLockEntity {
-  @PrimaryColumn()
+@Entity()
+export class SagaLock {
+  @PrimaryKey()
   target: string;
 
-  @Column({ name: 'saga_id' })
+  @Property()
   sagaId: string;
 
-  @Column({ name: 'saga_type' })
+  @Property()
   sagaType: string;
 
-  @VersionColumn()
-  version: string;
+  @Property({ version: true })
+  version: number;
 }

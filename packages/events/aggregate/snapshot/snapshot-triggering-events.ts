@@ -1,21 +1,29 @@
+import { EntityProperty, Platform, Type } from '@mikro-orm/core';
+
 import { DuplicateTriggeringEventException } from '../exceptions';
 import { EventAndTrigger } from '../interfaces';
-
-// ????
 import { LoadedSnapshot } from './loaded-snapshot';
 import { Snapshot } from './snapshot-strategy';
 import { DecodedEtpoContext, EtpoEventContext } from './etpo-event-context';
 
-export class SnapshotTriggeringEvents {
-  private readonly topicPartitionOffsets = new Map<
-    string,
-    Map<number, bigint>
-  >();
-
-  constructor(triggeringEvents?: readonly string[]) {
-    triggeringEvents?.forEach(e => this.add(e));
+export class SnapshotTriggeringEventsType extends Type<
+  SnapshotTriggeringEvents,
+  readonly string[]
+> {
+  getColumnType(prop: EntityProperty, platform: Platform): string {
+    return platform.getArrayDeclarationSQL();
   }
 
+  convertToJSValue(value: readonly string[]): SnapshotTriggeringEvents {
+    return new SnapshotTriggeringEvents(value);
+  }
+
+  convertToDatabaseValue(value: SnapshotTriggeringEvents): readonly string[] {
+    return value.serialize();
+  }
+}
+
+export class SnapshotTriggeringEvents {
   static checkSnapshotForDuplicateEvent(
     previousSnapshot: LoadedSnapshot<any>,
     eventContext: EtpoEventContext,
@@ -51,6 +59,15 @@ export class SnapshotTriggeringEvents {
     return ste;
   }
 
+  private readonly topicPartitionOffsets = new Map<
+    string,
+    Map<number, bigint>
+  >();
+
+  constructor(triggeringEvents?: readonly string[]) {
+    triggeringEvents?.forEach(e => this.add(e));
+  }
+
   isEmpty(): boolean {
     return this.topicPartitionOffsets.size < 1;
   }
@@ -76,9 +93,8 @@ export class SnapshotTriggeringEvents {
         ? triggeringEvent.eventToken
         : triggeringEvent;
 
-    const { topic, partition, offset } = EtpoEventContext.decode(
-      triggeringEvent,
-    )!;
+    const { topic, partition, offset } =
+      EtpoEventContext.decode(triggeringEvent)!;
     const pos = this.topicPartitionOffsets.get(topic);
 
     if (pos == null) {

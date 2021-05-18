@@ -13,7 +13,7 @@ def pkg_npm(substitutions = {}, **kwargs):
 
 def eslint(tags = ["lint"], **kwargs):
     eslint_test(
-        config = "//:.eslintrc",
+        config = "//:.eslintrc.js",
         deps = [
             "@npm//eslint-plugin-import",
             "@npm//@typescript-eslint/eslint-plugin",
@@ -21,6 +21,7 @@ def eslint(tags = ["lint"], **kwargs):
             "@npm//eslint-config-prettier",
             "@npm//eslint-plugin-prettier",
             "//:tsconfig.json",
+            "//:.prettierrc.json",
         ],
         tags = tags,
         **kwargs
