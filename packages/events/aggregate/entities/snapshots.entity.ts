@@ -1,35 +1,37 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  PrimaryKey,
+  Entity,
+  Property,
+  PrimaryKeyType,
+  JsonType,
+} from '@mikro-orm/core';
 
-import { SnapshotTriggeringEvents } from '../snapshot';
+import {
+  SnapshotTriggeringEvents,
+  SnapshotTriggeringEventsType,
+} from '../snapshot';
 
-@Entity('snapshots')
-export class SnapshotsEntity {
-  @PrimaryColumn({ name: 'entity_type' })
+@Entity({ tableName: 'snapshots' })
+export class Snapshots {
+  @PrimaryKey()
   entityType: string;
 
-  @PrimaryColumn({ name: 'entity_id' })
+  @PrimaryKey()
   entityId: string;
 
-  @PrimaryColumn({ name: 'entity_version' })
+  @PrimaryKey()
   entityVersion: string;
 
-  @Column({ name: 'snapshot_type' })
+  [PrimaryKeyType]: [string, string, string];
+
+  @Property()
   snapshotType: string;
 
-  @Column({ name: 'snapshot_json', type: 'json' })
+  @Property({ type: JsonType })
   snapshotJson: Record<string, unknown>;
 
-  @Column({
-    name: 'triggering_events',
-    type: 'array',
-    transformer: {
-      from(ste: SnapshotTriggeringEvents): readonly string[] {
-        return ste.serialize();
-      },
-      to(triggeringEvents: readonly string[]): SnapshotTriggeringEvents {
-        return new SnapshotTriggeringEvents(triggeringEvents);
-      },
-    },
+  @Property({
+    type: SnapshotTriggeringEventsType,
   })
   triggeringEvents: SnapshotTriggeringEvents;
 }

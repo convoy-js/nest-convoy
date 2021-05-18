@@ -9,7 +9,7 @@ nest_library(
     module_name = "@nest-convoy/messaging/broker/cdc",
     deps = [
         "//packages/common",
-        "@npm//@nestjs/typeorm",
-        "@npm//typeorm",
+        "@npm//@mikro-orm/nestjs",
+        "@npm//@mikro-orm/core",
     ],
 )

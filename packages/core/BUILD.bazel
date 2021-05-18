@@ -17,7 +17,7 @@ nest_library(
         "//packages/sagas/participant",
         "@npm//@nestjs/core",
         "@npm//@nestjs/cqrs",
-        "@npm//@nestjs/typeorm",
+        "@npm//@mikro-orm/nestjs",
         "@npm//@types/uuid",
         "@npm//uuid",
     ],

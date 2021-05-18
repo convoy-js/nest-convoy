@@ -12,7 +12,7 @@ export const AGGREGATE_REPOSITORY_INTERCEPTOR = Symbol(
 export interface UpdateEventsAndOptions<
   AR extends AggregateRoot,
   S extends Snapshot,
-  E extends readonly any[]
+  E extends readonly any[],
 > {
   readonly events: E;
   readonly options?: AggregateCrudUpdateOptions<AR, S>;
@@ -25,7 +25,7 @@ export interface AggregateRepositoryInterceptor<
   transformUpdate<
     AR extends AggregateRoot,
     S extends Snapshot,
-    E extends readonly any[]
+    E extends readonly any[],
   >(
     aggregate: AR,
     ueo: UpdateEventsAndOptions<AR, S, E>,
@@ -33,7 +33,7 @@ export interface AggregateRepositoryInterceptor<
   handleException<
     AR extends AggregateRoot,
     S extends Snapshot,
-    E extends readonly any[]
+    E extends readonly any[],
   >(
     aggregate: AR,
     error?: RuntimeException,
@@ -43,11 +43,12 @@ export interface AggregateRepositoryInterceptor<
 
 @Injectable()
 export class DefaultAggregateRepositoryInterceptor
-  implements AggregateRepositoryInterceptor {
+  implements AggregateRepositoryInterceptor
+{
   handleException<
     AR extends AggregateRoot,
     S extends Snapshot,
-    E extends readonly any[]
+    E extends readonly any[],
   >(
     aggregate: AR,
     error?: RuntimeException,
@@ -59,7 +60,7 @@ export class DefaultAggregateRepositoryInterceptor
   transformUpdate<
     AR extends AggregateRoot,
     S extends Snapshot,
-    E extends readonly any[]
+    E extends readonly any[],
   >(
     aggregate: AR,
     ueo: UpdateEventsAndOptions<AR, S, E>,

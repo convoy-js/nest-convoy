@@ -6,7 +6,8 @@ package(default_visibility = [
 
 exports_files([
     "tsconfig.json",
-    ".eslintrc",
+    ".eslintrc.js",
+    ".prettierrc.json",
     "jest.config.js",
     ".npmrc",
 ])

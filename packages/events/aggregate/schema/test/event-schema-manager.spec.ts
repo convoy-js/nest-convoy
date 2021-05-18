@@ -1,17 +1,24 @@
 import { Test } from '@nestjs/testing';
 import { Type } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+import { uuid } from '@deepkit/type';
 
-import { EventIdTypeAndData, EventMetadata } from '../../interfaces';
+import { EventIdTypeAndData } from '../../interfaces';
 import { AggregateRoot } from '../../aggregate-root';
 import { AggregateSchemaModule } from '../aggregate-schema.module';
 import { ConfigurableEventSchema } from '../configurable-event-schema';
 import { EventUpcaster } from '../aggregate-schema-version';
 import { DefaultEventSchemaManager } from '../event-schema-manager';
+import { AggregateVersion } from '../../decorators';
 
-class Account extends AggregateRoot {}
+class Account extends AggregateRoot {
+  @AggregateVersion()
+  version: number;
+}
 
-class Order extends AggregateRoot {}
+class Order extends AggregateRoot {
+  @AggregateVersion()
+  version: number;
+}
 
 class SomeEventX {}
 
@@ -32,10 +39,10 @@ class Upcaster implements EventUpcaster {
 function makeEvents(
   eventType: Type,
   version?: number,
-): readonly EventIdTypeAndData<any>[] {
+): readonly [EventIdTypeAndData<any>] {
   return [
     {
-      eventId: uuidv4(),
+      eventId: uuid(),
       eventType,
       eventData: {},
       metadata:
@@ -62,8 +69,12 @@ describe('DefaultEventSchemaManager', () => {
     configuration = module.get(ConfigurableEventSchema);
     eventSchemaManager = module.get(DefaultEventSchemaManager);
 
-    upcasters = new Array(5).map(() => new Upcaster());
+    upcasters = Array.from({ length: 5 }).map(() => new Upcaster());
     unchanged = makeEvents(SomeEventX);
+
+    expect(upcasters).toStrictEqual(
+      expect.arrayContaining([expect.any(Upcaster)]),
+    );
 
     configuration
       .forAggregate(Account)
@@ -100,11 +111,8 @@ describe('DefaultEventSchemaManager', () => {
       Account,
       eventsForOldEvent,
     );
-    console.log(
-      (<any>eventSchemaManager).aggregateSchemaVersions.get(Account)!.versions,
-    );
+    expect(upcasters[0].upcast).toHaveBeenCalled();
     expect(upcastedEvents).toStrictEqual(eventsForOldEventOutcome);
-    expect(upcasters[0]).toHaveBeenCalled();
   });
 
   it('should upcast twice', () => {
@@ -117,9 +125,9 @@ describe('DefaultEventSchemaManager', () => {
       Account,
       eventsForOldEvent,
     );
+    expect(upcasters[1].upcast).toHaveBeenCalled();
+    expect(upcasters[2].upcast).toHaveBeenCalled();
     expect(upcastedEvents).toStrictEqual(eventsForOldEventOutcome);
-    expect(upcasters[1]).toHaveBeenCalled();
-    expect(upcasters[2]).toHaveBeenCalled();
   });
 
   it('should upcast once', () => {
@@ -132,7 +140,7 @@ describe('DefaultEventSchemaManager', () => {
       Account,
       eventsForOldEvent,
     );
+    expect(upcasters[3].upcast).toHaveBeenCalled();
     expect(upcastedEvents).toStrictEqual(eventsForOldEventOutcome);
-    expect(upcasters[3]).toHaveBeenCalled();
   });
 });

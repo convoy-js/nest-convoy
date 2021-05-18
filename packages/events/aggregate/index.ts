@@ -1,4 +1,9 @@
-export { ApplyEvent, ProcessCommand, AggregateId } from './decorators';
+export {
+  ApplyEvent,
+  ProcessCommand,
+  AggregateId,
+  AggregateVersion,
+} from './decorators';
 export {
   AggregateRepositoryInterceptor,
   DefaultAggregateRepositoryInterceptor,
@@ -15,3 +20,4 @@ export { CommandProcessingAggregate } from './command-processing-aggregate';
 export { AggregateSchema } from './schema/aggregate-schema';
 export { MissingApplyEventMethodStrategy } from './missing-apply-event-method-strategy';
 export { Aggregates } from './aggregates';
+export { AggregateException } from './exceptions';

@@ -1,12 +1,12 @@
-import { Command, CommandProvider } from '@nest-convoy/commands/common';
-import { Consumer, Predicate } from '@nest-convoy/common';
-
-import { SagaDefinition } from '../saga-definition';
 import { NestSagaDefinitionBuilder } from './nest-saga-definition-builder';
 import { InvokeParticipantStepBuilder } from './invoke-participant-step-builder';
 import { CommandEndpoint } from './command-endpoint';
 import { LocalStepBuilder } from './local-step-builder';
-import {
+
+import type { SagaDefinition } from '../saga-definition';
+import type { Consumer, Predicate } from '@nest-convoy/common';
+import type { Command, CommandProvider } from '@nest-convoy/commands/common';
+import type {
   Compensation,
   WithArgs,
   WithCompensationBuilder,

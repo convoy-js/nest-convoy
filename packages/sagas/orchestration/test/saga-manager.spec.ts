@@ -8,7 +8,7 @@ import {
   SagaActions,
   SagaActionsBuilder,
   SagaCommandProducer,
-  SagaInstance,
+  NestSagaInstance,
   SagaInstanceRepository,
   SagaManagerFactory,
   SagaDefinition,
@@ -45,7 +45,8 @@ class TestSaga
   implements
     OnStarting<TestSagaData>,
     OnSagaCompletedSuccessfully<TestSagaData>,
-    OnSagaRolledBack<TestSagaData> {
+    OnSagaRolledBack<TestSagaData>
+{
   readonly sagaDefinition: SagaDefinition<TestSagaData>;
 
   onSagaCompletedSuccessfully(sagaId: string, data: TestSagaData): void {}
@@ -88,7 +89,7 @@ describe('SagaManager', () => {
     .withHeader(ReplyMessageHeaders.REPLY_OUTCOME, CommandReplyOutcome.SUCCESS)
     .build();
 
-  let sagaInstance: SagaInstance<TestSagaData>;
+  let sagaInstance: NestSagaInstance<TestSagaData>;
   let sagaManager: SagaManager<TestSagaData>;
   let sagaMessageHandler: MessageHandler;
   let initialSagaData: TestSagaData;
@@ -100,8 +101,8 @@ describe('SagaManager', () => {
   let sagaCommandProducer: jest.Mocked<SagaCommandProducer>;
   let sagaInstanceRepository: SagaInstanceRepository;
 
-  function createExpectedSagaInstanceAfterSecondStep(): SagaInstance {
-    return new SagaInstance(
+  function createExpectedSagaInstanceAfterSecondStep(): NestSagaInstance {
+    return new NestSagaInstance(
       sagaType,
       sagaId,
       'state-B',
@@ -112,7 +113,7 @@ describe('SagaManager', () => {
   }
 
   function createExpectedSagaInstanceAfterFirstStep() {
-    return new SagaInstance(
+    return new NestSagaInstance(
       sagaType,
       sagaId,
       'state-A',
@@ -143,8 +144,8 @@ describe('SagaManager', () => {
   }
 
   function assertSagaInstanceEquals(
-    expectedSagaInstance: SagaInstance,
-    sagaInstance: SagaInstance,
+    expectedSagaInstance: NestSagaInstance,
+    sagaInstance: NestSagaInstance,
   ): void {
     expect(expectedSagaInstance).toMatchObject(sagaInstance);
   }
@@ -152,7 +153,8 @@ describe('SagaManager', () => {
   async function startSaga() {
     await sagaManager.subscribeToReplyChannel();
 
-    const expectedSagaInstanceAfterFirstStep = createExpectedSagaInstanceAfterFirstStep();
+    const expectedSagaInstanceAfterFirstStep =
+      createExpectedSagaInstanceAfterFirstStep();
 
     sagaCommandProducer.sendCommands.mockResolvedValue(requestId1);
 
@@ -187,7 +189,8 @@ describe('SagaManager', () => {
   }
 
   async function handleReply(compensating: boolean) {
-    const expectedSagaInstanceAfterSecondStep = createExpectedSagaInstanceAfterSecondStep();
+    const expectedSagaInstanceAfterSecondStep =
+      createExpectedSagaInstanceAfterSecondStep();
 
     const findSpy = jest
       .spyOn(sagaInstanceRepository, 'find')

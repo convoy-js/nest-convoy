@@ -1,9 +1,6 @@
-import { Injectable, Type } from '@nestjs/common';
+import { AsyncLikeFn, Type } from '@nest-convoy/common';
 
-import type { AsyncLikeFn } from '@nest-convoy/common';
-
-import { AggregateRoot } from './aggregate-root';
-import type { SerializedEvent } from './serialized-event';
+import { SerializedEvent } from './serialized-event';
 
 export class AggregatesAndEvents extends Map<
   string,

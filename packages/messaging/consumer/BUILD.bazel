@@ -10,7 +10,7 @@ nest_library(
     deps = [
         "//packages/common",
         "//packages/messaging/common",
-        "@npm//@nestjs/typeorm",
-        "@npm//typeorm",
+        "@npm//@mikro-orm/nestjs",
+        "@npm//@mikro-orm/core",
     ],
 )

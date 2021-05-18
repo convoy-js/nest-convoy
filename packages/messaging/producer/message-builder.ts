@@ -2,6 +2,7 @@ import { classToPlain } from '@deepkit/type';
 import { Type } from '@nestjs/common';
 
 import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
+import { Instance, ObjectLiteral } from '@nest-convoy/common';
 
 export class MessageBuilder {
   static withMessage(message: Message): MessageBuilder {
@@ -9,7 +10,7 @@ export class MessageBuilder {
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
-  static withPayload(payload: string | object = '{}'): MessageBuilder {
+  static withPayload(payload: string | ObjectLiteral = '{}'): MessageBuilder {
     if (payload instanceof Error) {
       payload = {
         name: payload.name,
@@ -18,18 +19,18 @@ export class MessageBuilder {
       };
     } else if (typeof payload !== 'string') {
       const plain = classToPlain(payload.constructor as Type, payload);
-      return new MessageBuilder(plain, payload as object);
+      return new MessageBuilder(plain, payload as ObjectLiteral);
     } else {
-      payload = JSON.parse(payload) as any;
+      payload = JSON.parse(payload) as ObjectLiteral;
     }
 
-    return new MessageBuilder(payload as object | Message);
+    return new MessageBuilder(payload as ObjectLiteral | Message);
   }
 
   protected headers = new MessageHeaders();
-  protected body: object;
+  protected body: ObjectLiteral;
 
-  constructor(messageOrPayload: object | Message, reference?: object) {
+  constructor(messageOrPayload: ObjectLiteral | Message, reference?: Instance) {
     if (messageOrPayload instanceof Message) {
       this.body = messageOrPayload.getPayload();
       this.headers = messageOrPayload.getHeaders();
@@ -42,7 +43,7 @@ export class MessageBuilder {
     }
   }
 
-  withReference(reference: object): this {
+  withReference(reference: Instance): this {
     this.headers.set(Message.TYPE, reference.constructor.name);
     return this;
   }

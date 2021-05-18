@@ -1,12 +1,11 @@
-import { Type } from '@nestjs/common';
-
-import { Builder } from '@nest-convoy/common';
-import { Command } from '@nest-convoy/commands/common';
-
 import { CommandEndpoint } from './command-endpoint';
 
+import type { Type, Builder } from '@nest-convoy/common';
+import type { Command } from '@nest-convoy/commands/common';
+
 export class CommandEndpointBuilder<C extends Command>
-  implements Builder<CommandEndpoint<C>> {
+  implements Builder<CommandEndpoint<C>>
+{
   static forCommand<C extends Command>(
     command: Type<C>,
   ): CommandEndpointBuilder<C> {

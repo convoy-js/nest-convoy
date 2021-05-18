@@ -1,15 +1,11 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { PrimaryKey, Entity, Property } from '@mikro-orm/core';
 
-@Entity('offset_store')
-export class OffsetStoreEntity {
-  @PrimaryColumn({
-    name: 'client_name',
-    length: 255,
-  })
+@Entity()
+export class OffsetStore {
+  @PrimaryKey({ length: 255 })
   clientName: string;
 
-  @Column({
-    name: 'serialized_offset',
+  @Property({
     nullable: true,
     length: 255,
   })

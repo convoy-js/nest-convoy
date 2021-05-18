@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository, MikroORM, wrap } from '@mikro-orm/core';
 
 import { RuntimeException, NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
-import { SagaInstance } from './saga-instance';
-import { SagaInstanceEntity, SagaInstanceParticipantsEntity } from './entities';
+import { NestSagaInstance } from './saga-instance';
+import { SagaInstance, SagaInstanceParticipants } from './entities';
 import { DestinationAndResource } from './destination-and-resource';
 
 @Injectable()
 export class SagaInstanceRepository {
-  private readonly store = new Map<string, SagaInstance>();
+  private readonly store = new Map<string, NestSagaInstance>();
 
-  async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
+  async find(sagaType: string, sagaId: string): Promise<NestSagaInstance> {
     return this.store.get(`${sagaType}-${sagaId}`)!;
   }
 
-  async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
+  async save(sagaInstance: NestSagaInstance): Promise<NestSagaInstance> {
     this.store.set(
       `${sagaInstance.sagaType}-${sagaInstance.sagaId}`,
       sagaInstance,
@@ -25,7 +25,7 @@ export class SagaInstanceRepository {
     return sagaInstance;
   }
 
-  async update(sagaInstance: SagaInstance): Promise<void> {
+  async update(sagaInstance: NestSagaInstance): Promise<void> {
     await this.save(sagaInstance);
   }
 }
@@ -33,10 +33,11 @@ export class SagaInstanceRepository {
 @Injectable()
 export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
   constructor(
-    @InjectRepository(SagaInstanceEntity, NEST_CONVOY_CONNECTION)
-    private readonly sagaInstanceRepository: Repository<SagaInstanceEntity>,
-    @InjectRepository(SagaInstanceParticipantsEntity, NEST_CONVOY_CONNECTION)
-    private readonly sagaInstanceParticipantsRepository: Repository<SagaInstanceParticipantsEntity>,
+    private readonly orm: MikroORM,
+    @InjectRepository(SagaInstance)
+    private readonly sagaInstanceRepository: EntityRepository<SagaInstance>,
+    @InjectRepository(SagaInstanceParticipants)
+    private readonly sagaInstanceParticipantsRepository: EntityRepository<SagaInstanceParticipants>,
   ) {
     super();
   }
@@ -45,30 +46,28 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     destinationsAndResources,
     sagaId,
     sagaType,
-  }: SagaInstance): Promise<void> {
-    await this.sagaInstanceParticipantsRepository.manager.transaction(manager =>
-      Promise.all(
-        destinationsAndResources.map(dr =>
-          manager.create(SagaInstanceParticipantsEntity, {
-            sagaId,
-            sagaType,
-            ...dr,
-          }),
-        ),
-      ),
-    );
+  }: NestSagaInstance): Promise<void> {
+    // await this.orm.em.transactional(async em => {
+    destinationsAndResources.forEach(dr => {
+      const entity = this.sagaInstanceParticipantsRepository.create({
+        sagaId,
+        sagaType,
+        ...dr,
+      });
+      this.sagaInstanceRepository.persist(entity);
+    });
+    // });
   }
 
   private async findDestinationsAndResources(
     sagaType: string,
     sagaId: string,
   ): Promise<DestinationAndResource[]> {
-    const sagaInstanceParticipants = await this.sagaInstanceParticipantsRepository.find(
-      {
+    const sagaInstanceParticipants =
+      await this.sagaInstanceParticipantsRepository.find({
         sagaType,
         sagaId,
-      },
-    );
+      });
 
     return sagaInstanceParticipants.map(
       ({ destination, resource }) =>
@@ -76,7 +75,7 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     );
   }
 
-  async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
+  async find(sagaType: string, sagaId: string): Promise<NestSagaInstance> {
     const destinationAndResources = await this.findDestinationsAndResources(
       sagaType,
       sagaId,
@@ -93,7 +92,7 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
       );
     }
 
-    return new SagaInstance(
+    return new NestSagaInstance(
       sagaType,
       sagaId,
       entity.stateName,
@@ -106,8 +105,13 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     );
   }
 
-  async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
-    const entity = await this.sagaInstanceRepository.save(sagaInstance);
+  async save(sagaInstance: NestSagaInstance): Promise<NestSagaInstance> {
+    const entity = this.sagaInstanceRepository.create(sagaInstance);
+    this.sagaInstanceRepository.persist(entity);
+    // wrap(entity).assign(sagaInstance);
+
+    // const entity = this.sagaInstanceRepository.create(sagaInstance);
+    // this.sagaInstanceRepository.persist(entity);
     await this.createDestinationsAndResources(sagaInstance);
     return Object.assign(sagaInstance, entity);
   }
@@ -117,16 +121,22 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     sagaId,
     destinationsAndResources,
     ...sagaInstance
-  }: NonNullable<SagaInstance>): Promise<void> {
-    const result = await this.sagaInstanceRepository.update(
-      {
-        sagaType,
-        sagaId,
-      },
-      sagaInstance,
-    );
+  }: NonNullable<NestSagaInstance>): Promise<void> {
+    const entity = this.sagaInstanceRepository.create({
+      sagaType,
+      sagaId,
+      ...sagaInstance,
+    });
+    this.sagaInstanceRepository.persist(entity);
+    // const result = await this.sagaInstanceRepository.update(
+    //   {
+    //     sagaType,
+    //     sagaId,
+    //   },
+    //   sagaInstance,
+    // );
 
     // eslint-disable-next-line prefer-rest-params
-    await this.createDestinationsAndResources(arguments[0] as SagaInstance);
+    await this.createDestinationsAndResources(arguments[0] as NestSagaInstance);
   }
 }

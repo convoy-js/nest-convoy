@@ -1,24 +1,13 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { BigIntType, Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
-@Entity('cdc_monitoring')
-export class CdcMonitoringEntity {
-  @PrimaryColumn({
-    name: 'reader_id',
-  })
+@Entity()
+export class CdcMonitoring {
+  @PrimaryKey()
   readerId: string;
 
-  @Column({
-    type: 'bigint',
-    name: 'last_time',
+  @Property({
+    type: BigIntType,
     nullable: true,
-    // transformer: {
-    //   from(value: Date): number {
-    //     return +value;
-    //   },
-    //   to(value: number): Date {
-    //     return new Date(value);
-    //   },
-    // },
   })
   lastTime?: number;
 }

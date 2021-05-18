@@ -1,68 +1,35 @@
 import {
-  CreateDateColumn,
-  PrimaryColumn,
-  Column,
+  DateType,
   Entity,
-  Index,
-  VersionColumn,
-} from 'typeorm';
+  JsonType,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 
-import { MessageHeaders, MessageRecordHeaders } from '../message-headers';
+import { ObjectLiteral } from '@nest-convoy/common';
 
-// @Index('message_pkey', ['id'], { unique: true })
-@Entity('message')
-export class MessageEntity<P> {
-  @PrimaryColumn()
+import { MessageHeaders, MessageHeadersType } from '../message-headers';
+
+@Entity({ tableName: 'message' })
+export class MessageEntity<P extends ObjectLiteral = ObjectLiteral> {
+  @PrimaryKey()
   id: string;
 
-  @Column('text')
+  @Property({ type: 'text' })
   destination: string;
 
-  @Column({
-    type: 'json',
+  @Property({
+    type: MessageHeadersType,
     nullable: true,
-    transformer: {
-      to(headers: MessageHeaders): MessageRecordHeaders {
-        return headers.asRecord();
-      },
-      from(headers: MessageRecordHeaders): MessageHeaders {
-        return MessageHeaders.fromRecord(headers);
-      },
-    },
   })
   headers: MessageHeaders;
 
-  @Column({ type: 'json', nullable: true })
+  @Property({ type: JsonType, nullable: true })
   payload: P;
 
-  @Column({
-    type: 'smallint',
-    // default: () => 0,
-    nullable: true,
-    transformer: {
-      to(value: boolean | undefined): number {
-        return value != null ? +value : 0;
-      },
-      from(value: number): boolean | null {
-        return value != null ? !!value : null;
-      },
-    },
-  })
-  published?: boolean;
+  @Property()
+  published = false;
 
-  @Column({
-    type: 'bigint',
-    name: 'creation_time',
-    nullable: true,
-    // default: () => Date.now(),
-    transformer: {
-      from(value: Date | undefined): number {
-        return value instanceof Date ? +value : Date.now();
-      },
-      to(value: number): Date | null {
-        return value != null ? new Date(value) : null;
-      },
-    },
-  })
-  creationTime?: Date;
+  @Property({ type: DateType })
+  creationTime = new Date();
 }

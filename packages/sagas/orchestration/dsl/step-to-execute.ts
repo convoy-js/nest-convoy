@@ -1,7 +1,8 @@
 import { SagaActions, SagaActionsBuilder } from '../saga-actions';
-import { SagaStep } from './saga-step';
 import { SagaExecutionState } from './saga-execution-state';
 import { encodeExecutionState } from './saga-execution-state-json-serde';
+
+import type { SagaStep } from './saga-step';
 
 export class StepToExecute<Data> {
   constructor(

@@ -1,40 +1,38 @@
-import { Column, PrimaryColumn, Index, Entity, VersionColumn } from 'typeorm';
+import { Entity, Property, PrimaryKey, JsonType } from '@mikro-orm/core';
 
-@Index('events_idx', ['entityType', 'entityId', 'eventId'])
-@Index('events_published_idx', ['published', 'eventId'])
-@Index('entities_idx', ['entityType', 'entityId'])
-@Entity('events')
-export class EventsEntity<
-  Data extends Record<string, unknown> = {},
-  Metadata extends Record<string, unknown> = {}
+import { ObjectLiteral } from '@nest-convoy/common';
+
+@Entity({
+  tableName: 'events',
+})
+export class Events<
+  Data extends ObjectLiteral = ObjectLiteral,
+  Metadata extends ObjectLiteral = ObjectLiteral,
 > {
-  @PrimaryColumn('event_id')
+  @PrimaryKey()
   eventId: string;
 
-  @Column({ name: 'event_type', nullable: true })
+  @Property({ nullable: true })
   eventType?: string;
 
-  @Column({
-    name: 'event_data',
-    type: 'json',
-  })
+  @Property({ type: JsonType })
   eventData: Data;
 
-  @Column('entity_type')
+  @Property()
   entityType: string;
 
-  @Column('entity_id')
+  @Property()
   entityId: string;
 
-  @Column({ name: 'triggering_event', nullable: true })
+  @Property({ nullable: true })
   triggeringEvent?: string;
 
-  @Column({ type: 'json', nullable: true, default: () => {} })
+  @Property({ type: JsonType, nullable: true })
   metadata: Metadata;
 
-  @Column()
+  @Property()
   published: boolean;
 
-  @VersionColumn()
-  version: string;
+  @Property({ version: true })
+  version: number;
 }

@@ -50,6 +50,7 @@ export class AggregateSchema<A extends AggregateRoot> {
       fromVersion,
       toVersion,
     );
+    // console.log('newEventTypeAndUpcasters', newEventTypeAndUpcasters);
 
     if (newEventTypeAndUpcasters.isEmpty()) return event;
 
@@ -104,14 +105,16 @@ export class AggregateSchema<A extends AggregateRoot> {
     currentVersion: number,
     metadata: EventMetadata = {},
   ): EventMetadata {
-    metadata[DefaultEventSchemaManager.SCHEMA_VERSION] = currentVersion;
-    return metadata;
+    return {
+      ...metadata,
+      [DefaultEventSchemaManager.SCHEMA_VERSION]: currentVersion,
+    };
   }
 
   private eventVersion<E>(event: EventIdTypeAndData<E>): number {
-    return event.metadata?.[DefaultEventSchemaManager.SCHEMA_VERSION] != null
-      ? (event.metadata[DefaultEventSchemaManager.SCHEMA_VERSION] as number)
-      : -1;
+    const metadataVersion =
+      event.metadata?.[DefaultEventSchemaManager.SCHEMA_VERSION];
+    return metadataVersion != null ? Number(metadataVersion) : -1;
   }
 
   private needsUpcast(latestVersion: number, actualVersion: number): boolean {

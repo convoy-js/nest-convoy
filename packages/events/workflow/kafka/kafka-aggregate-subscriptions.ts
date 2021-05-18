@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { EtpoEventContext } from '@nest-convoy/events/aggregate/snapshot';
 import {
   SerializedEvent,
@@ -25,15 +26,16 @@ export class KafkaAggregateSubscriptions implements AggregateEvents {
     message: KafkaMessage,
     aggregatesAndEvents: AggregatesAndEvents,
   ): Promise<SerializedEvent<any>> {
-    const {
-      id,
-      entityId,
-      metadata,
-      ...pe
-    } = await message.parsePayload<KafkaPublishedEvent>();
+    const { id, entityId, metadata, ...pe } =
+      await message.parsePayload<KafkaPublishedEvent>();
     const { partition, offset, topic } = message;
 
-    const etpo = new EtpoEventContext({ id, topic, partition, offset });
+    const etpo = new EtpoEventContext({
+      id,
+      topic,
+      partition,
+      offset,
+    });
 
     const [aggregate, events] = aggregatesAndEvents.get(pe.entityType)!;
     const eventType = [...events.values()].find(e => e.name === pe.eventType);

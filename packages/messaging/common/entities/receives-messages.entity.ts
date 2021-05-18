@@ -1,21 +1,13 @@
-import {
-  CreateDateColumn,
-  PrimaryColumn,
-  Entity,
-  VersionColumn,
-  Index,
-  Column,
-} from 'typeorm';
+import { DateType, Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
-// @Index('received_messages_pkey', ['consumerId', 'messageId'], { unique: true })
-@Entity('received_messages')
-export class ReceivedMessagesEntity {
-  @PrimaryColumn({ name: 'consumer_id' })
+@Entity()
+export class ReceivedMessages {
+  @PrimaryKey()
   consumerId: string;
 
-  @PrimaryColumn({ name: 'message_id' })
+  @PrimaryKey()
   messageId: string;
 
-  @Column('bigint', { name: 'creation_time', nullable: true })
-  creationTime?: string;
+  @Property({ type: DateType })
+  creationTime = new Date();
 }

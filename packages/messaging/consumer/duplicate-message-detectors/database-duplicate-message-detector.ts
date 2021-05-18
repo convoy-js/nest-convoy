@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/core';
 
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 import {
   Message,
-  ReceivedMessagesEntity,
+  ReceivedMessages,
   MessageHandler,
 } from '@nest-convoy/messaging/common';
 
@@ -15,18 +14,19 @@ import { DuplicateMessageDetector } from './duplicate-message-detector';
 @Injectable()
 export class DatabaseDuplicateMessageDetector extends DuplicateMessageDetector {
   constructor(
-    @InjectRepository(ReceivedMessagesEntity, NEST_CONVOY_CONNECTION)
-    private readonly receivedMessagesRepository: Repository<ReceivedMessagesEntity>,
+    @InjectRepository(ReceivedMessages)
+    private readonly receivedMessagesRepository: EntityRepository<ReceivedMessages>,
   ) {
     super();
   }
 
   async isDuplicate(consumerId: string, messageId: string): Promise<boolean> {
     try {
-      await this.receivedMessagesRepository.save({
+      const receivedMessage = this.receivedMessagesRepository.create({
         consumerId,
         messageId,
       });
+      await this.receivedMessagesRepository.persistAndFlush(receivedMessage);
 
       return false;
     } catch {

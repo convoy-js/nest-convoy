@@ -1,3 +1,5 @@
+import { EntityProperty, Platform, Type } from '@mikro-orm/core';
+
 export type MessageRecordHeaders = Record<string, string>;
 
 export class MessageHeaders extends Map<string, string> {
@@ -12,5 +14,22 @@ export class MessageHeaders extends Map<string, string> {
 
   asRecord(): MessageRecordHeaders {
     return Object.fromEntries(this);
+  }
+}
+
+export class MessageHeadersType extends Type<
+  MessageHeaders,
+  MessageRecordHeaders
+> {
+  getColumnType(prop: EntityProperty, platform: Platform): string {
+    return platform.getJsonDeclarationSQL();
+  }
+
+  convertToDatabaseValue(value: MessageHeaders): MessageRecordHeaders {
+    return value.asRecord();
+  }
+
+  convertToJSValue(value: MessageRecordHeaders): MessageHeaders {
+    return MessageHeaders.fromRecord(value);
   }
 }

@@ -1,15 +1,17 @@
 import { Inject, Type } from '@nestjs/common';
-import { firstValueFrom, from, Observable, of, throwError } from 'rxjs';
+import { firstValueFrom, from, of, throwError } from 'rxjs';
 import { map, retryWhen, take } from 'rxjs/operators';
 import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
 import { CircularDependencyException } from '@nestjs/core/errors/exceptions/circular-dependency.exception';
 import { plainToClass } from '@deepkit/type';
 
+import { Instance } from '@nest-convoy/common';
 import { Command, CommandProvider } from '@nest-convoy/commands/common';
 import { DomainEvent } from '@nest-convoy/events/common';
 
 import { EntityIdAndVersion, EventWithMetadata } from './interfaces';
 import { CommandProcessingAggregate } from './command-processing-aggregate';
+import { AggregateRoot } from './aggregate-root';
 import { Snapshot } from './snapshot';
 import { Aggregates } from './aggregates';
 import {
@@ -26,7 +28,6 @@ import {
   AggregateStoreCrud,
   AggregateCrudUpdateOptions,
 } from './crud';
-import { AggregateRoot } from './aggregate-root';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function getAggregateRepositoryToken<AR extends AggregateRoot>(
@@ -51,7 +52,7 @@ export class CommandOutcome<E extends readonly DomainEvent[]> {
 export function InjectAggregateRepository<
   AR extends CommandProcessingAggregate<AR, any>,
 >(aggregate: Type<AR>): PropertyDecorator {
-  return (target: object, key: string | symbol, index?: number) =>
+  return (target: Instance, key: string | symbol, index?: number) =>
     Inject(getAggregateRepositoryToken(aggregate))(target, key, index);
 }
 
@@ -59,7 +60,9 @@ export class AggregateRepository<
   AR extends CommandProcessingAggregate<AR, CT>,
   CT extends Command,
 > {
-  find = this.aggregateStore.find;
+  find: AggregateStoreCrud['find'] = this.aggregateStore.find.bind(
+    this.aggregateStore,
+  );
 
   constructor(
     private readonly aggregateType: Type<AR>,
@@ -126,16 +129,18 @@ export class AggregateRepository<
     return options?.interceptor || this.interceptor;
   }
 
-  private withRetry<T>(request: () => Promise<T>): Observable<T> {
-    return from(request()).pipe(
-      retryWhen(errors =>
-        errors.pipe(
-          map(result =>
-            result instanceof OptimisticLockingException
-              ? throwError(() => result)
-              : of(result),
+  private withRetry<T>(request: () => Promise<T>): Promise<T> {
+    return firstValueFrom(
+      from(request()).pipe(
+        retryWhen(errors =>
+          errors.pipe(
+            map(result =>
+              result instanceof OptimisticLockingException
+                ? throwError(() => result)
+                : of(result),
+            ),
+            take(10),
           ),
-          take(10),
         ),
       ),
     );
@@ -150,67 +155,65 @@ export class AggregateRepository<
     commandProvider: CommandProvider<AR, C>,
     options?: AggregateCrudUpdateOptions<AR, S>,
   ): Promise<EntityIdAndVersion> {
-    return firstValueFrom(
-      this.withRetry<EntityIdAndVersion>(async () => {
-        const entityWithMetadata = await this.aggregateStore.find(
-          this.aggregateType,
-          entityId,
-          options,
-        );
-        const {
-          entity: aggregate,
-          events: oldEvents,
-          snapshotVersion,
-          entityVersion,
-        } = entityWithMetadata;
+    return this.withRetry<EntityIdAndVersion>(async () => {
+      const entityWithMetadata = await this.aggregateStore.find(
+        this.aggregateType,
+        entityId,
+        options,
+      );
+      const {
+        entity: aggregate,
+        events: oldEvents,
+        snapshotVersion,
+        entityVersion,
+      } = entityWithMetadata;
 
-        const command = await commandProvider(aggregate);
-        let commandOutcome: CommandOutcome<E>;
-        if (command) {
-          try {
-            commandOutcome = new CommandOutcome<E>(
-              await aggregate.process(command),
-            );
-          } catch (err) {
-            commandOutcome = new CommandOutcome<E>([] as never, err);
-          }
-        } else {
-          commandOutcome = new CommandOutcome<E>([] as never);
+      const command = await commandProvider(aggregate);
+      let commandOutcome: CommandOutcome<E>;
+      if (command) {
+        try {
+          commandOutcome = new CommandOutcome<E>(
+            await aggregate.process(command),
+          );
+        } catch (err) {
+          commandOutcome = new CommandOutcome<E>([] as never, err);
         }
+      } else {
+        commandOutcome = new CommandOutcome<E>([] as never);
+      }
 
-        const transformed = await this.transformUpdateEventsAndOptions(
-          aggregate,
-          commandOutcome,
-          options,
-        );
-        if (!transformed.events.length) {
+      const transformed = await this.transformUpdateEventsAndOptions(
+        aggregate,
+        commandOutcome,
+        options,
+      );
+      if (!transformed.events.length) {
+        return { entityId, entityVersion };
+      } else {
+        try {
+          const snapshot = this.withPossibleSnapshot(
+            aggregate,
+            oldEvents,
+            transformed.events,
+            snapshotVersion,
+            transformed.options,
+          );
+          return await this.aggregateStore.update(
+            aggregate,
+            entityWithMetadata,
+            transformed.events,
+            snapshot,
+          );
+        } catch (err) {
+          if (err instanceof DuplicateTriggeringEventException) {
+            // This should not happen but lets handle it anyway
+            return this.aggregateStore.find(this.aggregateType, entityId);
+          }
+          // TODO: Should this be here?
           return { entityId, entityVersion };
-        } else {
-          try {
-            const snapshot = this.withPossibleSnapshot(
-              aggregate,
-              oldEvents,
-              transformed.events,
-              snapshotVersion,
-              transformed.options,
-            );
-            return await this.aggregateStore.update(
-              aggregate,
-              entityWithMetadata,
-              transformed.events,
-              snapshot,
-            );
-          } catch (err) {
-            if (err instanceof DuplicateTriggeringEventException) {
-              // This should not happen but lets handle it anyway
-              return this.aggregateStore.find(this.aggregateType, entityId);
-            }
-            // TODO: Should this be here?
-            return { entityId, entityVersion };
-          }
         }
-      }),
-    );
+      }
+    });
   }
 
   async save<C>(

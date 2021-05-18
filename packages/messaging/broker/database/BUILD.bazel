@@ -11,7 +11,7 @@ nest_library(
         "//packages/common",
         "//packages/messaging/common",
         "//packages/messaging/producer",
-        "@npm//@nestjs/typeorm",
-        "@npm//typeorm",
+        "@npm//@mikro-orm/nestjs",
+        "@npm//@mikro-orm/core",
     ],
 )

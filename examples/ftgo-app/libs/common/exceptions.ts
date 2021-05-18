@@ -1,6 +1,6 @@
-import { RuntimeException } from '@nest-convoy/core';
+import { AggregateException, RuntimeException } from '@nest-convoy/core';
 
-export class UnsupportedStateTransitionException extends RuntimeException {
+export class UnsupportedStateTransitionException extends AggregateException {
   constructor(state: string) {
     super(`current state: ${state}`);
   }

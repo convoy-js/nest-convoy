@@ -1,11 +1,10 @@
 import { Type } from '@nestjs/common';
-import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository, MikroORM, QueryOrder } from '@mikro-orm/core';
+import { AbstractSqlDriver } from '@mikro-orm/knex';
+import { uuid } from '@deepkit/type';
 
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
-
-import { EntitiesEntity, EventsEntity, SnapshotsEntity } from '../entities';
+import { Entities, Events, Snapshots } from '../entities';
 import { AggregateRoot } from '../aggregate-root';
 import { SaveUpdateResult } from '../save-update-result';
 import { LoadedEvents } from '../loaded-events';
@@ -34,21 +33,20 @@ import {
 
 export class AggregateCrudAccess {
   constructor(
-    @InjectRepository(EntitiesEntity)
-    private readonly entities: Repository<EntitiesEntity>,
-    @InjectRepository(EventsEntity)
-    private readonly events: Repository<EventsEntity>,
-    @InjectRepository(EventsEntity)
-    private readonly snapshots: Repository<SnapshotsEntity>,
-    @InjectConnection(NEST_CONVOY_CONNECTION)
-    private readonly connection: Connection,
+    private readonly orm: MikroORM<AbstractSqlDriver>,
+    @InjectRepository(Entities)
+    private readonly entities: EntityRepository<Entities>,
+    @InjectRepository(Events)
+    private readonly events: EntityRepository<Events>,
+    @InjectRepository(Snapshots)
+    private readonly snapshots: EntityRepository<Snapshots>,
   ) {}
 
   private toEventId(
     eventTypeAndData: EventTypeAndData<any>,
   ): EventIdTypeAndData<any> {
     return {
-      eventId: uuidv4(),
+      eventId: uuid(),
       ...eventTypeAndData,
     };
   }
@@ -58,45 +56,47 @@ export class AggregateCrudAccess {
     events: readonly EventTypeAndData<any>[],
     options?: AggregateCrudSaveOptions,
   ): Promise<SaveUpdateResult<AR>> {
-    const eventsWithIds = events.map(e => this.toEventId(e));
-    const entityId = options?.entityId || uuidv4();
-    const entityVersion = eventsWithIds[eventsWithIds.length - 1].eventId;
-    const entityType = aggregate.constructor.name;
+    return this.orm.em.transactional(async em => {
+      const eventsWithIds = events.map(e => this.toEventId(e));
+      let entityId = options?.entityId;
+      const entityVersion = eventsWithIds[eventsWithIds.length - 1].eventId;
+      const entityType = aggregate.constructor.name;
 
-    const entity = await this.entities.save({
-      type: entityType,
-      id: entityId,
-      version: entityVersion,
+      const entity = this.entities.create({
+        type: entityType,
+        id: entityId,
+        version: entityVersion,
+      });
+      em.persist(entity);
+      entityId = entity.id;
+
+      eventsWithIds.forEach(event => {
+        const entity = this.events.create({
+          eventId: event.eventId,
+          eventData: event.eventData,
+          eventType: event.eventType.name,
+          triggeringEvent: options?.triggeringEvent?.eventToken,
+          metadata: event.metadata,
+          entityType,
+          entityId,
+        });
+
+        em.persist(entity);
+      });
+
+      return new SaveUpdateResult(
+        {
+          entityId: entity.id,
+          entityVersion: entity.version,
+          eventIds: eventsWithIds.map(e => e.eventId),
+        },
+        {
+          aggregateType: aggregate.constructor as Type<AR>,
+          entityId: entity.id,
+          eventsWithIds,
+        },
+      );
     });
-
-    await this.connection.transaction(manager =>
-      Promise.all(
-        eventsWithIds.map(event =>
-          manager.create(EventsEntity, {
-            eventId: event.eventId,
-            eventData: event.eventData,
-            eventType: event.eventType.name,
-            triggeringEvent: options?.triggeringEvent?.eventToken,
-            metadata: event.metadata,
-            entityType,
-            entityId,
-          }),
-        ),
-      ),
-    );
-
-    return new SaveUpdateResult(
-      {
-        entityId: entity.id,
-        entityVersion: entity.version,
-        eventIds: eventsWithIds.map(e => e.eventId),
-      },
-      {
-        aggregateType: aggregate.constructor as Type<AR>,
-        entityId: entity.id,
-        eventsWithIds,
-      },
-    );
   }
 
   async find<AR extends AggregateRoot>(
@@ -104,143 +104,46 @@ export class AggregateCrudAccess {
     entityId: string,
     options?: AggregateCrudFindOptions,
   ): Promise<LoadedEvents> {
-    const entityType = aggregateType.name;
-    const snapshot = await this.snapshots.findOne({
-      where: {
+    return this.orm.em.transactional(async em => {
+      const entityType = aggregateType.name;
+      const snapshot = await this.snapshots.findOne({
         entityType,
         entityId,
-      },
-    });
+      });
 
-    let events: readonly EventsEntity<any, any>[];
-    let serializedSnapshot: SerializedSnapshotWithVersion<any> | undefined;
+      let events: readonly Events<any, any>[];
+      let serializedSnapshot: SerializedSnapshotWithVersion<any> | undefined;
 
-    if (snapshot) {
-      serializedSnapshot = new SerializedSnapshotWithVersion(
-        new SerializedSnapshot(
-          snapshot.snapshotType,
-          JSON.stringify(snapshot.snapshotJson),
-        ),
-        snapshot.entityVersion,
-      );
-      events = await this.events
-        .createQueryBuilder()
-        .where(
-          'entityType = :entityType and entityId = :entityId and eventId > :eventId',
-        )
-        .orderBy('eventId', 'ASC')
-        .setParameters({
-          eventId: snapshot.entityVersion,
-          entityType,
-          entityId,
-        })
-        .getMany();
-    } else {
-      events = await this.events
-        .createQueryBuilder()
-        .where('entityType = :entityType and entityId = :entityId')
-        .setParameters({
-          entityType,
-          entityId,
-        })
-        .getMany();
-    }
+      if (snapshot) {
+        serializedSnapshot = new SerializedSnapshotWithVersion(
+          new SerializedSnapshot(
+            snapshot.snapshotType,
+            JSON.stringify(snapshot.snapshotJson),
+          ),
+          snapshot.entityVersion,
+        );
 
-    const eventsAndTriggers: readonly EventAndTrigger<any>[] = events.map(
-      e => ({
-        event: {
-          ...e,
-          // TODO
-          eventType: class {},
-        },
-        triggeringEvent: e.triggeringEvent!,
-      }),
-    );
-
-    const matching = eventsAndTriggers.find(
-      et => options?.triggeringEvent?.eventToken === et.triggeringEvent,
-    );
-
-    if (matching) {
-      throw new DuplicateTriggeringEventException();
-    }
-
-    if (!serializedSnapshot && !events.length) {
-      throw new EntityNotFoundException(aggregateType, entityId);
-    } else {
-      return new LoadedEvents(
-        eventsAndTriggers.map(e => e.event),
-        serializedSnapshot,
-      );
-    }
-  }
-
-  async update<AR extends AggregateRoot, S extends Snapshot>(
-    entityIdAndType: EntityIdAndType,
-    entityVersion: string,
-    events: readonly EventTypeAndData<any>[],
-    options?: AggregateCrudUpdateOptions<AR, S>,
-  ): Promise<SaveUpdateResult<AR>> {
-    const eventsWithIds = events.map(e => this.toEventId(e));
-    const updatedEntityVersion =
-      eventsWithIds[eventsWithIds.length - 1].eventId;
-
-    const result = await this.connection
-      .createQueryBuilder()
-      .update(EntitiesEntity)
-      .set({
-        version: updatedEntityVersion,
-        type: entityIdAndType.entityType.name,
-        id: entityIdAndType.entityId,
-      })
-      .where(
-        'id = :entityId AND type = :entityType AND version = :entityVersion',
-        {
-          ...entityIdAndType,
-          entityVersion,
-        },
-      )
-      .execute();
-
-    if (result?.affected != 1) {
-      throw new OptimisticLockingException();
-    }
-
-    if (options?.snapshot) {
-      const previousSnapshot = await this.connection
-        .createQueryBuilder()
-        .select('*')
-        .from(SnapshotsEntity, 'user')
-        .where(
-          'snapshots.entityType = :entityType and snapshots.entityId = :entityId',
-        )
-        .orderBy('entityVersion', 'DESC')
-        .setParameters(entityIdAndType)
-        .limit(1)
-        .getOne();
-
-      let oldEvents: readonly EventsEntity<any, any>[];
-      if (previousSnapshot) {
-        oldEvents = await this.events
-          .createQueryBuilder()
-          .where(
-            'entityType = :entityType AND entityId = :entityId AND eventId > :eventId',
-          )
-          .orderBy('eventId', 'ASC')
-          .setParameters({
-            eventId: previousSnapshot.entityVersion,
-            ...entityIdAndType,
+        events = await em
+          .createQueryBuilder(Events)
+          .where({
+            entityType,
+            entityId,
+            eventId: {
+              $gt: snapshot.entityVersion,
+            },
           })
-          .getMany();
+          .orderBy({
+            eventId: QueryOrder.ASC,
+          })
+          .getResult();
       } else {
-        oldEvents = await this.events
-          .createQueryBuilder()
-          .where('entityType = :entityType and entityId = :entityId')
-          .setParameters(entityIdAndType)
-          .getMany();
+        events = await this.events.find({
+          entityType,
+          entityId,
+        });
       }
 
-      const eventsAndTriggers: readonly EventAndTrigger<any>[] = oldEvents.map(
+      const eventsAndTriggers: readonly EventAndTrigger<any>[] = events.map(
         e => ({
           event: {
             ...e,
@@ -251,47 +154,169 @@ export class AggregateCrudAccess {
         }),
       );
 
-      const triggeringEvents = SnapshotTriggeringEvents.create(
-        eventsAndTriggers,
+      const matching = eventsAndTriggers.find(
+        et => options?.triggeringEvent?.eventToken === et.triggeringEvent,
       );
 
-      await this.snapshots.save({
-        entityId: entityIdAndType.entityId,
-        entityType: entityIdAndType.entityType.name,
-        entityVersion: updatedEntityVersion,
-        snapshotType: previousSnapshot?.snapshotType,
-        snapshotJson: previousSnapshot?.snapshotJson,
-        triggeringEvents,
-      });
-    }
+      if (matching) {
+        throw new DuplicateTriggeringEventException();
+      }
 
-    await this.connection.transaction(manager =>
-      Promise.all(
-        eventsWithIds.map(event =>
-          manager.create(EventsEntity, {
-            eventId: event.eventId,
-            eventData: event.eventData,
-            eventType: event.eventType.name,
-            triggeringEvent: options?.triggeringEvent?.eventToken,
-            metadata: event.metadata,
-            entityId: entityIdAndType.entityId,
+      if (!serializedSnapshot && !events.length) {
+        throw new EntityNotFoundException(aggregateType, entityId);
+      } else {
+        return new LoadedEvents(
+          eventsAndTriggers.map(e => e.event),
+          serializedSnapshot,
+        );
+      }
+    });
+  }
+
+  async update<AR extends AggregateRoot, S extends Snapshot>(
+    entityIdAndType: EntityIdAndType,
+    entityVersion: string,
+    events: readonly EventTypeAndData<any>[],
+    options?: AggregateCrudUpdateOptions<AR, S>,
+  ): Promise<SaveUpdateResult<AR>> {
+    // Idk if I even need to make a new transaction
+    return this.orm.em.transactional(async em => {
+      const eventsWithIds = events.map(e => this.toEventId(e));
+      const updatedEntityVersion =
+        eventsWithIds[eventsWithIds.length - 1].eventId;
+
+      // TODO - check if it's correct
+      const result = await em
+        .createQueryBuilder(Entities)
+        .where({
+          type: entityIdAndType.entityType.name,
+          id: entityIdAndType.entityId,
+          entityVersion,
+        })
+        .update({
+          version: updatedEntityVersion,
+          type: entityIdAndType.entityType.name,
+          id: entityIdAndType.entityId,
+        })
+        .getSingleResult();
+
+      // const result = await this.connection
+      //   .createQueryBuilder()
+      //   .update(Entities)
+      //   .set({
+      //     version: updatedEntityVersion,
+      //     type: entityIdAndType.entityType.name,
+      //     id: entityIdAndType.entityId,
+      //   })
+      //   .where(
+      //     'id = :entityId AND type = :entityType AND version = :entityVersion',
+      //     {
+      //       ...entityIdAndType,
+      //       entityVersion,
+      //     },
+      //   )
+      //   .execute();
+
+      if (!result) {
+        throw new OptimisticLockingException();
+      }
+
+      if (options?.snapshot) {
+        const previousSnapshot = await em
+          .createQueryBuilder(Snapshots)
+          .where(entityIdAndType)
+          .orderBy({
+            entityVersion: QueryOrder.DESC,
+          })
+          .limit(1)
+          .getSingleResult();
+
+        // const previousSnapshot = await this.connection
+        //   .createQueryBuilder()
+        //   .select('*')
+        //   .from(Snapshots, 'user')
+        //   .where(
+        //     'snapshots.entityType = :entityType and snapshots.entityId = :entityId',
+        //   )
+        //   .orderBy('entityVersion', 'DESC')
+        //   .setParameters(entityIdAndType)
+        //   .limit(1)
+        //   .getOne();
+
+        let oldEvents: readonly Events<any, any>[];
+        if (previousSnapshot) {
+          oldEvents = await em
+            .createQueryBuilder(Events)
+            .where({
+              entityType: entityIdAndType.entityType.name,
+              entityId: entityIdAndType.entityId,
+              eventId: {
+                $gt: previousSnapshot.entityVersion,
+              },
+            })
+            .orderBy({
+              eventId: QueryOrder.ASC,
+            })
+            .getResult();
+        } else {
+          oldEvents = await this.events.find({
             entityType: entityIdAndType.entityType.name,
-          }),
-        ),
-      ),
-    );
+            entityId: entityIdAndType.entityId,
+          });
+        }
 
-    return new SaveUpdateResult(
-      {
-        entityId: entityIdAndType.entityId,
-        entityVersion: updatedEntityVersion,
-        eventIds: eventsWithIds.map(e => e.eventId),
-      },
-      {
-        aggregateType: entityIdAndType.entityType,
-        entityId: entityIdAndType.entityId,
-        eventsWithIds,
-      },
-    );
+        const eventsAndTriggers: readonly EventAndTrigger<any>[] =
+          oldEvents.map(e => ({
+            event: {
+              ...e,
+              // TODO
+              eventType: class {},
+            },
+            triggeringEvent: e.triggeringEvent!,
+          }));
+
+        const triggeringEvents =
+          SnapshotTriggeringEvents.create(eventsAndTriggers);
+
+        // persistAndFlush ?
+        em.persist({
+          entityId: entityIdAndType.entityId,
+          entityType: entityIdAndType.entityType.name,
+          entityVersion: updatedEntityVersion,
+          snapshotType: previousSnapshot?.snapshotType,
+          snapshotJson: previousSnapshot?.snapshotJson,
+          triggeringEvents,
+        });
+      }
+
+      // await this.orm.em.transactional(async em => {
+      eventsWithIds.forEach(event => {
+        const entity = this.events.create({
+          eventId: event.eventId,
+          eventData: event.eventData,
+          eventType: event.eventType.name,
+          triggeringEvent: options?.triggeringEvent?.eventToken,
+          metadata: event.metadata,
+          entityId: entityIdAndType.entityId,
+          entityType: entityIdAndType.entityType.name,
+        });
+
+        em.persist(entity);
+      });
+      // });
+
+      return new SaveUpdateResult(
+        {
+          entityId: entityIdAndType.entityId,
+          entityVersion: updatedEntityVersion,
+          eventIds: eventsWithIds.map(e => e.eventId),
+        },
+        {
+          aggregateType: entityIdAndType.entityType,
+          entityId: entityIdAndType.entityId,
+          eventsWithIds,
+        },
+      );
+    });
   }
 }

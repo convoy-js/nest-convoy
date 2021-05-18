@@ -1,12 +1,12 @@
 import { Inject, Injectable, Type } from '@nestjs/common';
 import { plainToClass } from '@deepkit/type';
 
+import { MissingApplyMethodException } from './exceptions';
 import { AggregateRoot } from './aggregate-root';
 import {
   MISSING_APPLY_EVENT_METHOD_STRATEGY,
   MissingApplyEventMethodStrategy,
 } from './missing-apply-event-method-strategy';
-import { MissingApplyMethodException } from './exceptions';
 
 @Injectable()
 export class Aggregates {
@@ -15,6 +15,7 @@ export class Aggregates {
     private readonly missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<any>,
   ) {}
 
+  // AR should be CommandProcessingAggregate
   async applyEvents<AR extends AggregateRoot, E extends readonly any[]>(
     aggregate: AR,
     events: E,
@@ -36,7 +37,7 @@ export class Aggregates {
     return aggregate;
   }
 
-  recreateAggregate<AR extends AggregateRoot, E extends readonly object[]>(
+  recreateAggregate<AR extends AggregateRoot, E extends readonly any[]>(
     aggregateType: Type<AR>,
     events: E,
     // missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<AR>,

@@ -11,6 +11,7 @@ nest_library(
         "//packages/sagas/orchestration:__subpackages__",
     ],
     deps = [
-        "@npm//typeorm",
+        "@npm//@mikro-orm/core",
+        "@npm//@deepkit/type",
     ],
 )
