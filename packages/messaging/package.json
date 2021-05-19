@@ -18,7 +18,7 @@
   },
   "optionalDependencies": {
     "kafkajs": "^1.15.0",
-    "@kafkajs/confluent-schema-registry": "^1.0.6",
+    "@kafkajs/confluent-schema-registry": "^2.0.0",
     "avsc": "5.7.0"
   },
   "keywords": [
