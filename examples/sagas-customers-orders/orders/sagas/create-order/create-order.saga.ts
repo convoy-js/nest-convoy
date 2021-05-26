@@ -1,7 +1,4 @@
-// import { InjectRepository } from '@mikro-orm/nestjs';
-// import type { EntityRepository } from '@mikro-orm/core';
-
-import { Saga, NestSaga } from '@nest-convoy/core';
+import { Saga, NestSaga } from '@nest-convoy/sagas';
 
 import {
   CustomerCreditLimitExceeded,
@@ -9,8 +6,7 @@ import {
   ReserveCreditCommand,
 } from '../../../customers/api';
 import { OrderState, RejectionReason } from '../../common';
-// import { Order } from '../../entities';
-import { OrderService } from '../../order.service';
+import { OrderRepositoryR } from '../../order.repository';
 import { CustomerServiceProxy } from '../participants';
 import { CreateOrderSagaData } from './create-order-saga.data';
 
@@ -34,8 +30,8 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
     .build();
 
   constructor(
+    private readonly order: OrderRepositoryR,
     private readonly customerServiceProxy: CustomerServiceProxy,
-    private readonly order: OrderService, // private readonly orderRepository: EntityRepository<Order>, // @InjectRepository(Order)
   ) {
     super();
   }

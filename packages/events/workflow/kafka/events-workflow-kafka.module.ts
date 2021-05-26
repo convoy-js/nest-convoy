@@ -4,7 +4,7 @@ import { AGGREGATE_EVENTS } from '@nest-convoy/events/aggregate/aggregate-events
 
 import { KafkaAggregateSubscriptions } from './kafka-aggregate-subscriptions';
 
-@Global()
+// @Global()
 @Module({
   providers: [
     {

@@ -4,7 +4,7 @@ import { ConvoyCommandProducer } from '@nest-convoy/commands';
 import { ConvoyMessageConsumer } from '@nest-convoy/messaging';
 import { SagaLockManager } from '@nest-convoy/sagas/common';
 
-import { SagaInstanceRepository } from './saga-instance-repository';
+import { DefaultSagaInstanceRepository } from './saga-instance-repository';
 import { SagaCommandProducer } from './saga-command-producer';
 import { SagaManager } from './saga-manager';
 import { Saga } from './saga';
@@ -12,7 +12,7 @@ import { Saga } from './saga';
 @Injectable()
 export class SagaManagerFactory {
   constructor(
-    private readonly sagaInstanceRepository: SagaInstanceRepository,
+    private readonly sagaInstanceRepository: DefaultSagaInstanceRepository,
     private readonly commandProducer: ConvoyCommandProducer,
     private readonly messageConsumer: ConvoyMessageConsumer,
     private readonly sagaLockManager: SagaLockManager,

@@ -12,6 +12,7 @@ nest_library(
         "//packages/sagas/common:__subpackages__",
     ],
     deps = [
+        "//packages/common",
         "//packages/messaging/common",
         "@npm//@mikro-orm/core",
     ],

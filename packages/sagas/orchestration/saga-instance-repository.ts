@@ -9,7 +9,7 @@ import { SagaInstance, SagaInstanceParticipants } from './entities';
 import { ConvoySagaInstance } from './saga-instance';
 
 @Injectable()
-export class SagaInstanceRepository {
+export class DefaultSagaInstanceRepository {
   private readonly store = new Map<string, ConvoySagaInstance>();
 
   async find(sagaType: string, sagaId: string): Promise<ConvoySagaInstance> {
@@ -31,7 +31,7 @@ export class SagaInstanceRepository {
 }
 
 @Injectable()
-export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
+export class SagaDatabaseInstanceRepository extends DefaultSagaInstanceRepository {
   constructor(
     @InjectRepository(SagaInstance)
     private readonly sagaInstanceRepository: EntityRepository<SagaInstance>,
@@ -135,8 +135,8 @@ export class SagaDatabaseInstanceRepository extends SagaInstanceRepository {
     //   sagaInstance,
     // );
 
-    // eslint-disable-next-line prefer-rest-params
     await this.createDestinationsAndResources(
+      // eslint-disable-next-line prefer-rest-params
       arguments[0] as ConvoySagaInstance,
     );
   }

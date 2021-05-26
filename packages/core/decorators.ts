@@ -1,12 +1,10 @@
-import { COMMAND_HANDLER_METADATA } from '@nestjs/cqrs/dist/decorators/constants';
 import { EventsHandler } from '@nestjs/cqrs';
+import { COMMAND_HANDLER_METADATA } from '@nestjs/cqrs/dist/decorators/constants';
 
-import { Type } from '@nest-convoy/common';
-import { AggregateRoot } from '@nest-convoy/events/aggregate';
-import {
-  COMMAND_WITH_DESTINATION,
-  CommandMessageHandlerOptions,
-} from '@nest-convoy/commands';
+import { COMMAND_WITH_DESTINATION } from '@nest-convoy/commands';
+import type { CommandMessageHandlerOptions } from '@nest-convoy/commands';
+import type { Type } from '@nest-convoy/common';
+import type { AggregateRoot } from '@nest-convoy/events/aggregate';
 
 import {
   SAGA_COMMAND_HANDLER_METADATA,
@@ -76,14 +74,14 @@ export function DomainEventHandlers<T extends AggregateRoot>(
 }
 
 export function CommandHandlers(channel: string): ClassDecorator {
-  return (target: any) => {
+  return target => {
     Reflect.defineMetadata(COMMAND_HANDLER_METADATA, true, target);
     Reflect.defineMetadata(FROM_CHANNEL_METADATA, channel, target);
   };
 }
 
 export function SagaCommandHandlers(channel: string): ClassDecorator {
-  return (target: object): void => {
+  return target => {
     if (Reflect.hasMetadata(COMMAND_HANDLER_METADATA, target)) {
       Reflect.defineMetadata(HAS_COMMAND_HANDLER_METADATA, true, target);
     } else {

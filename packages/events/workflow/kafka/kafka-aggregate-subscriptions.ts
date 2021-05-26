@@ -8,10 +8,7 @@ import {
   SubscriberOptions,
   SubscriptionHandler,
 } from '@nest-convoy/events/aggregate';
-import {
-  KafkaMessageConsumer,
-  KafkaMessage,
-} from '@nest-convoy/messaging/broker/kafka';
+import { KafkaMessageConsumer, KafkaMessage } from '@nest-convoy/kafka';
 
 import { KafkaPublishedEvent } from './kafka-published-event';
 

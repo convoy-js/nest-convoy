@@ -1,7 +1,7 @@
 import { f } from '@deepkit/type';
 import { Property } from '@mikro-orm/core';
 
-import { Float, AvroSchema } from '@nest-convoy/messaging/broker/kafka';
+import { Float, AvroSchema } from '@nest-convoy/kafka';
 
 import { Namespace } from './channel';
 

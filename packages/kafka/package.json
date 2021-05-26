@@ -1,0 +1,32 @@
+{
+  "name": "@nest-convoy/kafka",
+  "license": "MIT",
+  "version": "0.0.0-PLACEHOLDER",
+  "bugs": {
+    "url": "https://github.com/marcus-sa/nest-convoy/issues"
+  },
+  "dependencies": {
+    "@nest-convoy/common": "0.0.0-PLACEHOLDER",
+    "@nest-convoy/core": "0.0.0-PLACEHOLDER",
+    "@nest-convoy/messaging": "0.0.0-PLACEHOLDER",
+    "@golevelup/nestjs-discovery": "2.3.1",
+    "@kafkajs/confluent-schema-registry": "3.0.0",
+    "kafkajs": "1.15.0",
+    "avsc": "5.7.0",
+    "tslib": "2.2.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": ">=7.3.0",
+    "@nestjs/core": ">=7.3.0",
+    "@deepkit/type": ">=1.0.1-alpha.29",
+    "rxjs": ">=7.1.0"
+  },
+  "keywords": [
+    "nestjs",
+    "nest convoy",
+    "kafka",
+    "sagas",
+    "cqrs",
+    "ddd"
+  ]
+}

@@ -1,19 +1,18 @@
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 
 import { ConvoyCommandsProducerModule } from '@nest-convoy/commands';
 import { SagaCommonModule } from '@nest-convoy/sagas/common';
-import { NEST_CONVOY_CONNECTION } from '@nest-convoy/common';
 
 import { SagaInstance, SagaInstanceParticipants } from './entities';
-import { SagaInstanceFactory } from './saga-instance-factory';
-import { SagaManagerFactory } from './saga-manager-factory';
 import { SagaCommandProducer } from './saga-command-producer';
+import { SagaInstanceFactory } from './saga-instance-factory';
 import {
   SagaDatabaseInstanceRepository,
-  SagaInstanceRepository,
+  DefaultSagaInstanceRepository,
 } from './saga-instance-repository';
+import { SagaManagerFactory } from './saga-manager-factory';
 
 @Module({
   imports: [
@@ -29,14 +28,14 @@ import {
     SagaManagerFactory,
     SagaCommandProducer,
     {
-      provide: SagaInstanceRepository,
+      provide: DefaultSagaInstanceRepository,
       useClass: SagaDatabaseInstanceRepository,
     },
   ],
   exports: [
     MikroOrmModule,
     SagaInstanceFactory,
-    SagaInstanceRepository,
+    DefaultSagaInstanceRepository,
     SagaManagerFactory,
     SagaCommandProducer,
   ],

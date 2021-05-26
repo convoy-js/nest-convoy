@@ -1,4 +1,4 @@
-import { MessageHeaders } from '@nest-convoy/messaging';
+import { MessageHeaders } from '@nest-convoy/messaging/common';
 
 import { SagaCommandHeaders } from './saga-command-headers';
 

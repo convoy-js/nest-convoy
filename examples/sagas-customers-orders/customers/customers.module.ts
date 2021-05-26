@@ -1,23 +1,18 @@
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
-import { ConvoyKafkaCdcOutboxBrokerModule } from '@nest-convoy/messaging/broker/kafka';
+import { ConvoyCommonModule } from '@nest-convoy/core';
+import { ConvoyKafkaCdcOutboxBrokerModule } from '@nest-convoy/kafka';
 
-import { CreditReservation, Customer } from './entities';
+import { Channel, defaultOptions } from '../common';
 import { CustomerCommandHandlers } from './customer-command-handlers';
 import { CustomerService } from './customer.service';
 import { CustomersController } from './customers.controller';
-import { Channel, defaultOptions, TypeOrmModuleOptions } from '../common';
+import { CreditReservation, Customer } from './entities';
 
 @Module({
   imports: [
     ConvoyCommonModule,
-    TypeOrmModule.forRoot({
-      ...defaultOptions,
-      schema: 'customers',
-    } as TypeOrmModuleOptions),
-    TypeOrmModule.forFeature([CreditReservation, Customer]),
     ConvoyKafkaCdcOutboxBrokerModule.register(
       {
         clientId: Channel.CUSTOMER,
@@ -25,23 +20,13 @@ import { Channel, defaultOptions, TypeOrmModuleOptions } from '../common';
       },
       {
         database: defaultOptions,
-        // schemaRegistry: new SchemaRegistry({
-        //   host: 'http://localhost:8081',
-        //   clientId: Channel.CUSTOMER,
-        // }),
       },
     ),
-    ConvoySagasModule,
+    MikroOrmModule.forFeature({
+      entities: [CreditReservation, Customer],
+    }),
   ],
   controllers: [CustomersController],
-  providers: [
-    CustomerService,
-    CustomerCommandHandlers,
-    // Money,
-    // ReserveCreditCommand,
-    // CustomerCreditReserved,
-    // CustomerNotFound,
-    // CustomerCreditLimitExceeded,
-  ],
+  providers: [CustomerService, CustomerCommandHandlers],
 })
 export class CustomersModule {}

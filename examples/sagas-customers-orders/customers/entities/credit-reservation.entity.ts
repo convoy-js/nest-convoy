@@ -1,7 +1,7 @@
 import { f, t, uuid } from '@deepkit/type';
 import { Embedded, Entity, PrimaryKey, ManyToOne } from '@mikro-orm/core';
 
-import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
+import { AvroSchema } from '@nest-convoy/kafka';
 
 import { Money, Namespace } from '../../common';
 import { Customer } from './customer.entity';

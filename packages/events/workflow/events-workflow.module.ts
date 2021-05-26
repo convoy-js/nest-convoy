@@ -6,7 +6,7 @@ import { AggregateSchemaModule } from '@nest-convoy/events/aggregate/schema';
 
 import { EventDispatcherInitializer } from './event-dispatcher-initializer';
 
-@Global()
+// @Global()
 @Module({
   imports: [DiscoveryModule, AggregateCrudModule, AggregateSchemaModule],
   providers: [EventDispatcherInitializer],

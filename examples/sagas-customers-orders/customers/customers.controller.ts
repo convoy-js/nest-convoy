@@ -1,8 +1,10 @@
+import { MikroORM } from '@mikro-orm/core';
+import { UseRequestContext } from '@mikro-orm/nestjs';
 import { Body, Controller, Post } from '@nestjs/common';
 
-import { Money } from '../common';
+import type { Money } from '../common';
 import { CustomerService } from './customer.service';
-import { Customer } from './entities';
+import type { Customer } from './entities';
 
 export class CreateCustomerDto {
   creditLimit: Money;
@@ -11,10 +13,14 @@ export class CreateCustomerDto {
 
 @Controller('customers')
 export class CustomersController {
-  constructor(private readonly customer: CustomerService) {}
+  constructor(
+    private readonly orm: MikroORM,
+    private readonly customer: CustomerService,
+  ) {}
 
   @Post('')
-  create(@Body() createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    return this.customer.create(createCustomerDto);
+  @UseRequestContext()
+  create(@Body() createCustomerDto: CreateCustomerDto): Customer {
+    return this.customer.save(createCustomerDto);
   }
 }

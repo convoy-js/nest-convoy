@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { EntityRepository } from '@mikro-orm/core';
 import type { EntityData } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
+import { Injectable } from '@nestjs/common';
 
-import { Money } from '../common';
+import type { Money } from '../common';
 import { CustomerNotFound } from './api';
 import { Customer } from './entities';
 

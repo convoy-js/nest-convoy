@@ -4,9 +4,9 @@ nest_test(
     name = "avro-schema",
     srcs = ["avro-schema.spec.ts"],
     deps = [
-        "//packages/messaging/broker/kafka",
-        "@npm//@golevelup/nestjs-discovery",
+        "//packages/kafka",
         "@npm//@deepkit/type",
+        "@npm//@golevelup/nestjs-discovery",
         "@npm//avsc",
     ],
 )

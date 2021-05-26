@@ -83,16 +83,16 @@ export class SagaDatabaseLockManager extends SagaLockManager {
   ): Promise<void> {
     const messageHeaders = message.getHeaders().asRecord();
     const messagePayload = message.getPayload();
+    const id = message.id;
 
     const sagaStash = this.sagaStashRepository.create({
       messagePayload,
       messageHeaders,
-      message.id,
+      id,
       sagaType,
       sagaId,
       target,
     });
-    // await this.sagaStashRepository.persistAndFlush(sagaStash);
     this.sagaStashRepository.persist(sagaStash);
   }
 

@@ -14,7 +14,7 @@ nest_library(
         "//examples/ftgo-app/services/restaurant/entities",
         "//examples/ftgo-app/services/restaurant/services",
         "//packages/core",
-        "//packages/messaging/broker/kafka",
+        "//packages/kafka",
         "@npm//@nestjs/microservices",
     ],
 )

@@ -1,6 +1,6 @@
 import { t, f } from '@deepkit/type/dist/cjs';
 
-import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
+import { AvroSchema } from '@nest-convoy/kafka';
 
 import { Money, Namespace } from '../../common';
 

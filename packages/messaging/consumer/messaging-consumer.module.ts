@@ -1,12 +1,13 @@
-import { DynamicModule, Global, Module, Provider, Type } from '@nestjs/common';
+import type { DynamicModule, Provider } from '@nestjs/common';
+import { Global, Module, Type } from '@nestjs/common';
 
 import { ConvoyMessagingCommonModule } from '@nest-convoy/messaging/common';
 
-import { ConvoyMessageConsumer, MessageConsumer } from './message-consumer';
 import {
   DatabaseDuplicateMessageDetector,
   DuplicateMessageDetector,
 } from './duplicate-message-detectors';
+import { ConvoyMessageConsumer, MessageConsumer } from './message-consumer';
 
 @Global()
 @Module({})

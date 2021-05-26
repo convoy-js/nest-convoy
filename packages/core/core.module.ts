@@ -13,11 +13,11 @@ import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
 import { ConvoyCommonModule } from './common.module';
 import { InitializerService } from './initializer.service';
 
-@Global()
+// @Global()
 @Module({
   imports: [ConvoyCommonModule],
   providers: [ExplorerService, InitializerService],
-  exports: [ConvoyCommonModule],
+  // exports: [ConvoyCommonModule],
 })
 export class ConvoyCoreModule {
   // static forRoot(): DynamicModule {

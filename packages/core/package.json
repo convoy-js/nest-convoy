@@ -15,8 +15,7 @@
     "tslib": ">=2.2.0"
   },
   "peerDependencies": {
-    "typeorm": ">=0.2.25",
-    "@nestjs/typeorm": ">=7.0.0",
+    "@mikro-orm/core": ">=4.5.5",
     "@nestjs/common": ">=7.3.0",
     "@nestjs/core": ">=7.3.0",
     "@deepkit/core": ">=1.0.1-alpha.29",

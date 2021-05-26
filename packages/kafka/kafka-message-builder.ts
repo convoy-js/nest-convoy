@@ -1,10 +1,10 @@
+import type { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import type {
   EachMessagePayload,
   IHeaders,
   Message as ProducerMessage,
 } from 'kafkajs';
-import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
-import { Inject, Injectable, Optional } from '@nestjs/common';
 
 import {
   Message,
@@ -13,9 +13,9 @@ import {
 } from '@nest-convoy/messaging';
 
 import { KafkaMessage } from './kafka-message';
-import { KAFKA_SCHEMA_REGISTRY } from './tokens';
 // import { avroSchemaRegistry } from './avro-schema';
-import { AvroSchemaRegistry } from './schema/avro-schema-registry';
+import { AvroSchemaRegistry } from './schema';
+import { KAFKA_SCHEMA_REGISTRY } from './tokens';
 
 @Injectable()
 export class KafkaMessageBuilder {

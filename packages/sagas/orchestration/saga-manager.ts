@@ -37,7 +37,7 @@ import { SagaCommandProducer } from './saga-command-producer';
 import type { SagaDefinition } from './saga-definition';
 import { ConvoySagaInstance } from './saga-instance';
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import { SagaInstanceRepository } from './saga-instance-repository';
+import { DefaultSagaInstanceRepository } from './saga-instance-repository';
 
 export class SagaManager<Data> {
   private readonly logger = new Logger(this.constructor.name, true);
@@ -56,7 +56,7 @@ export class SagaManager<Data> {
 
   constructor(
     private readonly saga: Saga<Data> & SagaLifecycleHooks<Data>,
-    private readonly sagaInstanceRepository: SagaInstanceRepository,
+    private readonly sagaInstanceRepository: DefaultSagaInstanceRepository,
     private readonly commandProducer: ConvoyCommandProducer,
     private readonly messageConsumer: ConvoyMessageConsumer,
     private readonly sagaLockManager: SagaLockManager,

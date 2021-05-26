@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-import type { AsyncLikeFn } from '@nest-convoy/common';
+import type { AsyncLikeFn } from './types';
 
 @Injectable()
-export class ConvoyTransactionContext<T> {
+export class ConvoyTransactionContext<T = unknown> {
   get(): T | undefined {
     return undefined;
   }

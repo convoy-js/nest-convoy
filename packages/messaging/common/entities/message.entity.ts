@@ -22,10 +22,10 @@ export class MessageEntity<P extends ObjectLiteral = ObjectLiteral> {
     type: MessageHeadersType,
     nullable: true,
   })
-  headers: MessageHeaders;
+  headers?: MessageHeaders;
 
   @Property({ type: JsonType, nullable: true })
-  payload: P;
+  payload?: P;
 
   @Property()
   published = false;

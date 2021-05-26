@@ -1,3 +1,5 @@
+import { MikroORM } from '@mikro-orm/core';
+import { UseRequestContext } from '@mikro-orm/nestjs';
 import {
   Body,
   Controller,
@@ -10,17 +12,23 @@ import {
 import type { Money } from '../common';
 import type { Order } from './entities';
 import { OrderService } from './order.service';
+import { OrderRepositoryR } from './order.repository';
 
 export class CreateOrderDto {
   orderTotal: Money;
-  customerId: number;
+  customerId: string;
 }
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly order: OrderService) {}
+  constructor(
+    private readonly orm: MikroORM,
+    private readonly order: OrderService,
+    private readonly orderRepository: OrderRepositoryR,
+  ) {}
 
   @Post('')
+  @UseRequestContext()
   create(
     @Body() { customerId, orderTotal }: CreateOrderDto,
   ): Promise<Order | null> {
@@ -32,7 +40,7 @@ export class OrdersController {
 
   @Get(':id')
   async find(@Param('id') id: Order['id']): Promise<Order> {
-    const order = await this.order.find(id);
+    const order = await this.orderRepository.find(id);
     if (!order) {
       throw new NotFoundException(`No order found by ID ${id}`);
     }

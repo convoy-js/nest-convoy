@@ -1,7 +1,7 @@
 import { f, t, uuid } from '@deepkit/type';
 import { Property, Entity, PrimaryKey, Embedded, Enum } from '@mikro-orm/core';
 
-import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
+import { AvroSchema } from '@nest-convoy/kafka';
 
 import { Namespace } from '../../common';
 import { OrderDetails, OrderState, RejectionReason } from '../common';
@@ -11,7 +11,7 @@ import { OrderDetails, OrderState, RejectionReason } from '../common';
 export class Order {
   @PrimaryKey()
   @f
-  id = uuid();
+  id: string = uuid();
 
   @Embedded(() => OrderDetails)
   @t

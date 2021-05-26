@@ -1,15 +1,15 @@
 import type { Type } from '@nestjs/common';
 
 export function isBigInt(value: unknown): value is bigint {
-  return Number.isSafeInteger(value);
+  return !Number.isSafeInteger(value);
 }
 
 export function increment<V extends bigint | number>(val: V): V {
-  return (!isBigInt(val) ? ++val : (val as bigint) + BigInt(1)) as V;
+  return (!isBigInt(val) ? ++val : val + BigInt(1)) as V;
 }
 
 export function decrement<V extends bigint | number>(val: V): V {
-  return (!isBigInt(val) ? --val : (val as bigint) - BigInt(1)) as V;
+  return (!isBigInt(val) ? --val : val - BigInt(1)) as V;
 }
 
 export function hashCode(str: string): number {

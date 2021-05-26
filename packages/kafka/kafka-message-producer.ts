@@ -1,5 +1,5 @@
-import {
-  Injectable,
+import { Injectable } from '@nestjs/common';
+import type {
   OnApplicationBootstrap,
   OnApplicationShutdown,
 } from '@nestjs/common';
@@ -12,7 +12,8 @@ import { KafkaMessageBuilder } from './kafka-message-builder';
 @Injectable()
 export class KafkaMessageProducer
   extends MessageProducer
-  implements OnApplicationBootstrap, OnApplicationShutdown {
+  implements OnApplicationBootstrap, OnApplicationShutdown
+{
   constructor(
     private readonly kafka: Kafka,
     private readonly message: KafkaMessageBuilder,

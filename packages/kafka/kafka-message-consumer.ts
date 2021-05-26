@@ -1,23 +1,20 @@
-import { AsyncLocalStorage } from 'async_hooks';
-import { EntityManager, MikroORM } from '@mikro-orm/core';
-import {
-  Inject,
-  Injectable,
-  Logger,
+import { Injectable, Logger } from '@nestjs/common';
+import type {
   OnApplicationBootstrap,
   OnApplicationShutdown,
 } from '@nestjs/common';
 
-import { MessageConsumer, MessageSubscription } from '@nest-convoy/messaging';
 import {
   ConvoyTransactionContext,
   RuntimeException,
 } from '@nest-convoy/common';
+import { MessageConsumer } from '@nest-convoy/messaging';
+import type { MessageSubscription } from '@nest-convoy/messaging';
 
 import { Kafka } from './kafka';
+import type { KafkaMessageHandler } from './kafka-message';
 import { KafkaMessageBuilder } from './kafka-message-builder';
 import { KafkaMessageProcessor } from './kafka-message-processor';
-import { KafkaMessageHandler } from './kafka-message';
 
 @Injectable()
 export class KafkaMessageConsumer
@@ -30,7 +27,7 @@ export class KafkaMessageConsumer
   constructor(
     private readonly kafka: Kafka,
     private readonly message: KafkaMessageBuilder,
-    private readonly transactionContext: ConvoyTransactionContext, // private readonly orm: MikroORM, // @Inject(NEST_CONVOY_ASYNC_LOCAL_STORAGE) // private readonly storage: AsyncLocalStorage<EntityManager>,
+    private readonly transactionContext: ConvoyTransactionContext<unknown>, // private readonly orm: MikroORM, // @Inject(NEST_CONVOY_ASYNC_LOCAL_STORAGE) // private readonly storage: AsyncLocalStorage<EntityManager>,
   ) {
     super();
   }

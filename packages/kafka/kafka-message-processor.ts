@@ -1,8 +1,11 @@
-import { EachMessagePayload, TopicPartitionOffsetAndMetadata } from 'kafkajs';
+import type {
+  EachMessagePayload,
+  TopicPartitionOffsetAndMetadata,
+} from 'kafkajs';
 
+import type { KafkaMessageHandler, KafkaMessage } from './kafka-message';
 import { TopicPartitionOffsetTracker } from './topic-partition-offset-tracker';
-import { TopicPartitionOffset } from './topic-partition-offsets';
-import { KafkaMessageHandler, KafkaMessage } from './kafka-message';
+import type { TopicPartitionOffset } from './topic-partition-offsets';
 
 export class KafkaMessageProcessor {
   private readonly topicPartitionOffsetTracker =

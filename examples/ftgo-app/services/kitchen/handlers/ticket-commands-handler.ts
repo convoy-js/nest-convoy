@@ -24,6 +24,7 @@ import {
 
 @SagaCommandHandlers('kitchen')
 export class TicketHandlers {
+  Q;
   constructor(private readonly ticket: TicketService) {}
 
   // @CommandDestination(RestaurantServiceChannel.COMMAND)

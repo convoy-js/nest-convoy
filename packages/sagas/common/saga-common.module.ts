@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { Module } from '@nestjs/common';
 
 import { SagaLock, SagaStash } from './entities';
 import { SagaDatabaseLockManager, SagaLockManager } from './saga-lock-manager';

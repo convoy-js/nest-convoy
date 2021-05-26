@@ -1,24 +1,21 @@
-import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { Module } from '@nestjs/common';
 
-import { ConvoyCommonModule, ConvoySagasModule } from '@nest-convoy/core';
-import { ConvoyKafkaCdcOutboxBrokerModule } from '@nest-convoy/messaging/broker/kafka';
+import { ConvoyCommonModule } from '@nest-convoy/core';
+import { ConvoyKafkaCdcOutboxBrokerModule } from '@nest-convoy/kafka';
+import { ConvoySagasModule } from '@nest-convoy/sagas';
 
 import { Channel, defaultOptions } from '../common';
 import { Order } from './entities';
-import { OrdersController } from './orders.controller';
+import { OrderRepositoryR } from './order.repository';
 import { OrderService } from './order.service';
+import { OrdersController } from './orders.controller';
 import { CreateOrderSaga } from './sagas/create-order';
 import { CustomerServiceProxy } from './sagas/participants';
 
 @Module({
   imports: [
     ConvoyCommonModule,
-    // TypeOrmModule.forRoot({
-    //   ...defaultOptions,
-    //   schema: 'orders',
-    //   entities: [Order],
-    // } as TypeOrmModuleOptions),
     ConvoyKafkaCdcOutboxBrokerModule.register(
       {
         clientId: Channel.ORDER,
@@ -39,12 +36,10 @@ import { CustomerServiceProxy } from './sagas/participants';
   ],
   controllers: [OrdersController],
   providers: [
-    CreateOrderSaga,
     OrderService,
+    OrderRepositoryR,
+    CreateOrderSaga,
     CustomerServiceProxy,
-    // OrderDetails,
-    // Order,
-    // Money,
   ],
 })
 export class OrdersModule {}

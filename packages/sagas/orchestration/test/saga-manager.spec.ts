@@ -9,7 +9,7 @@ import {
   SagaActionsBuilder,
   SagaCommandProducer,
   ConvoySagaInstance,
-  SagaInstanceRepository,
+  DefaultSagaInstanceRepository,
   SagaManagerFactory,
   SagaDefinition,
   SagaManager,
@@ -99,7 +99,7 @@ describe('SagaManager', () => {
   let sagaDefinition: NestSagaDefinition<TestSagaData>;
   let sagaSteps: SagaStep<TestSagaData>[];
   let sagaCommandProducer: jest.Mocked<SagaCommandProducer>;
-  let sagaInstanceRepository: SagaInstanceRepository;
+  let sagaInstanceRepository: DefaultSagaInstanceRepository;
 
   function createExpectedSagaInstanceAfterSecondStep(): ConvoySagaInstance {
     return new ConvoySagaInstance(
@@ -223,7 +223,7 @@ describe('SagaManager', () => {
         mockProvider(ConvoyMessageConsumer),
         mockProvider(SagaCommandProducer),
         mockProvider(TestSaga),
-        SagaInstanceRepository,
+        DefaultSagaInstanceRepository,
         SagaLockManager,
         SagaManagerFactory,
       ],
@@ -242,7 +242,7 @@ describe('SagaManager', () => {
     sagaDefinition = new NestSagaDefinition(sagaSteps);
     sagaManager = await module.get(SagaManagerFactory).create(testSaga);
     sagaCommandProducer = module.get(SagaCommandProducer);
-    sagaInstanceRepository = module.get(SagaInstanceRepository);
+    sagaInstanceRepository = module.get(DefaultSagaInstanceRepository);
 
     jest
       .spyOn<any, any>(sagaManager, 'sagaType', 'get')

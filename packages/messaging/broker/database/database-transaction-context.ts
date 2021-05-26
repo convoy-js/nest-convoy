@@ -15,10 +15,10 @@ export class DatabaseTransactionContext extends ConvoyTransactionContext<EntityM
     return TransactionContext.getEntityManager();
   }
 
-  create(cb: AsyncLikeFn<[], void>): Promise<void> {
+  async create(cb: AsyncLikeFn<[], void>): Promise<void> {
     const em = this.orm.em.fork(true, true);
 
-    return TransactionContext.createAsync(em, async () => {
+    await TransactionContext.createAsync(em, async () => {
       await em.begin();
 
       try {

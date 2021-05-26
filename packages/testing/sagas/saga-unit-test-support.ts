@@ -8,7 +8,7 @@ import { SagaLockManager, SagaReplyHeaders } from '@nest-convoy/sagas/common';
 import {
   SagaCommandProducer,
   ConvoySagaInstance,
-  SagaInstanceRepository,
+  DefaultSagaInstanceRepository,
 } from '@nest-convoy/sagas/orchestration';
 import {
   Command,
@@ -31,7 +31,7 @@ import { mockProvider } from '../common';
 import { MessageWithDestination } from './message-with-destination';
 
 @Injectable()
-export class SagaTestInstanceRepository extends SagaInstanceRepository {
+export class SagaTestInstanceRepository extends DefaultSagaInstanceRepository {
   constructor(private readonly moduleRef: ModuleRef) {
     super();
   }
@@ -165,7 +165,7 @@ export class SagaUnitTestSupport<Data> {
     });
   }
 
-  private get sagaInstanceRepository(): SagaInstanceRepository {
+  private get sagaInstanceRepository(): DefaultSagaInstanceRepository {
     return this.moduleRef.get(SagaTestInstanceRepository);
   }
 
@@ -277,7 +277,7 @@ export class TestMessageProducer {
     SagaCommandProducer,
     SagaTestInstanceRepository,
     {
-      provide: SagaInstanceRepository,
+      provide: DefaultSagaInstanceRepository,
       useExisting: SagaTestInstanceRepository,
     },
     SagaUnitTestSupport,

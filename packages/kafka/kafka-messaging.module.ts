@@ -46,6 +46,7 @@ export class ConvoyKafkaCdcOutboxBrokerModule {
     return {
       module: ConvoyKafkaCdcOutboxBrokerModule,
       imports: [
+        ConvoyDatabaseModule.forRoot(options.database),
         ConvoyKafkaBrokerModule.register(kafkaConfig, {
           ...options,
           messageProducerProvider: {
@@ -73,7 +74,6 @@ export class ConvoyKafkaBrokerModule {
       module: ConvoyKafkaBrokerModule,
       imports: [
         ConvoyCoreModule,
-        ConvoyDatabaseModule.forRoot(database),
         ConvoyMessagingConsumerModule.register(
           {
             useExisting: KafkaMessageConsumer,

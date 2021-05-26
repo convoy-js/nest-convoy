@@ -1,23 +1,26 @@
-import { Injectable, OnModuleInit, Optional } from '@nestjs/common';
-import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
+import type { OnModuleInit } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
+import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
 
-import {
-  SagaCommandDispatcherFactory,
-  SagaCommandHandler,
-} from '@nest-convoy/sagas/participant';
-import {
-  DomainEventDispatcherFactory,
-  DomainEventHandlersBuilder,
-  DomainEventMessageHandler,
-} from '@nest-convoy/events';
+import type {
+  CommandMessageHandler,
+  CommandMessageHandlerOptions,
+} from '@nest-convoy/commands';
 import {
   CommandDispatcherFactory,
   CommandHandlers,
   CommandHandlersBuilder,
-  CommandMessageHandler,
-  CommandMessageHandlerOptions,
 } from '@nest-convoy/commands';
+import type { DomainEventMessageHandler } from '@nest-convoy/events';
+import {
+  DomainEventDispatcherFactory,
+  DomainEventHandlersBuilder,
+} from '@nest-convoy/events';
+import {
+  SagaCommandDispatcherFactory,
+  SagaCommandHandler,
+} from '@nest-convoy/sagas/participant';
 
 import {
   AGGREGATE_TYPE_METADATA,
@@ -62,6 +65,8 @@ export class InitializerService implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     const { commands, events } = this.explorer.explore();
+
+    console.log(commands, events);
 
     const commandHandlers = (commands || []).map(async instanceType => {
       const channel = Reflect.getMetadata(

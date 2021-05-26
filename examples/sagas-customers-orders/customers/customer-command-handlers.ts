@@ -22,6 +22,6 @@ export class CustomerCommandHandlers {
       orderTotal,
     );
 
-    return new CustomerCreditReserved(creditReservations);
+    return new CustomerCreditReserved(creditReservations.getItems());
   }
 }

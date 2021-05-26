@@ -1,12 +1,12 @@
-load("//tools:defaults.bzl", "nest_library")
+load("//tools:defaults.bzl", "nest_library", "pkg_npm")
 
 nest_library(
     name = "kafka",
     srcs = glob(
-        ["*.ts"],
-        exclude = ["*.spec.ts"],
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@nest-convoy/messaging/broker/kafka",
+    module_name = "@nest-convoy/kafka",
     deps = [
         "//packages/common",
         "//packages/core",
@@ -21,4 +21,10 @@ nest_library(
         "@npm//kafkajs",
         "@npm//rxjs",
     ],
+)
+
+pkg_npm(
+    name = "package",
+    srcs = ["package.json"],
+    deps = [":kafka"],
 )

@@ -1,9 +1,10 @@
-import { f } from '@deepkit/type';
+import { t, f } from '@deepkit/type';
 
-import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
+import { AvroSchema } from '@nest-convoy/kafka';
 
 import { Namespace } from '../../common';
-import { Customer, CreditReservation } from '../entities';
+import { CreditReservation } from '../entities';
+import type { Customer } from '../entities';
 
 @AvroSchema(Namespace.CUSTOMER)
 export class CustomerCreditReserved {
@@ -15,7 +16,7 @@ export class CustomerCreditReserved {
 
 @AvroSchema(Namespace.CUSTOMER)
 export class CustomerNotFound {
-  constructor(@f readonly id: Customer['id']) {}
+  constructor(@f.type(String) readonly id: Customer['id']) {}
 }
 
 @AvroSchema(Namespace.CUSTOMER)

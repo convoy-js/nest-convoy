@@ -9,7 +9,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 
-import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
+import { AvroSchema } from '@nest-convoy/kafka';
 
 import { Money, Namespace } from '../../common';
 import { CustomerCreditLimitExceeded } from '../api';
@@ -36,7 +36,7 @@ export class Customer {
     cascade: [Cascade.ALL],
     eager: true,
   })
-  @f.array(f.type(() => CreditReservation))
+  // @f.array(f.type(() => CreditReservation))
   creditReservations = new Collection<CreditReservation>(this);
 
   availableCredit(): Money {

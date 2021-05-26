@@ -1,5 +1,6 @@
-import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import { DiscoveryModule } from '@golevelup/nestjs-discovery';
+import type { DynamicModule, Provider } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 import { ConvoyMessagingCommonModule } from '@nest-convoy/messaging/common';
 

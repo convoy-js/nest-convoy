@@ -1,7 +1,5 @@
-import {
-  TopicPartitionOffset,
-  TopicPartitionOffsets,
-} from './topic-partition-offsets';
+import { TopicPartitionOffsets } from './topic-partition-offsets';
+import type { TopicPartitionOffset } from './topic-partition-offsets';
 
 export class TopicPartitionOffsetTracker {
   // HINT: The index of TopicPartitionOffsets[] is the partition
@@ -17,7 +15,7 @@ export class TopicPartitionOffsetTracker {
     return tpo;
   }
 
-  putState(topic: string, partition: number, tpo: TopicPartitionOffsets) {
+  putState(topic: string, partition: number, tpo: TopicPartitionOffsets): void {
     if (!this.state.has(topic)) {
       this.state.set(topic, []);
     }
@@ -45,7 +43,7 @@ export class TopicPartitionOffsetTracker {
     });
   }
 
-  offsetsToCommit(): TopicPartitionOffset[] {
+  offsetsToCommit(): readonly TopicPartitionOffset[] {
     return [...this.state.entries()].flatMap(([topic, partitions]) =>
       partitions
         .map<[number, bigint | undefined]>((tpo, partition) => [
