@@ -1,12 +1,6 @@
-import { Logger, Type } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 
-import { Instance } from '@nest-convoy/common';
-import {
-  Message,
-  MessageBuilder,
-  ConvoyMessageConsumer,
-  MessageHeaders,
-} from '@nest-convoy/messaging';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import {
   CommandMessageHeaders,
   CommandReplyOutcome,
@@ -16,22 +10,34 @@ import {
   ConvoyCommandProducer,
   LockTarget,
 } from '@nest-convoy/commands';
+import type { Instance, Type } from '@nest-convoy/common';
+import type { Message } from '@nest-convoy/messaging';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import {
+  MessageBuilder,
+  ConvoyMessageConsumer,
+  MessageHeaders,
+} from '@nest-convoy/messaging';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import {
   CannotClaimResourceLockException,
   SagaCommandHeaders,
   SagaLockManager,
+  SagaMessageHeaders,
   SagaReplyHeaders,
   SagaUnlockCommand,
   StateMachineEmptyException,
 } from '@nest-convoy/sagas/common';
 
-import { NestSagaInstance } from './saga-instance';
-import { SagaInstanceRepository } from './saga-instance-repository';
-import { SagaCommandProducer } from './saga-command-producer';
-import { Saga, SagaLifecycleHooks } from './saga';
-import { SagaDefinition } from './saga-definition';
-import { SagaActions } from './saga-actions';
 import { DestinationAndResource } from './destination-and-resource';
+import type { Saga, SagaLifecycleHooks } from './saga';
+import type { SagaActions } from './saga-actions';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { SagaCommandProducer } from './saga-command-producer';
+import type { SagaDefinition } from './saga-definition';
+import { ConvoySagaInstance } from './saga-instance';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { SagaInstanceRepository } from './saga-instance-repository';
 
 export class SagaManager<Data> {
   private readonly logger = new Logger(this.constructor.name, true);
@@ -92,7 +98,7 @@ export class SagaManager<Data> {
   }
 
   private updateState(
-    sagaInstance: NestSagaInstance<Data>,
+    sagaInstance: ConvoySagaInstance<Data>,
     actions: SagaActions<Data>,
   ): void {
     if (actions.updatedState) {
@@ -104,14 +110,13 @@ export class SagaManager<Data> {
 
   private async performEndStateActions(
     sagaId: string,
-    sagaInstance: NestSagaInstance<Data>,
+    sagaInstance: ConvoySagaInstance<Data>,
     compensating: boolean,
     sagaData: Data,
   ): Promise<void> {
     for (const dr of sagaInstance.destinationsAndResources) {
-      const headers = new MessageHeaders();
-      headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
-      headers.set(SagaCommandHeaders.SAGA_TYPE, this.sagaType);
+      const headers = new SagaMessageHeaders(this.sagaType, sagaId);
+
       await this.commandProducer.send(
         dr.destination,
         new SagaUnlockCommand(),
@@ -132,7 +137,7 @@ export class SagaManager<Data> {
   }
 
   private async processActions(
-    sagaInstance: NestSagaInstance<Data>,
+    sagaInstance: ConvoySagaInstance<Data>,
     sagaData: Data,
     actions: SagaActions<Data>,
   ): Promise<void> {
@@ -236,22 +241,22 @@ export class SagaManager<Data> {
     );
   }
 
-  create(data: Data): Promise<NestSagaInstance<Data>>;
-  create(data: Data, lockTarget?: string): Promise<NestSagaInstance<Data>>;
+  create(data: Data): Promise<ConvoySagaInstance<Data>>;
+  create(data: Data, lockTarget?: string): Promise<ConvoySagaInstance<Data>>;
   create(
     data: Data,
     targetType: Instance,
     targetId: string,
-  ): Promise<NestSagaInstance<Data>>;
+  ): Promise<ConvoySagaInstance<Data>>;
   async create(
     sagaData: Data,
     target?: string | Instance,
     targetId?: string,
-  ): Promise<NestSagaInstance<Data>> {
+  ): Promise<ConvoySagaInstance<Data>> {
     const lockTarget = new LockTarget(target, targetId);
     const resource = lockTarget.target;
 
-    let sagaInstance = new NestSagaInstance<Data>(
+    let sagaInstance = new ConvoySagaInstance<Data>(
       this.sagaType,
       null as never,
       '????',

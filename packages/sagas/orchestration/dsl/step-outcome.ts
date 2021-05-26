@@ -1,7 +1,7 @@
-import { CommandWithDestination } from '@nest-convoy/commands/consumer';
-import { RuntimeException } from '@nest-convoy/common';
+import type { CommandWithDestination } from '@nest-convoy/commands/consumer';
+import type { RuntimeException } from '@nest-convoy/common';
 
-import { SagaActionsBuilder } from '../saga-actions';
+import type { SagaActionsBuilder } from '../saga-actions';
 
 export interface StepOutcome {
   visit<Data>(

@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository, MikroORM } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
 
-import { Message, MessageEntity } from '@nest-convoy/messaging/common';
+import { MessageEntity } from '@nest-convoy/messaging/common';
+import type { Message } from '@nest-convoy/messaging/common';
 import { MessageProducer } from '@nest-convoy/messaging/producer';
 
 @Injectable()
 export class DatabaseMessageProducer extends MessageProducer {
   constructor(
-    private readonly orm: MikroORM,
     @InjectRepository(MessageEntity)
-    private readonly messageRepository: EntityRepository<MessageEntity>,
+    private readonly messages: EntityRepository<MessageEntity>,
   ) {
     super();
   }
@@ -23,16 +23,14 @@ export class DatabaseMessageProducer extends MessageProducer {
     destination: string,
     messages: readonly Message[],
   ): Promise<void> {
-    await this.orm.em.transactional(async em => {
-      messages.forEach(message => {
-        const entity = this.messageRepository.create({
-          id: message.id,
-          headers: message.getHeaders(),
-          payload: message.getPayload(),
-          destination,
-        });
-        em.persist(entity);
+    messages.forEach(message => {
+      const entity = this.messages.create({
+        id: message.id,
+        headers: message.getHeaders(),
+        payload: message.getPayload(),
+        destination,
       });
+      this.messages.persist(entity);
     });
   }
 }

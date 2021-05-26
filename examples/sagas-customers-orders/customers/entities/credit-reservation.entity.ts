@@ -1,11 +1,5 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { f, t } from '@deepkit/type';
+import { f, t, uuid } from '@deepkit/type';
+import { Embedded, Entity, PrimaryKey, ManyToOne } from '@mikro-orm/core';
 
 import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
 
@@ -15,23 +9,26 @@ import { Customer } from './customer.entity';
 @Entity()
 @AvroSchema(Namespace.CUSTOMER)
 export class CreditReservation {
-  @PrimaryGeneratedColumn()
+  @PrimaryKey()
   @f
-  id: number;
+  id: string = uuid();
 
-  @PrimaryColumn()
+  @PrimaryKey()
   @f
-  orderId: number;
+  orderId: string;
 
-  @Column(() => Money)
+  @Embedded(() => Money)
   @t
   amount: Money;
 
-  @ManyToOne(() => Customer, customer => customer.creditReservations)
+  @ManyToOne({
+    entity: () => Customer,
+    inversedBy: customer => customer.creditReservations,
+  })
   @f.type(() => Customer)
   customer: Customer;
 
-  constructor(orderId: number, amount: Money) {
+  constructor(orderId: string, amount: Money) {
     this.orderId = orderId;
     this.amount = amount;
   }

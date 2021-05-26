@@ -1,26 +1,18 @@
-import {
-  Inject,
-  Injectable,
-  OnModuleInit,
-  Optional,
-  Type,
-} from '@nestjs/common';
-import { DiscoveryService } from '@golevelup/nestjs-discovery';
 import { getClassSchema } from '@deepkit/type';
-import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
-
-import { Message, MessageHeaders } from '@nest-convoy/messaging';
-
-import { KAFKA_SCHEMA_REGISTRY } from './tokens';
-import { KafkaMessage } from './kafka-message';
-import {
-  AVRO_SCHEMA_METADATA,
-  AvroSchemaMetadata,
-  createAvroSchema,
-} from './avro-schema';
-
-import type { EachMessagePayload } from 'kafkajs';
+import { DiscoveryService } from '@golevelup/nestjs-discovery';
+import type { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
+import { Inject, Injectable, Optional } from '@nestjs/common';
+import type { OnModuleInit, Type } from '@nestjs/common';
 import type { schema } from 'avsc';
+import type { EachMessagePayload } from 'kafkajs';
+
+import type { Message } from '@nest-convoy/messaging';
+import { MessageHeaders } from '@nest-convoy/messaging';
+
+import { KafkaMessage } from '../kafka-message';
+import { KAFKA_SCHEMA_REGISTRY } from '../tokens';
+import type { AvroSchemaMetadata } from './avro-schema';
+import { AVRO_SCHEMA_METADATA, createAvroSchema } from './avro-schema';
 
 @Injectable()
 export class AvroSchemaRegistry implements OnModuleInit {

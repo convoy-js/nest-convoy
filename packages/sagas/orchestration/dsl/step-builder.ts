@@ -1,11 +1,11 @@
-import { NestSagaDefinitionBuilder } from './nest-saga-definition-builder';
-import { InvokeParticipantStepBuilder } from './invoke-participant-step-builder';
-import { CommandEndpoint } from './command-endpoint';
-import { LocalStepBuilder } from './local-step-builder';
+import type { Command, CommandProvider } from '@nest-convoy/commands/common';
+import type { Consumer, Predicate } from '@nest-convoy/common';
 
 import type { SagaDefinition } from '../saga-definition';
-import type { Consumer, Predicate } from '@nest-convoy/common';
-import type { Command, CommandProvider } from '@nest-convoy/commands/common';
+import type { CommandEndpoint } from './command-endpoint';
+import { InvokeParticipantStepBuilder } from './invoke-participant-step-builder';
+import { LocalStepBuilder } from './local-step-builder';
+import type { NestSagaDefinitionBuilder } from './nest-saga-definition-builder';
 import type {
   Compensation,
   WithArgs,
@@ -70,8 +70,6 @@ export class StepBuilder<Data> implements WithCompensationBuilder<Data> {
     ...args: WithArgs<Data, C>
   ): InvokeParticipantStepBuilder<Data> {
     return new InvokeParticipantStepBuilder<Data>(this.parent).withCompensation(
-      // TODO: No clue why this cannot compile, but "invokeParticipant" can
-      // @ts-ignore
       ...args,
     );
   }

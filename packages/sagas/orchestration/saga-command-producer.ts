@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 
-import { Message, MessageHeaders } from '@nest-convoy/messaging';
-import { SagaCommandHeaders } from '@nest-convoy/sagas/common';
-import {
-  CommandWithDestination,
-  ConvoyCommandProducer,
-} from '@nest-convoy/commands';
+import type { CommandWithDestination } from '@nest-convoy/commands';
+import { ConvoyCommandProducer } from '@nest-convoy/commands';
+import type { Message } from '@nest-convoy/messaging';
+import { SagaMessageHeaders } from '@nest-convoy/sagas/common';
 
 @Injectable()
 export class SagaCommandProducer {
   constructor(private readonly commandProducer: ConvoyCommandProducer) {}
 
+  // TODO: Kafka transactions
   async sendCommands(
     sagaType: string,
     sagaId: string,
@@ -20,9 +19,7 @@ export class SagaCommandProducer {
     let message: Message | undefined;
 
     for (const command of commands) {
-      const headers = new MessageHeaders();
-      headers.set(SagaCommandHeaders.SAGA_TYPE, sagaType);
-      headers.set(SagaCommandHeaders.SAGA_ID, sagaId);
+      const headers = new SagaMessageHeaders(sagaType, sagaId);
 
       message = await this.commandProducer.send(
         command.channel,

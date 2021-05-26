@@ -1,5 +1,5 @@
-import { Column } from 'typeorm';
-import { f } from '@deepkit/type/dist/cjs';
+import { f } from '@deepkit/type';
+import { Property } from '@mikro-orm/core';
 
 import { Float, AvroSchema } from '@nest-convoy/messaging/broker/kafka';
 
@@ -7,7 +7,7 @@ import { Namespace } from './channel';
 
 @AvroSchema(Namespace.COMMON)
 export class Money {
-  @Column({ default: 0.0, type: Float })
+  @Property({ type: 'float' })
   @f.type(Float)
   amount: number;
 
@@ -19,7 +19,7 @@ export class Money {
     return new Money(this.amount + other.amount);
   }
 
-  subtract(other: Money) {
+  subtract(other: Money): Money {
     return new Money(this.amount - other.amount);
   }
 

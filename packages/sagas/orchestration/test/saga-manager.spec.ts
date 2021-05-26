@@ -8,7 +8,7 @@ import {
   SagaActions,
   SagaActionsBuilder,
   SagaCommandProducer,
-  NestSagaInstance,
+  ConvoySagaInstance,
   SagaInstanceRepository,
   SagaManagerFactory,
   SagaDefinition,
@@ -89,7 +89,7 @@ describe('SagaManager', () => {
     .withHeader(ReplyMessageHeaders.REPLY_OUTCOME, CommandReplyOutcome.SUCCESS)
     .build();
 
-  let sagaInstance: NestSagaInstance<TestSagaData>;
+  let sagaInstance: ConvoySagaInstance<TestSagaData>;
   let sagaManager: SagaManager<TestSagaData>;
   let sagaMessageHandler: MessageHandler;
   let initialSagaData: TestSagaData;
@@ -101,8 +101,8 @@ describe('SagaManager', () => {
   let sagaCommandProducer: jest.Mocked<SagaCommandProducer>;
   let sagaInstanceRepository: SagaInstanceRepository;
 
-  function createExpectedSagaInstanceAfterSecondStep(): NestSagaInstance {
-    return new NestSagaInstance(
+  function createExpectedSagaInstanceAfterSecondStep(): ConvoySagaInstance {
+    return new ConvoySagaInstance(
       sagaType,
       sagaId,
       'state-B',
@@ -113,7 +113,7 @@ describe('SagaManager', () => {
   }
 
   function createExpectedSagaInstanceAfterFirstStep() {
-    return new NestSagaInstance(
+    return new ConvoySagaInstance(
       sagaType,
       sagaId,
       'state-A',
@@ -144,8 +144,8 @@ describe('SagaManager', () => {
   }
 
   function assertSagaInstanceEquals(
-    expectedSagaInstance: NestSagaInstance,
-    sagaInstance: NestSagaInstance,
+    expectedSagaInstance: ConvoySagaInstance,
+    sagaInstance: ConvoySagaInstance,
   ): void {
     expect(expectedSagaInstance).toMatchObject(sagaInstance);
   }

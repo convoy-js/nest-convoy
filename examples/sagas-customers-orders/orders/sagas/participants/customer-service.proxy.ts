@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 import { Success, CommandEndpoint } from '@nest-convoy/core';
 
-import { ReserveCreditCommand } from '../../../customers/api';
 import { Channel } from '../../../common';
+import { ReserveCreditCommand } from '../../../customers/api';
 
 @Injectable()
 export class CustomerServiceProxy {

@@ -1,3 +1,3 @@
-export * from './default-typeorm-options';
+export * from './default-mikro-orm-options';
 export * from './money';
 export * from './channel';

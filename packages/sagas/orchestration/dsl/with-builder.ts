@@ -1,6 +1,7 @@
-import type { AsyncLikeFn, Predicate } from '@nest-convoy/common';
-import type { CommandWithDestination } from '@nest-convoy/commands/consumer';
 import type { Command, CommandProvider } from '@nest-convoy/commands/common';
+import type { CommandWithDestination } from '@nest-convoy/commands/consumer';
+import type { AsyncLikeFn, Predicate } from '@nest-convoy/common';
+
 import type { CommandEndpoint } from './command-endpoint';
 
 export type Compensation<

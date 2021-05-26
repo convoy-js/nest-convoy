@@ -1,58 +1,49 @@
-import { DynamicModule, Module } from '@nestjs/common';
+// import type { Options } from '@mikro-orm/core';
+// import { MikroOrmModule } from '@mikro-orm/nestjs';
+// import type { DynamicModule } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { EntityManager, MikroORMOptions } from '@mikro-orm/core';
-import { AsyncLocalStorage } from 'async_hooks';
 
-import {
-  NEST_CONVOY_CONNECTION,
-  NEST_CONVOY_SCHEMA,
-  NEST_CONVOY_ASYNC_LOCAL_STORAGE,
-} from '@nest-convoy/common';
+// import {
+//   ConvoyTransactionContext,
+//   NEST_CONVOY_CONNECTION,
+// } from '@nest-convoy/common';
+// import type { DatabaseTransactionContext } from '@nest-convoy/messaging/broker/database';
 
 import { ConvoyCommonModule } from './common.module';
 import { InitializerService } from './initializer.service';
 
-// export type ConvoyTypeOrmOptions = Omit<
-//   TypeOrmModuleOptions,
-//   'name' | 'schema'
-// >;
-
-export type ConvoyMikroOrmOptions = Omit<
-  MikroORMOptions,
-  'autoLoadEntities' | 'registerRequestContext' | 'context'
->;
-
-@Module({})
+@Global()
+@Module({
+  imports: [ConvoyCommonModule],
+  providers: [ExplorerService, InitializerService],
+  exports: [ConvoyCommonModule],
+})
 export class ConvoyCoreModule {
-  static forRoot(options?: ConvoyMikroOrmOptions): DynamicModule {
-    const storage = new AsyncLocalStorage<EntityManager>();
-
-    return {
-      module: ConvoyCoreModule,
-      imports: [
-        ConvoyCommonModule,
-        ...(options
-          ? [
-              MikroOrmModule.forRoot({
-                name: '',
-                registerRequestContext: false,
-                autoLoadEntities: true,
-                context: () => storage.getStore(),
-                ...options,
-              }),
-            ]
-          : []),
-      ],
-      providers: [
-        {
-          provide: NEST_CONVOY_ASYNC_LOCAL_STORAGE,
-          useValue: storage,
-        },
-        ExplorerService,
-        InitializerService,
-      ],
-      exports: options ? [MikroOrmModule] : [],
-    };
-  }
+  // static forRoot(): DynamicModule {
+  //   const module: Required<Omit<DynamicModule, 'controllers' | 'global'>> = {
+  //     module: ConvoyCoreModule,
+  //     imports: [ConvoyCommonModule],
+  //     providers: [ExplorerService, InitializerService],
+  //     exports: [ConvoyCommonModule],
+  //   };
+  //
+  //   if (options.database) {
+  //     module.imports.push(
+  //       MikroOrmModule.forRootAsync({
+  //         useFactory: (ctx: DatabaseTransactionContext) => ({
+  //           name: NEST_CONVOY_CONNECTION,
+  //           registerRequestContext: false,
+  //           autoLoadEntities: true,
+  //           context: () => ctx.get(),
+  //           ...options.database,
+  //         }),
+  //         inject: [ConvoyTransactionContext],
+  //       }),
+  //     );
+  //     module.exports.push(MikroOrmModule);
+  //   }
+  //
+  //   return module;
+  // }
 }

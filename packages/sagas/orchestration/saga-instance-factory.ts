@@ -7,7 +7,7 @@ import { MissingSagaManagerException } from '@nest-convoy/sagas/common';
 import { Saga } from './saga';
 import { SagaManager } from './saga-manager';
 import { SagaManagerFactory } from './saga-manager-factory';
-import { NestSagaInstance } from './saga-instance';
+import { ConvoySagaInstance } from './saga-instance';
 
 @Injectable()
 export class SagaInstanceFactory implements OnModuleInit {
@@ -50,7 +50,7 @@ export class SagaInstanceFactory implements OnModuleInit {
   async create<SagaData>(
     sagaType: Type<Saga<SagaData>>,
     data: SagaData,
-  ): Promise<NestSagaInstance<SagaData>> {
+  ): Promise<ConvoySagaInstance<SagaData>> {
     if (!this.sagaManagers.has(sagaType)) {
       throw new MissingSagaManagerException(sagaType);
     }

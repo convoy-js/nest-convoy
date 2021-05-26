@@ -1,34 +1,34 @@
-import { Type } from '@nestjs/common';
-
-import { IllegalArgumentException, Predicate } from '@nest-convoy/common';
-import { Command } from '@nest-convoy/commands/common';
+import type { Command } from '@nest-convoy/commands/common';
 import {
   COMMAND_WITH_DESTINATION,
   CommandWithDestination,
 } from '@nest-convoy/commands/consumer';
-
-import { SagaDefinition } from '../saga-definition';
-import { NestSagaDefinitionBuilder } from './nest-saga-definition-builder';
-import { BaseStepBuilder, StepBuilder } from './step-builder';
-import { SagaStepReplyHandler } from './saga-step';
-import { CommandEndpoint } from './command-endpoint';
 import {
-  BaseParticipantInvocation,
+  IllegalArgumentException,
+  RuntimeException,
+} from '@nest-convoy/common';
+import type { Type } from '@nest-convoy/common';
+
+import type { SagaDefinition } from '../saga-definition';
+import { CommandEndpoint } from './command-endpoint';
+import type { NestSagaDefinitionBuilder } from './nest-saga-definition-builder';
+import type { BaseParticipantInvocation } from './participant-invocation';
+import {
   ParticipantEndpointInvocation,
   ParticipantInvocation,
 } from './participant-invocation';
-import {
-  ParticipantInvocationStep,
-  ReplyHandlers,
-} from './participant-invocation-step';
-import {
+import { ParticipantInvocationStep } from './participant-invocation-step';
+import type { ReplyHandlers } from './participant-invocation-step';
+import type { SagaStepReplyHandler } from './saga-step';
+import type { BaseStepBuilder } from './step-builder';
+import { StepBuilder } from './step-builder';
+import type {
   WithActionBuilder,
   WithCompensationBuilder,
   WithArgs,
   WithEndpointArgs,
   WithoutEndpointArgs,
   WithDestinationArgs,
-  Compensation,
 } from './with-builder';
 
 function isEndpoint<Data, C extends Command>(
@@ -37,7 +37,7 @@ function isEndpoint<Data, C extends Command>(
   return args[0] instanceof CommandEndpoint;
 }
 
-function is<Data, C extends Command>(
+function isNotEndpoint<Data, C extends Command>(
   args: WithArgs<Data, C>,
 ): args is WithoutEndpointArgs<Data, C> {
   return !(args[0] instanceof CommandEndpoint);
@@ -47,7 +47,8 @@ export class InvokeParticipantStepBuilder<Data>
   implements
     BaseStepBuilder<Data>,
     WithCompensationBuilder<Data>,
-    WithActionBuilder<Data> {
+    WithActionBuilder<Data>
+{
   private readonly actionReplyHandlers: ReplyHandlers<Data> = new Map();
   private readonly compensationReplyHandlers: ReplyHandlers<Data> = new Map();
   private action?: BaseParticipantInvocation<Data>;
@@ -80,14 +81,15 @@ export class InvokeParticipantStepBuilder<Data>
         }
 
         if (!destination) {
-          throw new Error('Missing @CommandDestination() for ' + cmd);
+          throw new RuntimeException(
+            'Missing @CommandDestination() for ' + cmd,
+          );
         }
 
         return new CommandWithDestination<C>(destination, cmd as C);
       },
-      // @ts-ignore
       ...args,
-    ];
+    ] as unknown as WithDestinationArgs<Data, C>;
   }
 
   private addStep(): void {
@@ -110,14 +112,14 @@ export class InvokeParticipantStepBuilder<Data>
         args[1].bind(this.parent.saga),
         args[2]?.bind(this.parent.saga),
       );
-    } else if (is(args)) {
+    } else if (isNotEndpoint(args)) {
       const destArgs = this.wrapCommandProvider(args);
       return new ParticipantInvocation<Data, C>(
         destArgs[0].bind(this.parent.saga),
         destArgs[1]?.bind(this.parent.saga),
       );
     } else {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException(args[0]);
     }
   }
 
@@ -129,22 +131,22 @@ export class InvokeParticipantStepBuilder<Data>
   /**
    * With compensation
    */
-  withCompensation<C extends Command>(
-    compensation: Compensation<Data, C>,
-  ): this;
-  withCompensation<C extends Command>(
-    compensation: Compensation<Data, C>,
-    compensationPredicate: Predicate<Data>,
-  ): this;
-  withCompensation<C extends Command>(
-    commandEndpoint: CommandEndpoint<C>,
-    commandProvider: Compensation<Data, C>,
-  ): this;
-  withCompensation<C extends Command>(
-    commandEndpoint: CommandEndpoint<C>,
-    commandProvider: Compensation<Data, C>,
-    compensationPredicate: Predicate<Data>,
-  ): this;
+  // withCompensation<C extends Command>(
+  //   compensation: Compensation<Data, C>,
+  // ): this;
+  // withCompensation<C extends Command>(
+  //   compensation: Compensation<Data, C>,
+  //   compensationPredicate: Predicate<Data>,
+  // ): this;
+  // withCompensation<C extends Command>(
+  //   commandEndpoint: CommandEndpoint<C>,
+  //   commandProvider: Compensation<Data, C>,
+  // ): this;
+  // withCompensation<C extends Command>(
+  //   commandEndpoint: CommandEndpoint<C>,
+  //   commandProvider: Compensation<Data, C>,
+  //   compensationPredicate: Predicate<Data>,
+  // ): this;
   withCompensation<C extends Command>(...args: WithArgs<Data, C>): this {
     this.compensation = this.with(args);
     return this;

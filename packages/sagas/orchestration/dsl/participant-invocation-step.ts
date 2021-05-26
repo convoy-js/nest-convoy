@@ -1,6 +1,6 @@
 import { Message } from '@nest-convoy/messaging/common';
 import { ReplyMessageHeaders } from '@nest-convoy/commands/common';
-import { AsyncLike } from '@nest-convoy/common';
+import { RuntimeException } from '@nest-convoy/common';
 
 import { SagaStep, SagaStepReply } from './saga-step';
 import { BaseParticipantInvocation } from './participant-invocation';
@@ -17,21 +17,22 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
   ) {}
 
   private getParticipantInvocation(
-    compensation: boolean,
+    compensating: boolean,
   ): BaseParticipantInvocation<Data> | undefined {
-    return compensation ? this.compensation : this.participantInvocation;
+    return compensating ? this.compensation : this.participantInvocation;
   }
 
-  hasAction(data: Data): AsyncLike<boolean> {
-    return typeof this.participantInvocation?.isInvocable === 'function'
-      ? this.participantInvocation?.isInvocable?.(data)
-      : !!this.participantInvocation;
+  async hasAction(data: Data): Promise<boolean> {
+    return (
+      (await this.participantInvocation?.isInvocable?.(data)) ??
+      !!this.participantInvocation
+    );
   }
 
-  hasCompensation(data: Data): AsyncLike<boolean> {
-    return typeof this.compensation?.isInvocable === 'function'
-      ? this.compensation?.isInvocable?.(data)
-      : !!this.compensation;
+  async hasCompensation(data: Data): Promise<boolean> {
+    return (
+      (await this.compensation?.isInvocable?.(data)) ?? !!this.compensation
+    );
   }
 
   getReply<T>(
@@ -58,7 +59,7 @@ export class ParticipantInvocationStep<Data> implements SagaStep<Data> {
   ): Promise<StepOutcome> {
     const invocation = this.getParticipantInvocation(compensating);
     if (!invocation) {
-      throw new Error('Invocation missing');
+      throw new RuntimeException('Invocation missing');
     }
     const command = await invocation.createCommandToSend(data);
 

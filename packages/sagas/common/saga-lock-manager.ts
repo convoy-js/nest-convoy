@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository, LockMode, MikroORM, wrap } from '@mikro-orm/core';
+import { EntityRepository, LockMode, wrap } from '@mikro-orm/core';
 
 import { Message } from '@nest-convoy/messaging/common';
 import { RuntimeException } from '@nest-convoy/common';
@@ -30,7 +30,6 @@ export class SagaLockManager {
 @Injectable()
 export class SagaDatabaseLockManager extends SagaLockManager {
   constructor(
-    private readonly orm: MikroORM,
     @InjectRepository(SagaLock)
     private readonly sagaLockRepository: EntityRepository<SagaLock>,
     @InjectRepository(SagaStash)
@@ -83,13 +82,12 @@ export class SagaDatabaseLockManager extends SagaLockManager {
     message: Message,
   ): Promise<void> {
     const messageHeaders = message.getHeaders().asRecord();
-    const messageId = message.getRequiredHeader(Message.ID);
     const messagePayload = message.getPayload();
 
     const sagaStash = this.sagaStashRepository.create({
       messagePayload,
       messageHeaders,
-      messageId,
+      message.id,
       sagaType,
       sagaId,
       target,
@@ -99,38 +97,37 @@ export class SagaDatabaseLockManager extends SagaLockManager {
   }
 
   async unlock(sagaId: string, target: string): Promise<Message | void> {
-    return this.orm.em.transactional(async em => {
-      const owningSaga = await this.getLockedSagaByTarget(target);
-      if (!owningSaga) {
-        throw new RuntimeException(
-          `SagaLockEntity is not present for ${target} ${sagaId}`,
-        );
-      }
+    const owningSaga = await this.getLockedSagaByTarget(target);
+    if (!owningSaga) {
+      throw new RuntimeException(
+        `SagaLock is not present for ${target} (${sagaId})`,
+      );
+    }
 
-      if (owningSaga.sagaId !== sagaId) {
-        throw new RuntimeException(
-          `Expected owner of ${target} to be ${sagaId} but is ${owningSaga.sagaId}`,
-        );
-      }
+    if (owningSaga.sagaId !== sagaId) {
+      throw new RuntimeException(
+        `Expected owner of ${target} to be ${sagaId}, but is ${owningSaga.sagaId}`,
+      );
+    }
 
-      const stashedMessage = await this.sagaStashRepository.findOne({ target });
-      if (!stashedMessage) {
-        em.remove(owningSaga);
-        return;
-      }
+    const stashedMessage = await this.sagaStashRepository.findOne({ target });
+    if (!stashedMessage) {
+      this.sagaLockRepository.remove(owningSaga);
+      return;
+    }
 
+    this.sagaLockRepository.persist(
       wrap(owningSaga).assign({
         sagaType: stashedMessage.sagaType,
         sagaId: stashedMessage.sagaId,
-      });
-      em.persist(owningSaga);
+      }),
+    );
 
-      em.remove(stashedMessage);
+    this.sagaStashRepository.remove(stashedMessage);
 
-      return new Message(
-        stashedMessage.messagePayload,
-        stashedMessage.messageHeaders,
-      );
-    });
+    return new Message(
+      stashedMessage.messagePayload,
+      stashedMessage.messageHeaders,
+    );
   }
 }

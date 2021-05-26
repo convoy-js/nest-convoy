@@ -1,6 +1,6 @@
 import { Property, Entity, PrimaryKey, JsonType } from '@mikro-orm/core';
 
-import { ObjectLiteral } from '@nest-convoy/common';
+import type { ObjectLiteral } from '@nest-convoy/common';
 import {
   MessageHeaders,
   MessageHeadersType,

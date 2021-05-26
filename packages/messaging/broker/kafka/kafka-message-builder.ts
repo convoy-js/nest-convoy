@@ -15,7 +15,7 @@ import {
 import { KafkaMessage } from './kafka-message';
 import { KAFKA_SCHEMA_REGISTRY } from './tokens';
 // import { avroSchemaRegistry } from './avro-schema';
-import { AvroSchemaRegistry } from './avro-schema-registry';
+import { AvroSchemaRegistry } from './schema/avro-schema-registry';
 
 @Injectable()
 export class KafkaMessageBuilder {

@@ -10,7 +10,7 @@ import {
 
 import { MessageConsumer, MessageSubscription } from '@nest-convoy/messaging';
 import {
-  NEST_CONVOY_ASYNC_LOCAL_STORAGE,
+  ConvoyTransactionContext,
   RuntimeException,
 } from '@nest-convoy/common';
 
@@ -30,9 +30,7 @@ export class KafkaMessageConsumer
   constructor(
     private readonly kafka: Kafka,
     private readonly message: KafkaMessageBuilder,
-    private readonly orm: MikroORM,
-    @Inject(NEST_CONVOY_ASYNC_LOCAL_STORAGE)
-    private readonly storage: AsyncLocalStorage<EntityManager>,
+    private readonly transactionContext: ConvoyTransactionContext, // private readonly orm: MikroORM, // @Inject(NEST_CONVOY_ASYNC_LOCAL_STORAGE) // private readonly storage: AsyncLocalStorage<EntityManager>,
   ) {
     super();
   }
@@ -94,17 +92,16 @@ export class KafkaMessageConsumer
             `No KafkaMessageProcessor available for topic ${payload.topic}`,
           );
         }
-        const message = await this.message.from(payload);
-        console.log(
-          await new Promise(resolve =>
-            this.storage.run(this.orm.em.fork(true, true), resolve),
-          ),
-        );
 
-        await processor.process(message, payload);
+        const message = await this.message.from(payload);
+        await this.transactionContext.create(async () => {
+          await processor.process(message, payload);
+        });
+
         await this.maybeCommitOffsets(processor);
       },
     });
+
     await this.kafka.consumer.connect();
   }
 

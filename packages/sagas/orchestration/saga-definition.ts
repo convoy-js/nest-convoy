@@ -1,6 +1,6 @@
-import { Message } from '@nest-convoy/messaging';
+import type { Message } from '@nest-convoy/messaging';
 
-import { SagaActions } from './saga-actions';
+import type { SagaActions } from './saga-actions';
 
 export interface SagaDefinition<Data> {
   start(sagaData: Data): Promise<SagaActions<Data>>;

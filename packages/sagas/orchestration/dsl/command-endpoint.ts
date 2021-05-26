@@ -1,6 +1,5 @@
-import { Type } from '@nestjs/common';
-
-import { Command } from '@nest-convoy/commands/common';
+import type { Command } from '@nest-convoy/commands/common';
+import type { Type } from '@nest-convoy/common';
 
 export class CommandEndpoint<C extends Command> {
   constructor(

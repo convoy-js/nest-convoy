@@ -1,37 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityRepository } from '@mikro-orm/core';
+import type { EntityData } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
 
-import { Customer } from './entities';
-import { CustomerNotFound } from './api';
 import { Money } from '../common';
+import { CustomerNotFound } from './api';
+import { Customer } from './entities';
 
 @Injectable()
 export class CustomerService {
   constructor(
     @InjectRepository(Customer)
-    private readonly customerRepository: Repository<Customer>,
+    private readonly customerRepository: EntityRepository<Customer>,
   ) {}
 
-  async find(id: Customer['id']): Promise<Customer | undefined> {
-    return this.customerRepository.findOne(id);
+  async findOrFail(id: Customer['id']): Promise<Customer> {
+    const customer = await this.find(id);
+    if (!customer) {
+      throw new CustomerNotFound(id);
+    }
+    return customer;
   }
 
-  async create(customer: Partial<Customer>): Promise<Customer> {
-    return this.customerRepository.save(customer);
+  async find(id: Customer['id']): Promise<Customer | null> {
+    return this.customerRepository.findOne({ id });
+  }
+
+  save(data: EntityData<Customer>): Customer {
+    const order = this.customerRepository.create(data);
+    this.customerRepository.persist(order);
+    return order;
   }
 
   async reserveCredit(
     customerId: Customer['id'],
-    orderId: number,
+    orderId: string,
     orderTotal: Money,
   ): Promise<Customer> {
-    const customer = await this.find(customerId);
-    if (!customer) {
-      throw new CustomerNotFound(customerId);
-    }
-
+    const customer = await this.findOrFail(customerId);
     customer.reserveCredit(orderId, orderTotal);
-    return this.customerRepository.save(customer);
+    this.customerRepository.persist(customer);
+    return customer;
   }
 }

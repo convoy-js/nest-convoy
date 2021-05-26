@@ -1,5 +1,5 @@
+import type { Command } from '@nest-convoy/commands/common';
 import { MessageHeaders } from '@nest-convoy/messaging/common';
-import { Command } from '@nest-convoy/commands/common';
 
 export const COMMAND_WITH_DESTINATION = Symbol('__commandWithDestination__');
 

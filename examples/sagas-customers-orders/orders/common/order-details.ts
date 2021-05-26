@@ -1,16 +1,17 @@
-import { Column } from 'typeorm';
 import { f, t } from '@deepkit/type';
+import { Property, Embedded } from '@mikro-orm/core';
+
 import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
 
 import { Money, Namespace } from '../../common';
 
 @AvroSchema(Namespace.ORDER)
 export class OrderDetails {
-  @Column()
+  @Property()
   @f
-  customerId: number;
+  customerId: string;
 
-  @Column(() => Money)
+  @Embedded(() => Money)
   @t
   orderTotal: Money;
 }

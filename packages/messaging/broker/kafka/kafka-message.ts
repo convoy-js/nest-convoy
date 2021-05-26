@@ -10,7 +10,7 @@ import {
   lazyLoadAvroSchema,
   getAvroSchemaMetadata,
   // avroSchemaRegistry,
-} from './avro-schema';
+} from './schema';
 
 export interface KafkaMessageSchema extends Partial<AvroSchemaMetadata> {
   readonly id?: number;

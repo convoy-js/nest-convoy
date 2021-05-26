@@ -7,7 +7,7 @@ import { SagaManager, NestSaga } from '@nest-convoy/sagas';
 import { SagaLockManager, SagaReplyHeaders } from '@nest-convoy/sagas/common';
 import {
   SagaCommandProducer,
-  NestSagaInstance,
+  ConvoySagaInstance,
   SagaInstanceRepository,
 } from '@nest-convoy/sagas/orchestration';
 import {
@@ -40,13 +40,13 @@ export class SagaTestInstanceRepository extends SagaInstanceRepository {
     return this.moduleRef.get(SagaUnitTestSupport);
   }
 
-  async save(sagaInstance: NestSagaInstance): Promise<NestSagaInstance> {
+  async save(sagaInstance: ConvoySagaInstance): Promise<ConvoySagaInstance> {
     sagaInstance.sagaId = uuid();
     this.sagaUnitTestSupport.sagaInstance = sagaInstance;
     return sagaInstance;
   }
 
-  async find(sagaType: string, sagaId: string): Promise<NestSagaInstance> {
+  async find(sagaType: string, sagaId: string): Promise<ConvoySagaInstance> {
     if (sagaId !== this.sagaUnitTestSupport.sagaInstance.sagaId) {
       throw new Error('some stuff');
     }
@@ -54,7 +54,7 @@ export class SagaTestInstanceRepository extends SagaInstanceRepository {
     return this.sagaUnitTestSupport.sagaInstance;
   }
 
-  async update(sagaInstance: NestSagaInstance): Promise<void> {
+  async update(sagaInstance: ConvoySagaInstance): Promise<void> {
     this.sagaUnitTestSupport.sagaInstance = sagaInstance;
   }
 }
@@ -72,7 +72,7 @@ export class SagaExpectCommandTest<Data> {
     private readonly sentCommandIdx: number,
     private readonly expects: SagaExpectationTest[],
     private readonly sagaManager: SagaManager<Data>,
-    private readonly sagaInstance: NestSagaInstance<Data>,
+    private readonly sagaInstance: ConvoySagaInstance<Data>,
   ) {}
 
   private async sendReply<T extends Instance>(
@@ -148,7 +148,7 @@ export class SagaUnitTestSupport<Data> {
   private sagaManager: SagaManager<Data>;
   private createException?: Error;
   public readonly sentCommands: MessageWithDestination[] = [];
-  public sagaInstance: NestSagaInstance;
+  public sagaInstance: ConvoySagaInstance;
 
   constructor(
     private readonly messageConsumer: ConvoyMessageConsumer,

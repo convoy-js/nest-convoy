@@ -1,10 +1,12 @@
-import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
+import type { ObjectLiteral } from '@nest-convoy/common';
+import { Message } from '@nest-convoy/messaging/common';
+import type { MessageHeaders } from '@nest-convoy/messaging/common';
 
-import { LockTarget } from './lock-target';
+import type { LockTarget } from './lock-target';
 
 export class SagaReplyMessage extends Message {
   constructor(
-    payload: any,
+    payload: ObjectLiteral,
     headers: MessageHeaders,
     readonly lockTarget?: LockTarget,
   ) {

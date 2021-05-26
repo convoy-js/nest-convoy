@@ -9,11 +9,11 @@ import {
   AvroSchema,
   getAvroSchemaMetadata,
   lazyLoadAvroSchema,
-} from '../avro-schema';
+} from '../schema/avro-schema';
 import { DiscoveryModule } from '@golevelup/nestjs-discovery';
 import { Test } from '@nestjs/testing';
 
-import { AvroSchemaRegistry } from '../avro-schema-registry';
+import { AvroSchemaRegistry } from '../schema/avro-schema-registry';
 
 enum Namespace {
   COMMON = 'common',

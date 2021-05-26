@@ -3,7 +3,7 @@ import { ResourcePathPattern } from './resource-path-pattern';
 
 export function splitResourcePath(pathPattern: string): readonly string[] {
   if (!pathPattern.startsWith('/')) {
-    throw new TypeError('Should start with / ' + pathPattern);
+    throw new TypeError(`"${pathPattern}" should start with /`);
   }
 
   return pathPattern.split('/');

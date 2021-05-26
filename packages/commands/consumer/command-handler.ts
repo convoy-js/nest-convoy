@@ -1,18 +1,17 @@
-import { AsyncLikeFn, Handler, Instance } from '@nest-convoy/common';
-import { Message } from '@nest-convoy/messaging/common';
+import type { Command, CommandType } from '@nest-convoy/commands/common';
 import {
-  Command,
-  CommandMessageHeaders,
-  CommandType,
   resourceMatches,
+  CommandMessageHeaders,
 } from '@nest-convoy/commands/common';
+import type { AsyncLikeFn, Handler, Instance } from '@nest-convoy/common';
+import type { Message } from '@nest-convoy/messaging/common';
 
-import { CommandMessage } from './command-message';
-import { SagaCommandHandlerPreLock } from './saga-reply-lock';
+import type { CommandMessage } from './command-message';
+import type { SagaCommandHandlerPreLock } from './saga-reply-lock';
 
 export type CommandMessageHandler<
   C extends Command = Command,
-  R = Instance | Message | undefined
+  R = Instance | Message | undefined,
 > = AsyncLikeFn<[cm: CommandMessage<C>, pvs?: Map<string, string>], R | R[]>;
 
 export interface CommandMessageHandlerOptions<T = any> {

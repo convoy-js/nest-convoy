@@ -1,5 +1,5 @@
-import { Builder, RuntimeException } from '@nest-convoy/common';
-import { CommandWithDestination } from '@nest-convoy/commands';
+import type { CommandWithDestination } from '@nest-convoy/commands';
+import type { Builder, RuntimeException } from '@nest-convoy/common';
 
 export class SagaActions<Data> {
   constructor(
@@ -14,7 +14,7 @@ export class SagaActions<Data> {
 }
 
 export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
-  private readonly commands: CommandWithDestination[] = [];
+  private commands: readonly CommandWithDestination[] = [];
   private compensating = false;
   private local = false;
   private endState = false;
@@ -23,7 +23,7 @@ export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
   private localException?: RuntimeException;
 
   withCommand(command: CommandWithDestination): this {
-    this.commands.push(command);
+    this.commands = [...this.commands, command];
     return this;
   }
 
@@ -43,7 +43,7 @@ export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
   }
 
   withCommands(commands: readonly CommandWithDestination[]): this {
-    this.commands.push(...commands);
+    this.commands = [...this.commands, ...commands];
     return this;
   }
 

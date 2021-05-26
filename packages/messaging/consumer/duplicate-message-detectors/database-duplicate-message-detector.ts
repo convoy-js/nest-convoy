@@ -15,18 +15,18 @@ import { DuplicateMessageDetector } from './duplicate-message-detector';
 export class DatabaseDuplicateMessageDetector extends DuplicateMessageDetector {
   constructor(
     @InjectRepository(ReceivedMessages)
-    private readonly receivedMessagesRepository: EntityRepository<ReceivedMessages>,
+    private readonly receivedMessages: EntityRepository<ReceivedMessages>,
   ) {
     super();
   }
 
   async isDuplicate(consumerId: string, messageId: string): Promise<boolean> {
     try {
-      const receivedMessage = this.receivedMessagesRepository.create({
+      const receivedMessage = this.receivedMessages.create({
         consumerId,
         messageId,
       });
-      await this.receivedMessagesRepository.persistAndFlush(receivedMessage);
+      await this.receivedMessages.persistAndFlush(receivedMessage);
 
       return false;
     } catch {
@@ -40,6 +40,7 @@ export class DatabaseDuplicateMessageDetector extends DuplicateMessageDetector {
     handleMessage: MessageHandler,
   ): Promise<void> {
     if (!(await this.isDuplicate(subscriberId, message.id))) {
+      // TODO: DatabaseTransactionContext should be created here
       await handleMessage(message);
     }
   }

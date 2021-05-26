@@ -1,5 +1,6 @@
 import type { Type, AsyncLike, AsyncLikeFn } from '@nest-convoy/common';
 import type { Message } from '@nest-convoy/messaging/common';
+
 import type { StepOutcome } from './step-outcome';
 
 // T should be a registered Event?

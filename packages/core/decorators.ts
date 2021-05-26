@@ -27,7 +27,7 @@ export function OnEvent<E, T>(event: Type<E>) {
 export function CommandDestination(
   channel: string,
 ) /*: ClassDecorator | MethodDecorator*/ {
-  return (target: Function | object, propertyKey?: string) => {
+  return (target: Function | object, propertyKey?: string): void => {
     Reflect.defineMetadata(
       COMMAND_WITH_DESTINATION,
       channel,

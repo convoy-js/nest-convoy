@@ -12,7 +12,7 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: 2021,
     sourceType: 'module',
     ecmaFeatures: {
       modules: true,
@@ -30,6 +30,7 @@ module.exports = {
     'import/order': [
       'error',
       {
+        alphabetize: { order: 'asc' },
         groups: [
           ['builtin', 'external'],
           'internal',
@@ -89,7 +90,7 @@ module.exports = {
         ],
       },
     ],
-    //    "@typescript-eslint/explicit-module-boundary-types": "error",
+    '@typescript-eslint/explicit-module-boundary-types': 'error',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/ban-types': 'warn',
@@ -97,7 +98,13 @@ module.exports = {
     '@typescript-eslint/no-empty-interface': 'warn',
     '@typescript-eslint/no-misused-new': 'error',
     '@typescript-eslint/no-for-in-array': 'error',
-    '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/no-empty-function': 'warn',
+    '@typescript-eslint/consistent-type-imports': [
+      'error',
+      // TODO: Waiting for https://github.com/typescript-eslint/typescript-eslint/issues/2769
+      // { prefer: 'type-imports-combine' },
+      { prefer: 'type-imports' },
+    ],
     '@typescript-eslint/ban-ts-comment': 'warn',
     'prettier/prettier': ['error', require('./.prettierrc.json')],
   },

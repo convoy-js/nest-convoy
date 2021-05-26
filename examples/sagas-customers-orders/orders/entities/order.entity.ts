@@ -1,35 +1,27 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { f, t } from '@deepkit/type';
+import { f, t, uuid } from '@deepkit/type';
+import { Property, Entity, PrimaryKey, Embedded, Enum } from '@mikro-orm/core';
 
 import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
 
-import { OrderDetails, OrderState, RejectionReason } from '../common';
 import { Namespace } from '../../common';
+import { OrderDetails, OrderState, RejectionReason } from '../common';
 
 @Entity()
 @AvroSchema(Namespace.ORDER)
 export class Order {
-  @PrimaryGeneratedColumn()
+  @PrimaryKey()
   @f
-  id: number;
+  id = uuid();
 
-  @Column(() => OrderDetails)
+  @Embedded(() => OrderDetails)
   @t
   details: OrderDetails;
 
-  @Column({
-    type: 'enum',
-    enum: OrderState,
-    default: OrderState.PENDING,
-  })
+  @Enum(() => OrderState)
   @f.enum(OrderState)
-  state: OrderState;
+  state: OrderState = OrderState.PENDING;
 
-  @Column({
-    type: 'enum',
-    enum: RejectionReason,
-    nullable: true,
-  })
+  @Enum({ items: () => RejectionReason, nullable: true })
   @f.enum(RejectionReason)
   rejectionReason?: RejectionReason;
 }

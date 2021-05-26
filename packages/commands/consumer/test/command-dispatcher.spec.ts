@@ -73,7 +73,7 @@ describe('CommandDispatcher', () => {
       );
 
       await commandDispatcher.handleMessage(message);
-      const correlationHeaders = correlateMessageHeaders(message.getHeaders());
+      const correlationHeaders = correlateMessageHeaders(message);
       expect(invokeSpy).toHaveBeenCalledWith(
         commandHandler,
         new CommandMessage(new TestCommand('1'), correlationHeaders, message),

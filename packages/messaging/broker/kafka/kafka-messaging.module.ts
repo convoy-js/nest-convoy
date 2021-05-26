@@ -1,27 +1,29 @@
-import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
-import { ConsumerConfig, KafkaConfig, ProducerConfig } from 'kafkajs';
 import { DiscoveryModule } from '@golevelup/nestjs-discovery';
-import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
+import type { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
+import { Global, Module } from '@nestjs/common';
+import type { DynamicModule, Provider } from '@nestjs/common';
+import type { ConsumerConfig, KafkaConfig, ProducerConfig } from 'kafkajs';
 
-import { DatabaseMessageProducer } from '@nest-convoy/messaging/broker/database';
-import { ConvoyCdcModule } from '@nest-convoy/messaging/broker/cdc';
-import {
-  ConvoyCoreModule,
-  ConvoyMikroOrmOptions,
-} from '@nest-convoy/core/core.module';
+import { ConvoyCoreModule } from '@nest-convoy/core/core.module';
+import type { MessageProducer } from '@nest-convoy/messaging';
 import {
   ConvoyMessagingConsumerModule,
   ConvoyMessagingProducerModule,
   DatabaseDuplicateMessageDetector,
-  MessageProducer,
 } from '@nest-convoy/messaging';
+import { ConvoyCdcModule } from '@nest-convoy/messaging/broker/cdc';
+import type { ConvoyMikroOrmOptions } from '@nest-convoy/messaging/broker/database';
+import {
+  DatabaseMessageProducer,
+  ConvoyDatabaseModule,
+} from '@nest-convoy/messaging/broker/database';
 
-import { KafkaMessageBuilder } from './kafka-message-builder';
-import { KafkaMessageProducer } from './kafka-message-producer';
-import { KafkaMessageConsumer } from './kafka-message-consumer';
 import { Kafka } from './kafka';
+import { KafkaMessageBuilder } from './kafka-message-builder';
+import { KafkaMessageConsumer } from './kafka-message-consumer';
+import { KafkaMessageProducer } from './kafka-message-producer';
+import { AvroSchemaRegistry } from './schema';
 import { KAFKA_CONFIG, KAFKA_SCHEMA_REGISTRY } from './tokens';
-import { AvroSchemaRegistry } from './avro-schema-registry';
 
 export interface ConvoyKafkaMessagingBrokerModuleOptions {
   readonly consumer?: Omit<ConsumerConfig, 'groupId'>;
@@ -33,7 +35,7 @@ export interface ConvoyKafkaMessagingBrokerModuleOptions {
 
 @Global()
 @Module({})
-export class ConvoyKafkaCdcBrokerModule {
+export class ConvoyKafkaCdcOutboxBrokerModule {
   static register(
     kafkaConfig: Omit<KafkaConfig, 'logCreator'>,
     options: Omit<
@@ -42,7 +44,7 @@ export class ConvoyKafkaCdcBrokerModule {
     >,
   ): DynamicModule {
     return {
-      module: ConvoyKafkaCdcBrokerModule,
+      module: ConvoyKafkaCdcOutboxBrokerModule,
       imports: [
         ConvoyKafkaBrokerModule.register(kafkaConfig, {
           ...options,
@@ -70,7 +72,8 @@ export class ConvoyKafkaBrokerModule {
     return {
       module: ConvoyKafkaBrokerModule,
       imports: [
-        ConvoyCoreModule.forRoot(database),
+        ConvoyCoreModule,
+        ConvoyDatabaseModule.forRoot(database),
         ConvoyMessagingConsumerModule.register(
           {
             useExisting: KafkaMessageConsumer,

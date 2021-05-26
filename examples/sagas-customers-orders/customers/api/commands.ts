@@ -8,8 +8,8 @@ import { Money, Namespace } from '../../common';
 @AvroSchema(Namespace.CUSTOMER)
 export class ReserveCreditCommand {
   constructor(
-    @f readonly customerId: number,
-    @f readonly orderId: number,
+    @f readonly customerId: string,
+    @f readonly orderId: string,
     @t readonly orderTotal: Money,
   ) {}
 }

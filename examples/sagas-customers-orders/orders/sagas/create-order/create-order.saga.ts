@@ -1,5 +1,5 @@
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+// import { InjectRepository } from '@mikro-orm/nestjs';
+// import type { EntityRepository } from '@mikro-orm/core';
 
 import { Saga, NestSaga } from '@nest-convoy/core';
 
@@ -9,7 +9,8 @@ import {
   ReserveCreditCommand,
 } from '../../../customers/api';
 import { OrderState, RejectionReason } from '../../common';
-import { Order } from '../../entities';
+// import { Order } from '../../entities';
+import { OrderService } from '../../order.service';
 import { CustomerServiceProxy } from '../participants';
 import { CreateOrderSagaData } from './create-order-saga.data';
 
@@ -34,8 +35,7 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
 
   constructor(
     private readonly customerServiceProxy: CustomerServiceProxy,
-    @InjectRepository(Order)
-    private readonly orderRepository: Repository<Order>,
+    private readonly order: OrderService, // private readonly orderRepository: EntityRepository<Order>, // @InjectRepository(Order)
   ) {
     super();
   }
@@ -62,18 +62,18 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
   }
 
   private async create(data: CreateOrderSagaData): Promise<void> {
-    const order = await this.orderRepository.save(data);
+    const order = this.order.save(data);
     data.id = order.id;
   }
 
   private async approve(data: CreateOrderSagaData): Promise<void> {
-    await this.orderRepository.update(data.id, {
+    await this.order.update(data.id, {
       state: OrderState.APPROVED,
     });
   }
 
   private async reject(data: CreateOrderSagaData): Promise<void> {
-    await this.orderRepository.update(data.id, {
+    await this.order.update(data.id, {
       state: OrderState.REJECTED,
       rejectionReason: data.rejectionReason,
     });

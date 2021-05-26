@@ -6,3 +6,4 @@ export * from './saga-unlock-command';
 export * from './exceptions';
 export * from './stashed-message';
 export * from './saga-common.module';
+export * from './saga-message-headers';

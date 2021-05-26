@@ -1,14 +1,12 @@
-import type {
-  EachMessagePayload,
-  TopicPartitionOffsetAndMetadata,
-} from 'kafkajs';
+import { EachMessagePayload, TopicPartitionOffsetAndMetadata } from 'kafkajs';
 
 import { TopicPartitionOffsetTracker } from './topic-partition-offset-tracker';
 import { TopicPartitionOffset } from './topic-partition-offsets';
 import { KafkaMessageHandler, KafkaMessage } from './kafka-message';
 
 export class KafkaMessageProcessor {
-  private readonly topicPartitionOffsetTracker = new TopicPartitionOffsetTracker();
+  private readonly topicPartitionOffsetTracker =
+    new TopicPartitionOffsetTracker();
 
   constructor(private handlers: readonly KafkaMessageHandler[] = []) {}
 

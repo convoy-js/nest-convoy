@@ -4,9 +4,9 @@ export class SagaExecutionState {
   }
 
   constructor(
-    public currentlyExecuting = -1,
-    public compensating = false,
-    public endState = false,
+    readonly currentlyExecuting = -1,
+    readonly compensating = false,
+    readonly endState = false,
   ) {}
 
   startCompensating(): SagaExecutionState {

@@ -1,12 +1,11 @@
-import { Injectable, Type } from '@nestjs/common';
-import { PropertySchema, getClassSchema, ClassSchema } from '@deepkit/type';
-import { CircularDependencyException } from '@nestjs/core/errors/exceptions/circular-dependency.exception';
+import type { ClassSchema } from '@deepkit/type';
+import { PropertySchema, getClassSchema } from '@deepkit/type';
+import type { COMPATIBILITY } from '@kafkajs/confluent-schema-registry';
+import type { Type } from '@nestjs/common';
 import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
-import { COMPATIBILITY } from '@kafkajs/confluent-schema-registry';
+import type { schema } from 'avsc';
 
 import { AvroSchemaRegistry } from './avro-schema-registry';
-
-import type { schema } from 'avsc';
 
 export const AVRO_SCHEMA_METADATA = Symbol('AVRO_SCHEMA_METADATA');
 
@@ -149,7 +148,7 @@ export function AvroSchema(
   compatibility?: COMPATIBILITY,
   version = 1,
 ) {
-  return (target: Type) => {
+  return (target: Type): void => {
     // Injectable()(target);
     AvroSchemaRegistry.INTERNAL.push({
       target,

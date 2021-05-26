@@ -1,6 +1,8 @@
-import { Order } from '../../entities';
+import type { Order } from '../../entities';
 
-export class CreateOrderSagaData {
+export type CreateOrderDto = Pick<Order, 'id' | 'rejectionReason' | 'details'>;
+
+export class CreateOrderSagaData implements CreateOrderDto {
   id: Order['id'];
   rejectionReason?: Order['rejectionReason'];
 

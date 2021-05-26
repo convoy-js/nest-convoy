@@ -1,5 +1,5 @@
-import { Entity, JsonType, PrimaryKey, Property } from '@mikro-orm/core';
 import { uuid } from '@deepkit/type';
+import { Entity, JsonType, PrimaryKey, Property } from '@mikro-orm/core';
 
 @Entity()
 export class SagaInstance<Data = any> {

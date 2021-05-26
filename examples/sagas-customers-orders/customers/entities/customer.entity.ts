@@ -1,11 +1,13 @@
+import { f, t, uuid } from '@deepkit/type';
 import {
-  Column,
+  Cascade,
+  Collection,
+  Embedded,
   Entity,
   OneToMany,
-  PrimaryGeneratedColumn,
-  JoinTable,
-} from 'typeorm';
-import { f, t } from '@deepkit/type';
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 
 import { AvroSchema } from '@nest-convoy/messaging/broker/kafka';
 
@@ -16,43 +18,42 @@ import { CreditReservation } from './credit-reservation.entity';
 @Entity()
 @AvroSchema(Namespace.CUSTOMER)
 export class Customer {
-  @PrimaryGeneratedColumn()
+  @PrimaryKey()
   @f
-  id: number;
+  id: string = uuid();
 
-  @Column()
+  @Property()
   @f
   name: string;
 
-  @Column(() => Money)
+  @Embedded(() => Money)
   @t
   creditLimit: Money;
 
-  @OneToMany(
-    () => CreditReservation,
-    creditReservation => creditReservation.customer,
-    {
-      cascade: true,
-      eager: true,
-    },
-  )
-  @JoinTable()
+  @OneToMany({
+    entity: () => CreditReservation,
+    mappedBy: creditReservation => creditReservation.customer,
+    cascade: [Cascade.ALL],
+    eager: true,
+  })
   @f.array(f.type(() => CreditReservation))
-  creditReservations: CreditReservation[];
+  creditReservations = new Collection<CreditReservation>(this);
 
   availableCredit(): Money {
-    const totalReserved = this.creditReservations.reduce(
-      (totalReserved, creditReservation) =>
-        totalReserved.add(creditReservation.amount),
-      new Money(),
-    );
+    const totalReserved = this.creditReservations
+      .getItems()
+      .reduce(
+        (totalReserved, creditReservation) =>
+          totalReserved.add(creditReservation.amount),
+        new Money(),
+      );
 
     return this.creditLimit.subtract(totalReserved);
   }
 
-  reserveCredit(orderId: number, orderTotal: Money): void {
+  reserveCredit(orderId: string, orderTotal: Money): void {
     if (this.availableCredit().isGreaterThanOrEqual(orderTotal)) {
-      this.creditReservations.push(new CreditReservation(orderId, orderTotal));
+      this.creditReservations.add(new CreditReservation(orderId, orderTotal));
     } else {
       throw new CustomerCreditLimitExceeded();
     }

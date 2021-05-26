@@ -7,9 +7,9 @@ import {
   Post,
 } from '@nestjs/common';
 
-import { Money } from '../common';
+import type { Money } from '../common';
+import type { Order } from './entities';
 import { OrderService } from './order.service';
-import { Order } from './entities';
 
 export class CreateOrderDto {
   orderTotal: Money;
@@ -23,7 +23,7 @@ export class OrdersController {
   @Post('')
   create(
     @Body() { customerId, orderTotal }: CreateOrderDto,
-  ): Promise<Order | undefined> {
+  ): Promise<Order | null> {
     return this.order.create({
       orderTotal,
       customerId,
@@ -31,7 +31,7 @@ export class OrdersController {
   }
 
   @Get(':id')
-  async find(@Param('id') id: number): Promise<Order> {
+  async find(@Param('id') id: Order['id']): Promise<Order> {
     const order = await this.order.find(id);
     if (!order) {
       throw new NotFoundException(`No order found by ID ${id}`);
