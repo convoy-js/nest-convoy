@@ -1,3 +1,4 @@
+import { uuid } from '@deepkit/type';
 import {
   DateType,
   Entity,
@@ -6,14 +7,14 @@ import {
   Property,
 } from '@mikro-orm/core';
 
-import { ObjectLiteral } from '@nest-convoy/common';
+import type { ObjectLiteral } from '@nest-convoy/common';
 
 import { MessageHeaders, MessageHeadersType } from '../message-headers';
 
 @Entity({ tableName: 'message' })
 export class MessageEntity<P extends ObjectLiteral = ObjectLiteral> {
   @PrimaryKey()
-  id: string;
+  id: string = uuid();
 
   @Property({ type: 'text' })
   destination: string;
@@ -27,8 +28,9 @@ export class MessageEntity<P extends ObjectLiteral = ObjectLiteral> {
   @Property({ type: JsonType, nullable: true })
   payload?: P;
 
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   @Property()
-  published = false;
+  published: boolean = false;
 
   @Property({ type: DateType })
   creationTime = new Date();

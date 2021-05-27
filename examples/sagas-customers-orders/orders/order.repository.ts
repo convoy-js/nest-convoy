@@ -12,10 +12,8 @@ export class OrderRepositoryR {
     private readonly orderRepository: EntityRepository<Order>,
   ) {}
 
-  async update(id: Order['id'], data: Partial<Order>): Promise<Order> {
-    const order = await this.orderRepository.findOneOrFail({
-      id: data.id,
-    });
+  async update(id: Order['id'], data: EntityData<Order>): Promise<Order> {
+    const order = await this.orderRepository.findOneOrFail({ id });
     wrap(order).assign(data);
     this.orderRepository.persist(order);
     return order;
@@ -23,6 +21,7 @@ export class OrderRepositoryR {
 
   save(data: EntityData<Order>): Order {
     const order = this.orderRepository.create(data);
+    wrap(order).assign(data);
     this.orderRepository.persist(order);
     return order;
   }

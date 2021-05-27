@@ -1,18 +1,20 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+
+import { SagaInstance } from './saga-instance.entity';
 
 @Entity()
 export class SagaInstanceParticipants {
-  @PrimaryKey()
-  sagaId: string;
-
-  @PrimaryKey()
-  sagaType: string;
-
   @PrimaryKey()
   destination: string;
 
   @PrimaryKey()
   resource: string;
+
+  @ManyToOne({
+    entity: () => SagaInstance,
+    inversedBy: instance => instance.participants,
+  })
+  sagaInstance: SagaInstance;
 
   @Property({ version: true })
   version: number;

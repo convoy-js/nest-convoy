@@ -62,16 +62,19 @@ export class CreateOrderSaga extends NestSaga<CreateOrderSagaData> {
     data.id = order.id;
   }
 
-  private async approve(data: CreateOrderSagaData): Promise<void> {
-    await this.order.update(data.id, {
+  private async approve({ id }: CreateOrderSagaData): Promise<void> {
+    await this.order.update(id, {
       state: OrderState.APPROVED,
     });
   }
 
-  private async reject(data: CreateOrderSagaData): Promise<void> {
-    await this.order.update(data.id, {
+  private async reject({
+    id,
+    rejectionReason,
+  }: CreateOrderSagaData): Promise<void> {
+    await this.order.update(id, {
       state: OrderState.REJECTED,
-      rejectionReason: data.rejectionReason,
+      rejectionReason,
     });
   }
 }

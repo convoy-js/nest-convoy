@@ -1,4 +1,4 @@
-import { SagaExecutionState } from './saga-execution-state';
+import { SagaExecutionState } from '../saga-execution-state';
 
 export function decodeExecutionState(currentState: string): SagaExecutionState {
   return Object.assign(

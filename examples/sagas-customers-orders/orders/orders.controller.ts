@@ -1,5 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
-import { UseRequestContext } from '@mikro-orm/nestjs';
 import {
   Body,
   Controller,
@@ -11,8 +9,8 @@ import {
 
 import type { Money } from '../common';
 import type { Order } from './entities';
-import { OrderService } from './order.service';
 import { OrderRepositoryR } from './order.repository';
+import { OrderService } from './order.service';
 
 export class CreateOrderDto {
   orderTotal: Money;
@@ -22,13 +20,11 @@ export class CreateOrderDto {
 @Controller('orders')
 export class OrdersController {
   constructor(
-    private readonly orm: MikroORM,
     private readonly order: OrderService,
     private readonly orderRepository: OrderRepositoryR,
   ) {}
 
   @Post('')
-  @UseRequestContext()
   create(
     @Body() { customerId, orderTotal }: CreateOrderDto,
   ): Promise<Order | null> {

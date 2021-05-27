@@ -2,9 +2,9 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 
 import { ConvoyCommonModule } from '@nest-convoy/core';
-import { ConvoyKafkaCdcOutboxBrokerModule } from '@nest-convoy/kafka';
+import { ConvoyKafkaBrokerModule } from '@nest-convoy/kafka';
 
-import { Channel, defaultOptions } from '../common';
+import { Channel, defaultOptions, Money } from '../common';
 import { CustomerCommandHandlers } from './customer-command-handlers';
 import { CustomerService } from './customer.service';
 import { CustomersController } from './customers.controller';
@@ -13,7 +13,7 @@ import { CreditReservation, Customer } from './entities';
 @Module({
   imports: [
     ConvoyCommonModule,
-    ConvoyKafkaCdcOutboxBrokerModule.register(
+    ConvoyKafkaBrokerModule.register(
       {
         clientId: Channel.CUSTOMER,
         brokers: ['localhost:9092'],
@@ -23,7 +23,7 @@ import { CreditReservation, Customer } from './entities';
       },
     ),
     MikroOrmModule.forFeature({
-      entities: [CreditReservation, Customer],
+      entities: [CreditReservation, Customer, Money],
     }),
   ],
   controllers: [CustomersController],

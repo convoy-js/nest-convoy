@@ -11,6 +11,7 @@ nest_library(
         "//examples/sagas-customers-orders/customers:src",
         "//packages/common",
         "//packages/core",
+        "//packages/events/aggregate",
         "//packages/kafka",
         "//packages/messaging/broker/database",
         "//packages/sagas",
@@ -27,5 +28,8 @@ nest_library(
 nest_app(
     name = "orders",
     entry = ":main.ts",
-    deps = [":src"],
+    deps = [
+        ":src",
+        "@npm//@mikro-orm/core",
+    ],
 )

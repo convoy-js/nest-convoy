@@ -3,8 +3,8 @@ load("//tools:defaults.bzl", "nest_library")
 nest_library(
     name = "orchestration",
     srcs = glob(
-        ["*.ts"],
-        exclude = ["*.spec.ts"],
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
     ),
     module_name = "@nest-convoy/sagas/orchestration",
     deps = [
@@ -12,11 +12,12 @@ nest_library(
         "//packages/common",
         "//packages/events",
         "//packages/messaging",
+        "//packages/messaging/broker/database",
         "//packages/sagas/common",
-        "//packages/sagas/orchestration/entities",
+        "@npm//@deepkit/type",
+        "@npm//@mikro-orm/core",
+        "@npm//@mikro-orm/nestjs",
         "@npm//@nestjs/core",
         "@npm//@nestjs/cqrs",
-        "@npm//@mikro-orm/nestjs",
-        "@npm//@mikro-orm/core",
     ],
 )

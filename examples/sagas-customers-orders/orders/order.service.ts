@@ -2,9 +2,10 @@ import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 
+import { Transactional } from '@nest-convoy/messaging/broker/database';
 import { SagaInstanceFactory } from '@nest-convoy/sagas';
 
-import type { OrderDetails } from './common';
+import { OrderDetails } from './common';
 import { Order } from './entities';
 import { CreateOrderSaga, CreateOrderSagaData } from './sagas/create-order';
 
@@ -16,6 +17,7 @@ export class OrderService {
     private readonly orderRepository: EntityRepository<Order>,
   ) {}
 
+  @Transactional()
   async create(details: OrderDetails): Promise<Order | null> {
     const data = new CreateOrderSagaData(details);
     await this.sagaInstanceFactory.create(CreateOrderSaga, data);

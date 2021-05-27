@@ -1,4 +1,4 @@
-import { Instance } from '@nest-convoy/common';
+import type { Instance } from '@nest-convoy/common';
 
 export class LockTarget {
   readonly target: string;
@@ -9,7 +9,7 @@ export class LockTarget {
   ) {
     if (typeof target === 'object' && typeof targetId === 'object') {
       this.target = `${target.constructor.name}/${targetId.constructor.name}`;
-    } else {
+    } else if (target != null && targetId != null) {
       this.target = `${target}/${targetId}`;
     }
   }

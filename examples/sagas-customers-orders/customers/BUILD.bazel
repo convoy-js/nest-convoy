@@ -26,5 +26,5 @@ nest_library(
 nest_app(
     name = "customers",
     entry = ":main.ts",
-    deps = [":src"],
+    deps = [":src", "@npm//@mikro-orm/core"],
 )

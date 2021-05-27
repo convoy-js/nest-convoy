@@ -5,25 +5,29 @@ import { Injectable } from '@nestjs/common';
 import type { AsyncLikeFn } from '@nest-convoy/common';
 import { ConvoyTransactionContext } from '@nest-convoy/common';
 
+export let databaseTransactionContext: DatabaseTransactionContext | undefined;
+
 @Injectable()
 export class DatabaseTransactionContext extends ConvoyTransactionContext<EntityManager> {
   constructor(private readonly orm: MikroORM) {
     super();
+    databaseTransactionContext = this;
   }
 
   get(): EntityManager | undefined {
     return TransactionContext.getEntityManager();
   }
 
-  async create(cb: AsyncLikeFn<[], void>): Promise<void> {
+  async create<V>(cb: AsyncLikeFn<[], V>): Promise<V> {
     const em = this.orm.em.fork(true, true);
 
-    await TransactionContext.createAsync(em, async () => {
+    return TransactionContext.createAsync(em, async () => {
       await em.begin();
 
       try {
-        await cb();
+        const res = await cb();
         await em.commit();
+        return res;
       } catch (err) {
         await em.rollback();
         throw err;

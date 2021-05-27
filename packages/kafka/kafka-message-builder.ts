@@ -6,6 +6,7 @@ import type {
   Message as ProducerMessage,
 } from 'kafkajs';
 
+import { ObjectLiteral } from '@nest-convoy/common';
 import {
   Message,
   MessageBuilder,
@@ -67,10 +68,10 @@ export class KafkaMessageBuilder {
     return {
       key: message.id,
       // Need to do this for compatibility with eventuate cdc
-      value: JSON.stringify({
+      value: JSON.stringify(message.getPayload()) /*JSON.stringify({
         payload: message.getPayload(),
         headers,
-      }),
+      }),*/,
       // partition: parseFloat(message.getHeader(Message.PARTITION_ID)),
       headers,
     };
@@ -83,22 +84,25 @@ export class KafkaMessageBuilder {
     const payload =
       (await this.registry?.decode(message.value!)) || message.value!;
 
-    const data = JSON.parse(payload.toString()) as {
-      headers: IHeaders;
-      payload: Record<string, unknown>;
-    };
+    // const data = JSON.parse(payload.toString()) as {
+    //   headers: IHeaders;
+    //   payload: Record<string, unknown>;
+    // };
+    // const data = JSON.parse(payload.toString()) as ObjectLiteral;
+
+    // console.log(data);
 
     const headers = new MessageHeaders(
       message.headers
         ? Object.entries({
+            // ...data.headers,
             ...message.headers,
-            ...data.headers,
           }).map(([key, value]) => [key, value!.toString()])
         : null,
     );
 
     return KafkaMessage.from(
-      MessageBuilder.withPayload(data.payload)
+      MessageBuilder.withPayload(payload.toString())
         .withHeader(Message.ID, message.key!.toString())
         // .withHeader(Message.PARTITION_ID, partition)
         .withExtraHeaders(headers)

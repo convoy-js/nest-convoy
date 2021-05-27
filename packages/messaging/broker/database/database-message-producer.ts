@@ -30,7 +30,10 @@ export class DatabaseMessageProducer extends MessageProducer {
         payload: message.getPayload(),
         destination,
       });
+
       this.messages.persist(entity);
     });
+
+    await this.messages.flush();
   }
 }

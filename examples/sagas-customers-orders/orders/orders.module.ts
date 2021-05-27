@@ -2,10 +2,11 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 
 import { ConvoyCommonModule } from '@nest-convoy/core';
-import { ConvoyKafkaCdcOutboxBrokerModule } from '@nest-convoy/kafka';
+import { ConvoyKafkaBrokerModule } from '@nest-convoy/kafka';
 import { ConvoySagasModule } from '@nest-convoy/sagas';
 
-import { Channel, defaultOptions } from '../common';
+import { Channel, defaultOptions, Money } from '../common';
+import { OrderDetails } from './common';
 import { Order } from './entities';
 import { OrderRepositoryR } from './order.repository';
 import { OrderService } from './order.service';
@@ -16,7 +17,7 @@ import { CustomerServiceProxy } from './sagas/participants';
 @Module({
   imports: [
     ConvoyCommonModule,
-    ConvoyKafkaCdcOutboxBrokerModule.register(
+    ConvoyKafkaBrokerModule.register(
       {
         clientId: Channel.ORDER,
         brokers: ['localhost:9092'],
@@ -30,7 +31,7 @@ import { CustomerServiceProxy } from './sagas/participants';
       },
     ),
     MikroOrmModule.forFeature({
-      entities: [Order],
+      entities: [Order, OrderDetails, Money],
     }),
     ConvoySagasModule,
   ],

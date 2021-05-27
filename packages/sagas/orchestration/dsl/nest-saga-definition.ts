@@ -1,19 +1,16 @@
-import { Message } from '@nest-convoy/messaging/common';
+import type { Type } from '@nest-convoy/common';
 import {
-  Type,
   RuntimeException,
   UnsupportedOperationException,
 } from '@nest-convoy/common';
+import type { Message } from '@nest-convoy/messaging/common';
 
-import { SagaActions, SagaActionsBuilder } from '../saga-actions';
-import { SagaDefinition } from '../saga-definition';
-import { SagaStep, SagaStepReplyHandler } from './saga-step';
-import { SagaExecutionState } from './saga-execution-state';
+import type { SagaActions } from '../saga-actions';
+import { SagaActionsBuilder } from '../saga-actions';
+import type { SagaDefinition } from '../saga-definition';
+import { SagaExecutionState } from '../saga-execution-state';
+import type { SagaStep, SagaStepReplyHandler } from './saga-step';
 import { StepToExecute } from './step-to-execute';
-import {
-  decodeExecutionState,
-  encodeExecutionState,
-} from './saga-execution-state-json-serde';
 
 export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
   constructor(private readonly sagaSteps: SagaStep<Data>[]) {}
@@ -60,7 +57,7 @@ export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
     state: SagaExecutionState,
   ): SagaActions<Data> {
     return new SagaActionsBuilder<Data>()
-      .withUpdatedState(encodeExecutionState(SagaExecutionState.makeEndState()))
+      .withUpdatedState(SagaExecutionState.makeEndState())
       .withIsEndState(true)
       .withIsCompensating(state.compensating)
       .build();
@@ -73,7 +70,6 @@ export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
     handleReply: SagaStepReplyHandler<Data>,
   ): Promise<void> {
     const reply = await message.parsePayload(replyType);
-    // const reply = Object.assign(new replyType(), message.parsePayload());
     await handleReply(data, reply);
   }
 
@@ -83,19 +79,18 @@ export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
   }
 
   async handleReply(
-    currentState: string,
+    currentState: SagaExecutionState,
     sagaData: Data,
     message: Message,
   ): Promise<SagaActions<Data>> {
-    const state = decodeExecutionState(currentState);
-    const currentStep = this.sagaSteps[state.currentlyExecuting];
+    const currentStep = this.sagaSteps[currentState.currentlyExecuting];
     if (!currentStep) {
       throw new RuntimeException(
         `Saga step is missing for execution state ${currentState}`,
       );
     }
 
-    const reply = currentStep.getReply(message, state.compensating);
+    const reply = currentStep.getReply(message, currentState.compensating);
     if (reply) {
       await this.invokeReplyHandler(
         message,
@@ -105,12 +100,12 @@ export class NestSagaDefinition<Data> implements SagaDefinition<Data> {
       );
     }
 
-    if (currentStep.isSuccessfulReply(state.compensating, message)) {
-      return this.executeNextStep(sagaData, state);
-    } else if (state.compensating) {
+    if (currentStep.isSuccessfulReply(currentState.compensating, message)) {
+      return this.executeNextStep(sagaData, currentState);
+    } else if (currentState.compensating) {
       throw new UnsupportedOperationException('Failure when compensating');
     } else {
-      return this.executeNextStep(sagaData, state.startCompensating());
+      return this.executeNextStep(sagaData, currentState.startCompensating());
     }
   }
 }

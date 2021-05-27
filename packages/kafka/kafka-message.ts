@@ -2,11 +2,12 @@ import type { Type } from '@nestjs/common';
 import type { schema } from 'avsc';
 import type { EachMessagePayload } from 'kafkajs';
 
-import type { Consumer } from '@nest-convoy/common';
-import { Message, MessageHeaders } from '@nest-convoy/messaging';
+import type { Consumer, ObjectLiteral } from '@nest-convoy/common';
+import type { MessageHeaders } from '@nest-convoy/messaging';
+import { Message } from '@nest-convoy/messaging';
 
+import type { AvroSchemaMetadata } from './schema';
 import {
-  AvroSchemaMetadata,
   lazyLoadAvroSchema,
   getAvroSchemaMetadata,
   // avroSchemaRegistry,
@@ -65,7 +66,7 @@ export class KafkaMessage extends Message {
   }
 
   constructor(
-    payload: any,
+    payload: ObjectLiteral,
     headers: MessageHeaders,
     { topic, partition, message: { offset } }: EachMessagePayload,
   ) {

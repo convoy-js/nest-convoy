@@ -1,4 +1,4 @@
-import { EntityRepository } from '@mikro-orm/core';
+import { EntityRepository, wrap } from '@mikro-orm/core';
 import type { EntityData } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
@@ -27,9 +27,10 @@ export class CustomerService {
   }
 
   save(data: EntityData<Customer>): Customer {
-    const order = this.customerRepository.create(data);
-    this.customerRepository.persist(order);
-    return order;
+    const customer = this.customerRepository.create(data);
+    wrap(customer).assign(data);
+    this.customerRepository.persist(customer);
+    return customer;
   }
 
   async reserveCredit(
@@ -40,6 +41,7 @@ export class CustomerService {
     const customer = await this.findOrFail(customerId);
     customer.reserveCredit(orderId, orderTotal);
     this.customerRepository.persist(customer);
+    console.log(customer);
     return customer;
   }
 }

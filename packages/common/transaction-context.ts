@@ -8,7 +8,7 @@ export class ConvoyTransactionContext<T = unknown> {
     return undefined;
   }
 
-  async create(cb: AsyncLikeFn<[], void>): Promise<void> {
-    await cb();
+  async create<V>(cb: AsyncLikeFn<[], V>): Promise<V> {
+    return cb();
   }
 }

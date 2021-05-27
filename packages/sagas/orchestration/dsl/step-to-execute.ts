@@ -1,6 +1,6 @@
 import { SagaActionsBuilder } from '../saga-actions';
 import type { SagaActions } from '../saga-actions';
-import type { SagaExecutionState } from './saga-execution-state';
+import type { SagaExecutionState } from '../saga-execution-state';
 import { encodeExecutionState } from './saga-execution-state-json-serde';
 import type { SagaStep } from './saga-step';
 
@@ -36,7 +36,7 @@ export class StepToExecute<Data> {
 
     return builder
       .withUpdatedSagaData(data)
-      .withUpdatedState(encodeExecutionState(newState))
+      .withUpdatedState(newState)
       .withIsEndState(newState.endState)
       .withIsCompensating(currentState.compensating)
       .build();

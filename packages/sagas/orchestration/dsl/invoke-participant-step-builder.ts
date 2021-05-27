@@ -60,10 +60,9 @@ export class InvokeParticipantStepBuilder<Data>
     args: WithoutEndpointArgs<Data, C>,
   ): WithDestinationArgs<Data, C> {
     const action = args.shift()!.bind(this.parent.saga);
-    let destination: string | undefined = Reflect.getMetadata(
-      COMMAND_WITH_DESTINATION,
-      action,
-    );
+    let destination = Reflect.getMetadata(COMMAND_WITH_DESTINATION, action) as
+      | string
+      | undefined;
 
     return [
       // TODO: Not entirely sure if command destination is a requirement

@@ -1,3 +1,4 @@
+import { wrap } from '@mikro-orm/core';
 import { Logger } from '@nestjs/common';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -30,6 +31,7 @@ import {
 } from '@nest-convoy/sagas/common';
 
 import { DestinationAndResource } from './destination-and-resource';
+import type { SagaInstance } from './entities';
 import type { Saga, SagaLifecycleHooks } from './saga';
 import type { SagaActions } from './saga-actions';
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -98,23 +100,25 @@ export class SagaManager<Data> {
   }
 
   private updateState(
-    sagaInstance: ConvoySagaInstance<Data>,
+    sagaInstance: SagaInstance<Data>,
     actions: SagaActions<Data>,
   ): void {
     if (actions.updatedState) {
-      sagaInstance.stateName = actions.updatedState;
-      sagaInstance.endState = actions.endState;
-      sagaInstance.compensating = actions.compensating;
+      wrap(sagaInstance).assign({
+        state: actions.updatedState,
+        endState: actions.endState,
+        compensating: actions.compensating,
+      });
     }
   }
 
   private async performEndStateActions(
     sagaId: string,
-    sagaInstance: ConvoySagaInstance<Data>,
+    sagaInstance: SagaInstance<Data>,
     compensating: boolean,
     sagaData: Data,
   ): Promise<void> {
-    for (const dr of sagaInstance.destinationsAndResources) {
+    for (const dr of sagaInstance.participants.getItems()) {
       const headers = new SagaMessageHeaders(this.sagaType, sagaId);
 
       await this.commandProducer.send(
@@ -137,7 +141,7 @@ export class SagaManager<Data> {
   }
 
   private async processActions(
-    sagaInstance: ConvoySagaInstance<Data>,
+    sagaInstance: SagaInstance<Data>,
     sagaData: Data,
     actions: SagaActions<Data>,
   ): Promise<void> {
@@ -150,17 +154,19 @@ export class SagaManager<Data> {
         );
       } else {
         // only do this if successful
-        sagaInstance.lastRequestId =
-          await this.sagaCommandProducer.sendCommands(
-            this.sagaType,
-            sagaInstance.sagaId,
-            actions.commands,
-            this.sagaReplyChannel,
-          );
+        const lastRequestId = await this.sagaCommandProducer.sendCommands(
+          this.sagaType,
+          sagaInstance.sagaId,
+          actions.commands,
+          this.sagaReplyChannel,
+        );
 
         this.updateState(sagaInstance, actions);
 
-        sagaInstance.sagaData = actions.updatedSagaData || sagaData;
+        wrap(sagaInstance).assign({
+          sagaData: actions.updatedSagaData || sagaData,
+          lastRequestId,
+        });
 
         if (actions.endState) {
           await this.performEndStateActions(
@@ -202,18 +208,21 @@ export class SagaManager<Data> {
       sagaId,
     );
 
-    const lockedTarget = message.getHeader(SagaReplyHeaders.REPLY_LOCKED);
-    if (lockedTarget) {
+    const resource = message.getHeader(SagaReplyHeaders.REPLY_LOCKED);
+    if (resource) {
       const destination = message.getRequiredHeader(
         CommandMessageHeaders.inReply(CommandMessageHeaders.DESTINATION),
       );
-      sagaInstance.destinationsAndResources.push(
-        new DestinationAndResource(destination, lockedTarget),
-      );
+
+      const participant = this.sagaInstanceRepository.createParticipant({
+        destination,
+        resource,
+      });
+      sagaInstance.participants.add(participant);
     }
 
     const actions = await this.getSagaDefinition().handleReply(
-      sagaInstance.stateName,
+      sagaInstance.state,
       sagaInstance.sagaData,
       message,
     );
@@ -241,44 +250,38 @@ export class SagaManager<Data> {
     );
   }
 
-  create(data: Data): Promise<ConvoySagaInstance<Data>>;
-  create(data: Data, lockTarget?: string): Promise<ConvoySagaInstance<Data>>;
+  create(data: Data): Promise<SagaInstance<Data>>;
+  create(data: Data, lockTarget?: string): Promise<SagaInstance<Data>>;
   create(
     data: Data,
     targetType: Instance,
     targetId: string,
-  ): Promise<ConvoySagaInstance<Data>>;
+  ): Promise<SagaInstance<Data>>;
   async create(
     sagaData: Data,
     target?: string | Instance,
     targetId?: string,
-  ): Promise<ConvoySagaInstance<Data>> {
+  ): Promise<SagaInstance<Data>> {
     const lockTarget = new LockTarget(target, targetId);
     const resource = lockTarget.target;
 
-    let sagaInstance = new ConvoySagaInstance<Data>(
-      this.sagaType,
-      null as never,
-      '????',
-      undefined,
-      (<Instance>sagaData).constructor.name,
+    const sagaInstance = await this.sagaInstanceRepository.create({
+      sagaType: this.sagaType,
+      sagaDataType: (<Instance>sagaData).constructor.name,
       sagaData,
-    );
-
-    sagaInstance = await this.sagaInstanceRepository.save(sagaInstance);
+    });
 
     await this.saga.onStarting?.(sagaInstance.sagaId, sagaData);
 
-    if (resource) {
-      if (
-        !(await this.sagaLockManager.claimLock(
-          this.sagaType,
-          sagaInstance.sagaId,
-          resource,
-        ))
-      ) {
-        throw new CannotClaimResourceLockException();
-      }
+    if (
+      resource &&
+      !(await this.sagaLockManager.claimLock(
+        this.sagaType,
+        sagaInstance.sagaId,
+        resource,
+      ))
+    ) {
+      throw new CannotClaimResourceLockException();
     }
 
     const actions = await this.getSagaDefinition().start(sagaData);

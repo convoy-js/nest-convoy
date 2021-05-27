@@ -5,7 +5,7 @@ export class SagaLock {
   @PrimaryKey()
   target: string;
 
-  @Property()
+  @PrimaryKey({ unique: true })
   sagaId: string;
 
   @Property()

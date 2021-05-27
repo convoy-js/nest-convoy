@@ -1,10 +1,8 @@
 import { Entity, Property, PrimaryKey, JsonType } from '@mikro-orm/core';
 
-import { ObjectLiteral } from '@nest-convoy/common';
+import type { ObjectLiteral } from '@nest-convoy/common';
 
-@Entity({
-  tableName: 'events',
-})
+@Entity()
 export class Events<
   Data extends ObjectLiteral = ObjectLiteral,
   Metadata extends ObjectLiteral = ObjectLiteral,

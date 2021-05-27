@@ -66,8 +66,6 @@ export class InitializerService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     const { commands, events } = this.explorer.explore();
 
-    console.log(commands, events);
-
     const commandHandlers = (commands || []).map(async instanceType => {
       const channel = Reflect.getMetadata(
         FROM_CHANNEL_METADATA,

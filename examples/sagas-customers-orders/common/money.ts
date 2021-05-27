@@ -1,11 +1,12 @@
 import { f } from '@deepkit/type';
-import { Property } from '@mikro-orm/core';
+import { Embeddable, Property } from '@mikro-orm/core';
 
 import { Float, AvroSchema } from '@nest-convoy/kafka';
 
 import { Namespace } from './channel';
 
 @AvroSchema(Namespace.COMMON)
+@Embeddable()
 export class Money {
   @Property({ type: 'float' })
   @f.type(Float)

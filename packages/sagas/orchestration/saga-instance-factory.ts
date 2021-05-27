@@ -1,13 +1,14 @@
-import { Injectable, OnModuleInit, Type } from '@nestjs/common';
+import type { OnModuleInit, Type } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
 
 import { MissingSagaManagerException } from '@nest-convoy/sagas/common';
+import type { SagaInstance } from '@nest-convoy/sagas/orchestration/entities';
 
-import { Saga } from './saga';
-import { SagaManager } from './saga-manager';
+import type { Saga } from './saga';
+import type { SagaManager } from './saga-manager';
 import { SagaManagerFactory } from './saga-manager-factory';
-import { ConvoySagaInstance } from './saga-instance';
 
 @Injectable()
 export class SagaInstanceFactory implements OnModuleInit {
@@ -19,10 +20,10 @@ export class SagaInstanceFactory implements OnModuleInit {
     private readonly explorer: ExplorerService,
   ) {}
 
-  private async createSagaManager<SagaData>(
-    saga: Saga<SagaData>,
-  ): Promise<SagaManager<SagaData>> {
-    const sagaManager = this.sagaManagerFactory.create<SagaData>(saga);
+  private async createSagaManager<Data>(
+    saga: Saga<Data>,
+  ): Promise<SagaManager<Data>> {
+    const sagaManager = this.sagaManagerFactory.create<Data>(saga);
     await sagaManager.subscribeToReplyChannel();
     return sagaManager;
   }
@@ -47,10 +48,10 @@ export class SagaInstanceFactory implements OnModuleInit {
     this.sagaManagers = new WeakMap(sagaManagers);
   }
 
-  async create<SagaData>(
-    sagaType: Type<Saga<SagaData>>,
-    data: SagaData,
-  ): Promise<ConvoySagaInstance<SagaData>> {
+  async create<Data>(
+    sagaType: Type<Saga<Data>>,
+    data: Data,
+  ): Promise<SagaInstance<Data>> {
     if (!this.sagaManagers.has(sagaType)) {
       throw new MissingSagaManagerException(sagaType);
     }

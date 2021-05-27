@@ -5,10 +5,11 @@ export const defaultOptions: MikroOrmOptions = {
   metadataProvider: ReflectMetadataProvider,
   host: '0.0.0.0',
   type: 'postgresql',
-  dbName: 'orders',
+  dbName: 'postgres',
   user: 'postgres',
   password: 'postgres',
   port: 5432,
+  debug: true,
 };
 
 export { MikroOrmOptions };

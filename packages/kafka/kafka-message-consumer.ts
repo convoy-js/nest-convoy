@@ -91,9 +91,13 @@ export class KafkaMessageConsumer
         }
 
         const message = await this.message.from(payload);
-        await this.transactionContext.create(async () => {
-          await processor.process(message, payload);
-        });
+        try {
+          await this.transactionContext.create(async () => {
+            await processor.process(message, payload);
+          });
+        } catch (err) {
+          this.logger.error(err);
+        }
 
         await this.maybeCommitOffsets(processor);
       },

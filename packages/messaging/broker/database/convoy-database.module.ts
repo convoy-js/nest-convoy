@@ -3,12 +3,12 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import type { DynamicModule } from '@nestjs/common';
 import { Global, Logger, Module } from '@nestjs/common';
 
-import {
-  ConvoyTransactionContext,
-  NEST_CONVOY_CONNECTION,
-} from '@nest-convoy/common';
+import { ConvoyTransactionContext } from '@nest-convoy/common';
 
-import { DatabaseTransactionContext } from './database-transaction-context';
+import {
+  databaseTransactionContext,
+  DatabaseTransactionContext,
+} from './database-transaction-context';
 
 export type ConvoyMikroOrmOptions = Omit<
   Options,
@@ -23,10 +23,9 @@ export class ConvoyDatabaseModule {
       module: ConvoyDatabaseModule,
       imports: [
         MikroOrmModule.forRootAsync({
-          useFactory: (ctx: DatabaseTransactionContext) => ({
-            name: NEST_CONVOY_CONNECTION,
+          useFactory: () => ({
             logger: (message: string) => Logger.log(message),
-            context: () => ctx.get(),
+            context: () => databaseTransactionContext?.get(),
             discovery: {
               disableDynamicFileAccess: true,
             },
@@ -35,7 +34,8 @@ export class ConvoyDatabaseModule {
             strict: true,
             ...options,
           }),
-          inject: [ConvoyTransactionContext],
+          // TODO: Somehow "inject" doesn't work and causes the app to immediately exit.
+          inject: [],
         }),
       ],
       providers: [
@@ -44,7 +44,7 @@ export class ConvoyDatabaseModule {
           useClass: DatabaseTransactionContext,
         },
       ],
-      exports: [MikroOrmModule, ConvoyTransactionContext],
+      exports: [ConvoyTransactionContext],
     };
   }
 }

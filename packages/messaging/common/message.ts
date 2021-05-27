@@ -1,11 +1,11 @@
-import { Type } from '@nestjs/common';
 import {
   plainToClass,
   validatedPlainToClass,
   ValidationFailed,
 } from '@deepkit/type';
+import type { Type } from '@nestjs/common';
 
-import { ObjectLiteral } from '@nest-convoy/common';
+import type { ObjectLiteral } from '@nest-convoy/common';
 
 import { MissingMessageHeaderException } from './exceptions';
 import { MessageHeaders } from './message-headers';
@@ -30,16 +30,20 @@ export class Message {
   }
 
   constructor(
-    protected payload: any,
+    protected payload: ObjectLiteral,
     protected headers = new MessageHeaders(),
   ) {}
 
   toString(): string {
-    return JSON.stringify({
-      payload: this.payload,
-      headers: this.getHeaders().asRecord(),
-      type: this.type,
-    });
+    return JSON.stringify(
+      {
+        type: this.type,
+        payload: this.payload,
+        headers: this.getHeaders().asRecord(),
+      },
+      null,
+      2,
+    );
   }
 
   setPayload(payload: ObjectLiteral): this {
@@ -47,10 +51,10 @@ export class Message {
     return this;
   }
 
-  async parsePayload<T = any>(type?: Type<T>): Promise<T> {
+  async parsePayload<T = ObjectLiteral>(type?: Type<T>): Promise<T> {
     return type
       ? await validatedPlainToClass(type, this.payload)
-      : this.payload;
+      : (this.payload as T);
   }
 
   getPayload(): ObjectLiteral {

@@ -1,22 +1,32 @@
-import { EntityRepository } from '@mikro-orm/core';
+import { EntityRepository, wrap } from '@mikro-orm/core';
+import type { EntityData } from '@mikro-orm/core/typings';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 
-import { RuntimeException } from '@nest-convoy/common';
+import { databaseTransactionContext } from '@nest-convoy/messaging/broker/database';
 
-import { DestinationAndResource } from './destination-and-resource';
 import { SagaInstance, SagaInstanceParticipants } from './entities';
-import { ConvoySagaInstance } from './saga-instance';
 
 @Injectable()
 export class DefaultSagaInstanceRepository {
-  private readonly store = new Map<string, ConvoySagaInstance>();
+  private readonly store = new Map<string, SagaInstance>();
 
-  async find(sagaType: string, sagaId: string): Promise<ConvoySagaInstance> {
+  async create(data: EntityData<SagaInstance>): Promise<SagaInstance> {
+    const instance = Object.assign(new SagaInstance(), data);
+    return this.save(instance);
+  }
+
+  createParticipant(
+    data: EntityData<SagaInstanceParticipants>,
+  ): SagaInstanceParticipants {
+    return Object.assign(new SagaInstanceParticipants(), data);
+  }
+
+  async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
     return this.store.get(`${sagaType}-${sagaId}`)!;
   }
 
-  async save(sagaInstance: ConvoySagaInstance): Promise<ConvoySagaInstance> {
+  async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
     this.store.set(
       `${sagaInstance.sagaType}-${sagaInstance.sagaId}`,
       sagaInstance,
@@ -25,7 +35,7 @@ export class DefaultSagaInstanceRepository {
     return sagaInstance;
   }
 
-  async update(sagaInstance: ConvoySagaInstance): Promise<void> {
+  async update(sagaInstance: SagaInstance): Promise<void> {
     await this.save(sagaInstance);
   }
 }
@@ -41,92 +51,104 @@ export class SagaDatabaseInstanceRepository extends DefaultSagaInstanceRepositor
     super();
   }
 
-  private async createDestinationsAndResources({
-    destinationsAndResources,
-    sagaId,
-    sagaType,
-  }: ConvoySagaInstance): Promise<void> {
-    // await this.orm.em.transactional(async em => {
-    destinationsAndResources.forEach(dr => {
-      const entity = this.sagaInstanceParticipantsRepository.create({
-        sagaId,
+  // private async createDestinationsAndResources({
+  //   destinationsAndResources,
+  //   sagaId,
+  //   sagaType,
+  // }: ConvoySagaInstance): Promise<void> {
+  //   destinationsAndResources.forEach(dr => {
+  //     const entity = this.sagaInstanceParticipantsRepository.create({
+  //       sagaId,
+  //       sagaType,
+  //       ...dr,
+  //     });
+  //     this.sagaInstanceParticipantsRepository.persist(entity);
+  //   });
+  //
+  //   await this.sagaInstanceParticipantsRepository.flush();
+  // }
+
+  // private async findDestinationsAndResources(
+  //   sagaType: string,
+  //   sagaId: string,
+  // ): Promise<DestinationAndResource[]> {
+  //   const sagaInstanceParticipants =
+  //     await this.sagaInstanceParticipantsRepository.find({
+  //       sagaType,
+  //       sagaId,
+  //     });
+  //
+  //   return sagaInstanceParticipants.map(
+  //     ({ destination, resource }) =>
+  //       new DestinationAndResource(destination, resource),
+  //   );
+  // }
+
+  async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
+    return this.sagaInstanceRepository.findOneOrFail(
+      {
         sagaType,
-        ...dr,
-      });
-      this.sagaInstanceRepository.persist(entity);
-    });
+        sagaId,
+      },
+      ['participants'],
+    );
+
+    // const destinationAndResources = await this.findDestinationsAndResources(
+    //   sagaType,
+    //   sagaId,
+    // );
+    //
+    // const entity = await this.sagaInstanceRepository.findOne({
+    //   sagaType,
+    //   sagaId,
     // });
+    //
+    // if (!entity) {
+    //   throw new RuntimeException(
+    //     `Cannot find saga instance ${sagaType} ${sagaId}`,
+    //   );
+    // }
+    //
+    // return new ConvoySagaInstance(
+    //   sagaType,
+    //   sagaId,
+    //   entity.stateName,
+    //   entity.lastRequestId,
+    //   entity.sagaDataType,
+    //   entity.sagaData,
+    //   destinationAndResources,
+    //   entity.compensating,
+    //   entity.endState,
+    // );
   }
 
-  private async findDestinationsAndResources(
-    sagaType: string,
-    sagaId: string,
-  ): Promise<DestinationAndResource[]> {
-    const sagaInstanceParticipants =
-      await this.sagaInstanceParticipantsRepository.find({
-        sagaType,
-        sagaId,
-      });
-
-    return sagaInstanceParticipants.map(
-      ({ destination, resource }) =>
-        new DestinationAndResource(destination, resource),
-    );
+  createParticipant(
+    data: EntityData<SagaInstanceParticipants>,
+  ): SagaInstanceParticipants {
+    const participant = this.sagaInstanceParticipantsRepository.create(data);
+    wrap(participant).assign(data);
+    return participant;
   }
 
-  async find(sagaType: string, sagaId: string): Promise<ConvoySagaInstance> {
-    const destinationAndResources = await this.findDestinationsAndResources(
-      sagaType,
-      sagaId,
-    );
-
-    const entity = await this.sagaInstanceRepository.findOne({
-      sagaType,
-      sagaId,
-    });
-
-    if (!entity) {
-      throw new RuntimeException(
-        `Cannot find saga instance ${sagaType} ${sagaId}`,
-      );
-    }
-
-    return new ConvoySagaInstance(
-      sagaType,
-      sagaId,
-      entity.stateName,
-      entity.lastRequestId,
-      entity.sagaDataType,
-      entity.sagaData,
-      destinationAndResources,
-      entity.compensating,
-      entity.endState,
-    );
+  async create(data: EntityData<SagaInstance>): Promise<SagaInstance> {
+    const instance = this.sagaInstanceRepository.create(data);
+    wrap(instance).assign(data);
+    return this.save(instance);
   }
 
-  async save(sagaInstance: ConvoySagaInstance): Promise<ConvoySagaInstance> {
-    const entity = this.sagaInstanceRepository.create(sagaInstance);
-    this.sagaInstanceRepository.persist(entity);
+  async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
+    // const entity = this.sagaInstanceRepository.create(sagaInstance);
+    await this.sagaInstanceRepository.persistAndFlush(sagaInstance);
     // wrap(entity).assign(sagaInstance);
 
     // const entity = this.sagaInstanceRepository.create(sagaInstance);
     // this.sagaInstanceRepository.save(entity);
-    await this.createDestinationsAndResources(sagaInstance);
-    return Object.assign(sagaInstance, entity);
+    // await this.createDestinationsAndResources(sagaInstance);
+    return sagaInstance;
   }
 
-  async update({
-    sagaType,
-    sagaId,
-    destinationsAndResources,
-    ...sagaInstance
-  }: NonNullable<ConvoySagaInstance>): Promise<void> {
-    const entity = this.sagaInstanceRepository.create({
-      sagaType,
-      sagaId,
-      ...sagaInstance,
-    });
-    this.sagaInstanceRepository.persist(entity);
+  async update(instance: SagaInstance): Promise<void> {
+    await this.sagaInstanceRepository.persistAndFlush(instance);
     // const result = await this.sagaInstanceRepository.update(
     //   {
     //     sagaType,
@@ -135,9 +157,9 @@ export class SagaDatabaseInstanceRepository extends DefaultSagaInstanceRepositor
     //   sagaInstance,
     // );
 
-    await this.createDestinationsAndResources(
-      // eslint-disable-next-line prefer-rest-params
-      arguments[0] as ConvoySagaInstance,
-    );
+    // await this.createDestinationsAndResources(
+    //   // eslint-disable-next-line prefer-rest-params
+    //   arguments[0] as ConvoySagaInstance,
+    // );
   }
 }

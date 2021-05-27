@@ -1,22 +1,29 @@
 import { uuid } from '@deepkit/type';
-import { Entity, JsonType, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Cascade,
+  Collection,
+  Embedded,
+  Entity,
+  JsonType,
+  ManyToOne,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+
+import { SagaExecutionState } from '../saga-execution-state';
+import { SagaInstanceParticipants } from './saga-instance-participants.entity';
 
 @Entity()
 export class SagaInstance<Data = any> {
   @PrimaryKey()
-  sagaId = uuid();
+  sagaId: string = uuid();
 
   @PrimaryKey()
   sagaType: string;
 
-  @Property()
-  stateName: string;
-
-  @Property()
-  compensating = false;
-
-  @Property()
-  endState = false;
+  @Embedded(() => SagaExecutionState)
+  state = new SagaExecutionState();
 
   @Property()
   sagaDataType: string;
@@ -26,6 +33,14 @@ export class SagaInstance<Data = any> {
 
   @Property({ nullable: true })
   lastRequestId?: string;
+
+  @OneToMany({
+    entity: () => SagaInstanceParticipants,
+    mappedBy: participants => participants.sagaInstance,
+    cascade: [Cascade.ALL],
+    eager: true,
+  })
+  participants = new Collection<SagaInstanceParticipants>(this);
 
   @Property({ version: true })
   version: number;
