@@ -3,7 +3,7 @@ import type { EntityData } from '@mikro-orm/core/typings';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 
-import { databaseTransactionContext } from '@nest-convoy/messaging/broker/database';
+import { databaseTransactionContext } from '@nest-convoy/database';
 
 import { SagaInstance, SagaInstanceParticipants } from './entities';
 

@@ -1,4 +1,4 @@
-import { databaseTransactionContext } from './database-transaction-context';
+import { DatabaseTransactionContext } from './database-transaction-context';
 
 export function Transactional(): MethodDecorator {
   return (
@@ -8,7 +8,7 @@ export function Transactional(): MethodDecorator {
   ) => {
     const originalMethod = descriptor.value;
     descriptor.value = async function <T>(...args: any[]): Promise<T> {
-      return databaseTransactionContext!.create(() =>
+      return DatabaseTransactionContext.create(() =>
         originalMethod.apply(this, args),
       );
     };

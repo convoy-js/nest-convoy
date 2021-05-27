@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
+import type { Message } from '@nest-convoy/messaging/common';
 import { MessageProducer } from '@nest-convoy/messaging/producer';
-import { Message } from '@nest-convoy/messaging/common';
 
 import { InMemoryMessageConsumer } from './in-memory-message-consumer';
 

@@ -12,7 +12,7 @@ nest_library(
         "//packages/common",
         "//packages/events",
         "//packages/messaging",
-        "//packages/messaging/broker/database",
+        "//packages/database",
         "//packages/sagas/common",
         "@npm//@deepkit/type",
         "@npm//@mikro-orm/core",

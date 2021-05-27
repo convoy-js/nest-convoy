@@ -6,9 +6,10 @@ nest_library(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@nest-convoy/messaging/broker/cdc",
+    module_name = "@nest-convoy/cdc",
     deps = [
         "//packages/common",
+        "@npm//@deepkit/type",
         "@npm//@mikro-orm/nestjs",
         "@npm//@mikro-orm/core",
     ],

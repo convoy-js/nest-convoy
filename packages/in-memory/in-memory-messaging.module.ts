@@ -1,11 +1,12 @@
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import type { DynamicModule } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
+import { ConvoyCoreModule } from '@nest-convoy/core/core.module';
 import { ConvoyMessagingConsumerModule } from '@nest-convoy/messaging/consumer';
 import { ConvoyMessagingProducerModule } from '@nest-convoy/messaging/producer';
-import { ConvoyCoreModule } from '@nest-convoy/core/core.module';
 
-import { InMemoryMessageProducer } from './in-memory-message-producer';
 import { InMemoryMessageConsumer } from './in-memory-message-consumer';
+import { InMemoryMessageProducer } from './in-memory-message-producer';
 
 @Global()
 @Module({})

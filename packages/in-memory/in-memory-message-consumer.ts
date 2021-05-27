@@ -1,10 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { Message, MessageHandler } from '@nest-convoy/messaging/common';
-import {
-  MessageSubscription,
-  MessageConsumer,
-} from '@nest-convoy/messaging/consumer';
+import type { Message, MessageHandler } from '@nest-convoy/messaging/common';
+import type { MessageSubscription } from '@nest-convoy/messaging/consumer';
+import { MessageConsumer } from '@nest-convoy/messaging/consumer';
 
 @Injectable()
 export class InMemoryMessageConsumer extends MessageConsumer {

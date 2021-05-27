@@ -5,10 +5,7 @@ import { Global, Logger, Module } from '@nestjs/common';
 
 import { ConvoyTransactionContext } from '@nest-convoy/common';
 
-import {
-  databaseTransactionContext,
-  DatabaseTransactionContext,
-} from './database-transaction-context';
+import { DatabaseTransactionContext } from './database-transaction-context';
 
 export type ConvoyMikroOrmOptions = Omit<
   Options,
@@ -25,7 +22,7 @@ export class ConvoyDatabaseModule {
         MikroOrmModule.forRootAsync({
           useFactory: () => ({
             logger: (message: string) => Logger.log(message),
-            context: () => databaseTransactionContext?.get(),
+            context: () => DatabaseTransactionContext.getEntityManager(),
             discovery: {
               disableDynamicFileAccess: true,
             },

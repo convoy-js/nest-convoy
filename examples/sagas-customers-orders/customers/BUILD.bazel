@@ -11,7 +11,7 @@ nest_library(
         "//packages/common",
         "//packages/core",
         "//packages/kafka",
-        "//packages/messaging/broker/database",
+        "//packages/database",
         "@npm//@deepkit/type",
         "@npm//@mikro-orm/core",
         "@npm//@mikro-orm/nestjs",

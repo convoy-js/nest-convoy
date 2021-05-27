@@ -13,7 +13,7 @@ nest_library(
         "//packages/core",
         "//packages/events/aggregate",
         "//packages/kafka",
-        "//packages/messaging/broker/database",
+        "//packages/database",
         "//packages/sagas",
         "@npm//@deepkit/type",
         "@npm//@mikro-orm/core",

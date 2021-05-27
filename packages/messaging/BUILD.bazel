@@ -19,8 +19,8 @@ pkg_npm(
     srcs = ["package.json"],
     deps = [
         ":messaging",
-        "//packages/messaging/broker/cdc",
-        "//packages/messaging/broker/database",
+        "//packages/cdc",
+        "//packages/database",
         "//packages/messaging/broker/in-memory",
     ],
 )

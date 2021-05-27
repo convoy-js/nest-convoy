@@ -4,19 +4,19 @@ import { Global, Module } from '@nestjs/common';
 import type { DynamicModule, Provider } from '@nestjs/common';
 import type { ConsumerConfig, KafkaConfig, ProducerConfig } from 'kafkajs';
 
+import { ConvoyCdcModule } from '@nest-convoy/cdc';
 import { ConvoyCoreModule } from '@nest-convoy/core/core.module';
+import type { ConvoyMikroOrmOptions } from '@nest-convoy/database';
+import {
+  DatabaseMessageProducer,
+  ConvoyDatabaseModule,
+} from '@nest-convoy/database';
 import type { MessageProducer } from '@nest-convoy/messaging';
 import {
   ConvoyMessagingConsumerModule,
   ConvoyMessagingProducerModule,
   DatabaseDuplicateMessageDetector,
 } from '@nest-convoy/messaging';
-import { ConvoyCdcModule } from '@nest-convoy/messaging/broker/cdc';
-import type { ConvoyMikroOrmOptions } from '@nest-convoy/messaging/broker/database';
-import {
-  DatabaseMessageProducer,
-  ConvoyDatabaseModule,
-} from '@nest-convoy/messaging/broker/database';
 
 import { Kafka } from './kafka';
 import { KafkaMessageBuilder } from './kafka-message-builder';

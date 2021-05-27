@@ -2,7 +2,7 @@ import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 
-import { Transactional } from '@nest-convoy/messaging/broker/database';
+import { Transactional } from '@nest-convoy/database';
 import { SagaInstanceFactory } from '@nest-convoy/sagas';
 
 import { OrderDetails } from './common';

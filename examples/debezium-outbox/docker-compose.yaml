@@ -1,13 +1,13 @@
 version: '3'
 services:
   zookeeper:
-    image: debezium/zookeeper:1.4
+    image: debezium/zookeeper:1.6
     ports:
       - 2181:2181
       - 2888:2888
       - 3888:3888
   kafka:
-    image: debezium/kafka:1.4
+    image: debezium/kafka:1.6
     ports:
       - 9092:9092
     depends_on:
@@ -15,14 +15,14 @@ services:
     environment:
       - ZOOKEEPER_CONNECT=zookeeper:2181
   postgres:
-    image: debezium/example-postgres:1.4
+    image: debezium/postgres:13-alpine
     ports:
       - 5432:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
   connect:
-    image: debezium/connect:1.4
+    image: debezium/connect:1.6
     ports:
       - 8083:8083
     depends_on:

@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 
-import { Transactional } from '@nest-convoy/messaging/broker/database';
+import { Transactional } from '@nest-convoy/database';
 
 import type { Money } from '../common';
 import { CustomerService } from './customer.service';

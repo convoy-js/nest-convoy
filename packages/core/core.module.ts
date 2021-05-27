@@ -35,7 +35,7 @@ export class ConvoyCoreModule {
   //           name: NEST_CONVOY_CONNECTION,
   //           registerRequestContext: false,
   //           autoLoadEntities: true,
-  //           context: () => ctx.get(),
+  //           context: () => ctx.getEntityManager(),
   //           ...options.database,
   //         }),
   //         inject: [ConvoyTransactionContext],

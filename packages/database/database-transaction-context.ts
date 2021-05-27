@@ -5,13 +5,21 @@ import { Injectable } from '@nestjs/common';
 import type { AsyncLikeFn } from '@nest-convoy/common';
 import { ConvoyTransactionContext } from '@nest-convoy/common';
 
-export let databaseTransactionContext: DatabaseTransactionContext | undefined;
-
 @Injectable()
 export class DatabaseTransactionContext extends ConvoyTransactionContext<EntityManager> {
+  private static instance?: DatabaseTransactionContext;
+
+  static getEntityManager(): EntityManager | undefined {
+    return DatabaseTransactionContext.instance?.get();
+  }
+
+  static async create<V>(cb: AsyncLikeFn<[], V>): Promise<V> {
+    return DatabaseTransactionContext.instance!.create(cb);
+  }
+
   constructor(private readonly orm: MikroORM) {
     super();
-    databaseTransactionContext = this;
+    DatabaseTransactionContext.instance = this;
   }
 
   get(): EntityManager | undefined {
