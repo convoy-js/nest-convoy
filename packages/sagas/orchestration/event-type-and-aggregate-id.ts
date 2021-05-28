@@ -1,4 +1,5 @@
 import type { Type } from '@nestjs/common';
+
 import type { DomainEvent } from '@nest-convoy/events';
 
 export class EventTypeAndAggregateId {

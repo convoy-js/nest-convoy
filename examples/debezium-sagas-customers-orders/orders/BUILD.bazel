@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "nest_app", "nest_library")
+
+nest_library(
+    name = "src",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["main.ts"],
+    ),
+    deps = [
+        "//examples/sagas-customers-orders/common",
+        "//examples/sagas-customers-orders/customers:src",
+        "//packages/common",
+        "//packages/core",
+        "//packages/events/aggregate",
+        "//packages/kafka",
+        "//packages/database",
+        "//packages/sagas",
+        "@npm//@deepkit/type",
+        "@npm//@mikro-orm/core",
+        "@npm//@mikro-orm/nestjs",
+        "@npm//kafkajs",
+        "@npm//pg",
+        "@npm//redis",
+        "@npm//typeorm",
+    ],
+)
+
+nest_app(
+    name = "orders",
+    entry = ":main.ts",
+    deps = [
+        ":src",
+        "@npm//@mikro-orm/core",
+    ],
+)

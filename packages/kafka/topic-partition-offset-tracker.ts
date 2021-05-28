@@ -1,3 +1,5 @@
+import { increment } from '@nest-convoy/common';
+
 import { TopicPartitionOffsets } from './topic-partition-offsets';
 import type { TopicPartitionOffset } from './topic-partition-offsets';
 
@@ -54,7 +56,7 @@ export class TopicPartitionOffsetTracker {
         .map(([partition, offset]) => ({
           topic,
           partition,
-          offset: offset + BigInt('1'),
+          offset: increment(offset),
         })),
     );
   }

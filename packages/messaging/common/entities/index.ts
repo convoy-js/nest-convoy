@@ -1,2 +1,2 @@
 export * from './message.entity';
-export * from './receives-messages.entity';
+export * from './consumed-message.entity';

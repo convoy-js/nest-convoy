@@ -6,8 +6,8 @@ import type { SagaExecutionState } from './saga-execution-state';
 export class SagaActions<Data> {
   constructor(
     readonly commands: readonly CommandWithDestination[],
-    readonly endState: boolean,
-    readonly compensating: boolean,
+    // readonly endState: boolean,
+    // readonly compensating: boolean,
     readonly local: boolean,
     readonly updatedSagaData?: Data,
     readonly updatedState?: SagaExecutionState,
@@ -17,9 +17,9 @@ export class SagaActions<Data> {
 
 export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
   private commands: readonly CommandWithDestination[] = [];
-  private compensating = false;
+  // private compensating = false;
+  // private endState = false;
   private local = false;
-  private endState = false;
   private updatedSagaData?: Data;
   private updatedState?: SagaExecutionState;
   private localException?: RuntimeException;
@@ -40,7 +40,7 @@ export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
   }
 
   withIsEndState(endState: boolean): this {
-    this.endState = endState;
+    this.updatedState!.endState = endState;
     return this;
   }
 
@@ -50,7 +50,7 @@ export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
   }
 
   withIsCompensating(compensating: boolean): this {
-    this.compensating = compensating;
+    this.updatedState!.compensating = compensating;
     return this;
   }
 
@@ -63,8 +63,8 @@ export class SagaActionsBuilder<Data> implements Builder<SagaActions<Data>> {
   build(): SagaActions<Data> {
     return new SagaActions<Data>(
       this.commands,
-      this.endState,
-      this.compensating,
+      // this.endState,
+      // this.compensating,
       this.local,
       this.updatedSagaData,
       this.updatedState,

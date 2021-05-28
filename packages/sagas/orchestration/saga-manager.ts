@@ -1,4 +1,3 @@
-import { wrap } from '@mikro-orm/core';
 import { Logger } from '@nestjs/common';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -37,7 +36,6 @@ import type { SagaActions } from './saga-actions';
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { SagaCommandProducer } from './saga-command-producer';
 import type { SagaDefinition } from './saga-definition';
-import { ConvoySagaInstance } from './saga-instance';
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { DefaultSagaInstanceRepository } from './saga-instance-repository';
 
@@ -104,10 +102,13 @@ export class SagaManager<Data> {
     actions: SagaActions<Data>,
   ): void {
     if (actions.updatedState) {
-      wrap(sagaInstance).assign({
+      // actions.updatedState.endState = actions.endState;
+      // actions.updatedState.compensating = actions.compensating;
+
+      this.sagaInstanceRepository.assign(sagaInstance, {
         state: actions.updatedState,
-        endState: actions.endState,
-        compensating: actions.compensating,
+        // endState: actions.endState,
+        // compensating: actions.compensating,
       });
     }
   }
@@ -115,7 +116,7 @@ export class SagaManager<Data> {
   private async performEndStateActions(
     sagaId: string,
     sagaInstance: SagaInstance<Data>,
-    compensating: boolean,
+    // compensating: boolean,
     sagaData: Data,
   ): Promise<void> {
     for (const dr of sagaInstance.participants.getItems()) {
@@ -130,13 +131,10 @@ export class SagaManager<Data> {
       );
     }
 
-    if (compensating) {
-      await this.saga.onSagaRolledBack?.(sagaInstance.sagaId, sagaData);
+    if (sagaInstance.state.compensating) {
+      await this.saga.onSagaRolledBack?.(sagaInstance.id, sagaData);
     } else {
-      await this.saga.onSagaCompletedSuccessfully?.(
-        sagaInstance.sagaId,
-        sagaData,
-      );
+      await this.saga.onSagaCompletedSuccessfully?.(sagaInstance.id, sagaData);
     }
   }
 
@@ -156,23 +154,23 @@ export class SagaManager<Data> {
         // only do this if successful
         const lastRequestId = await this.sagaCommandProducer.sendCommands(
           this.sagaType,
-          sagaInstance.sagaId,
+          sagaInstance.id,
           actions.commands,
           this.sagaReplyChannel,
         );
 
         this.updateState(sagaInstance, actions);
 
-        wrap(sagaInstance).assign({
+        this.sagaInstanceRepository.assign(sagaInstance, {
           sagaData: actions.updatedSagaData || sagaData,
           lastRequestId,
         });
 
-        if (actions.endState) {
+        if (actions.updatedState!.endState) {
           await this.performEndStateActions(
-            sagaInstance.sagaId,
+            sagaInstance.id,
             sagaInstance,
-            actions.compensating,
+            // actions.compensating,
             sagaData,
           );
         }
@@ -223,11 +221,11 @@ export class SagaManager<Data> {
 
     const actions = await this.getSagaDefinition().handleReply(
       sagaInstance.state,
-      sagaInstance.sagaData,
+      sagaInstance.data,
       message,
     );
 
-    await this.processActions(sagaInstance, sagaInstance.sagaData, actions);
+    await this.processActions(sagaInstance, sagaInstance.data, actions);
   }
 
   async handleMessage(message: Message): Promise<void> {
@@ -266,18 +264,18 @@ export class SagaManager<Data> {
     const resource = lockTarget.target;
 
     const sagaInstance = await this.sagaInstanceRepository.create({
-      sagaType: this.sagaType,
-      sagaDataType: (<Instance>sagaData).constructor.name,
-      sagaData,
+      type: this.sagaType,
+      dataType: (<Instance>sagaData).constructor.name,
+      data: sagaData,
     });
 
-    await this.saga.onStarting?.(sagaInstance.sagaId, sagaData);
+    await this.saga.onSagaStarting?.(sagaInstance.id, sagaData);
 
     if (
       resource &&
       !(await this.sagaLockManager.claimLock(
         this.sagaType,
-        sagaInstance.sagaId,
+        sagaInstance.id,
         resource,
       ))
     ) {

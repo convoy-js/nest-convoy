@@ -70,6 +70,7 @@ export class StepBuilder<Data> implements WithCompensationBuilder<Data> {
     ...args: WithArgs<Data, C>
   ): InvokeParticipantStepBuilder<Data> {
     return new InvokeParticipantStepBuilder<Data>(this.parent).withCompensation(
+      // @ts-ignore
       ...args,
     );
   }

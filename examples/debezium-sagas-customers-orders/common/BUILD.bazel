@@ -1,0 +1,13 @@
+load("//tools:defaults.bzl", "nest_library")
+
+nest_library(
+    name = "common",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/core",
+        "//packages/kafka",
+        "@npm//@deepkit/type",
+        "@npm//@mikro-orm/core",
+        "@npm//typeorm",
+    ],
+)

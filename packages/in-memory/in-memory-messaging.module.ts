@@ -15,7 +15,7 @@ export class ConvoyInMemoryMessagingModule {
     return {
       module: ConvoyInMemoryMessagingModule,
       imports: [
-        ConvoyCoreModule.forRoot(),
+        ConvoyCoreModule,
         ConvoyMessagingConsumerModule.register({
           useExisting: InMemoryMessageConsumer,
         }),

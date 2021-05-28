@@ -1,37 +1,37 @@
 import { Test } from '@nestjs/testing';
 
-import { mockProvider } from '@nest-convoy/testing';
-import {
-  OnSagaCompletedSuccessfully,
-  OnSagaRolledBack,
-  OnStarting,
-  SagaActions,
-  SagaActionsBuilder,
-  SagaCommandProducer,
-  ConvoySagaInstance,
-  DefaultSagaInstanceRepository,
-  SagaManagerFactory,
-  SagaDefinition,
-  SagaManager,
-} from '@nest-convoy/sagas/orchestration';
-import {
-  ConvoyMessageConsumer,
-  MessageBuilder,
-  MessageHandler,
-} from '@nest-convoy/messaging';
-import { SagaLockManager, SagaReplyHeaders } from '@nest-convoy/sagas/common';
 import {
   CommandReplyOutcome,
   CommandWithDestination,
   ConvoyCommandProducer,
   ReplyMessageHeaders,
 } from '@nest-convoy/commands';
+import type { MessageHandler } from '@nest-convoy/messaging';
+import { ConvoyMessageConsumer, MessageBuilder } from '@nest-convoy/messaging';
+import { SagaLockManager, SagaReplyHeaders } from '@nest-convoy/sagas/common';
+import type {
+  OnSagaCompletedSuccessfully,
+  OnSagaRolledBack,
+  OnSagaStarting,
+  SagaActions,
+  SagaDefinition,
+  SagaManager,
+} from '@nest-convoy/sagas/orchestration';
+import {
+  SagaActionsBuilder,
+  SagaCommandProducer,
+  ConvoySagaInstance,
+  DefaultSagaInstanceRepository,
+  SagaManagerFactory,
+} from '@nest-convoy/sagas/orchestration';
 import {
   NestSagaDefinition,
   NestSaga,
   Saga,
 } from '@nest-convoy/sagas/orchestration/dsl';
-import { SagaStep } from '@nest-convoy/sagas/orchestration/dsl/saga-step';
+import type { SagaStep } from '@nest-convoy/sagas/orchestration/dsl/saga-step';
+import { SagaExecutionState } from '@nest-convoy/sagas/orchestration/saga-execution-state';
+import { mockProvider } from '@nest-convoy/testing';
 
 class TestCommand {}
 
@@ -42,10 +42,7 @@ class TestSagaData {
 @Saga(TestSagaData)
 class TestSaga
   extends NestSaga<TestSagaData>
-  implements
-    OnStarting<TestSagaData>,
-    OnSagaCompletedSuccessfully<TestSagaData>,
-    OnSagaRolledBack<TestSagaData>
+  implements OnSagaStarting, OnSagaCompletedSuccessfully, OnSagaRolledBack
 {
   readonly sagaDefinition: SagaDefinition<TestSagaData>;
 
@@ -53,7 +50,7 @@ class TestSaga
 
   onSagaRolledBack(sagaId: string, data: TestSagaData): void {}
 
-  onStarting(sagaId: string, data: TestSagaData): void {}
+  onSagaStarting(sagaId: string, data: TestSagaData): void {}
 }
 
 describe('SagaManager', () => {
@@ -126,8 +123,8 @@ describe('SagaManager', () => {
   function createFirstSagaActions(): SagaActions<TestSagaData> {
     return new SagaActionsBuilder<TestSagaData>()
       .withCommand(commandForParticipant1)
+      .withUpdatedState(new SagaExecutionState())
       .withUpdatedSagaData(sagaDataUpdatedByStartingHandler)
-      .withUpdatedState('state-A')
       .build();
   }
 
@@ -136,7 +133,7 @@ describe('SagaManager', () => {
   ): SagaActions<TestSagaData> {
     return new SagaActionsBuilder<TestSagaData>()
       .withCommand(commandForParticipant2)
-      .withUpdatedState('state-B')
+      .withUpdatedState(new SagaExecutionState())
       .withUpdatedSagaData(sagaDataUpdatedByReplyHandler)
       .withIsEndState(true)
       .withIsCompensating(compensating)
@@ -161,7 +158,7 @@ describe('SagaManager', () => {
     jest
       .spyOn(sagaInstanceRepository, 'save')
       .mockImplementation(async sagaInstance => {
-        sagaInstance.sagaId = sagaId;
+        sagaInstance.id = sagaId;
         return sagaInstance;
       });
 

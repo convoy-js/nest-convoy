@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
+import { CommandDestination } from '@nest-convoy/core';
 import { NestSaga, Saga } from '@nest-convoy/sagas/orchestration/dsl';
-import { CommandWithDestination } from '@nest-convoy/commands';
 
-import { LocalSagaData } from './local-saga.data';
 import { Do2Command, Undo2Command } from './commands';
+import { LocalSagaData } from './local-saga.data';
 
 @Injectable()
 export class LocalSagaSteps {
@@ -29,11 +29,13 @@ export class LocalSaga extends NestSaga<LocalSagaData> {
     super();
   }
 
-  private do2(): CommandWithDestination {
-    return new CommandWithDestination('participant2', new Do2Command());
+  @CommandDestination('participant2')
+  private do2(): Do2Command {
+    return new Do2Command();
   }
 
-  private undo2(): CommandWithDestination {
-    return new CommandWithDestination('participant2', new Undo2Command());
+  @CommandDestination('participant2')
+  private undo2(): Undo2Command {
+    return new Undo2Command();
   }
 }

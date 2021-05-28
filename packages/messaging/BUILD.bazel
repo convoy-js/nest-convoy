@@ -21,6 +21,6 @@ pkg_npm(
         ":messaging",
         "//packages/cdc",
         "//packages/database",
-        "//packages/messaging/broker/in-memory",
+        "//packages/in-memory",
     ],
 )

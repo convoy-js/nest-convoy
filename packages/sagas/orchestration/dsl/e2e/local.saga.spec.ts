@@ -1,17 +1,17 @@
 import { Test } from '@nestjs/testing';
 
 import {
-  SagaUnitTestSupport,
+  ConvoySagaTestSupport,
   ConvoySagaTestingModule,
   mockProvider,
 } from '@nest-convoy/testing';
 
-import { LocalSaga, LocalSagaSteps } from './local.saga';
-import { LocalSagaData } from './local-saga.data';
 import { Do2Command, Undo2Command } from './commands';
+import { LocalSagaData } from './local-saga.data';
+import { LocalSaga, LocalSagaSteps } from './local.saga';
 
 describe('LocalSaga', () => {
-  let saga: SagaUnitTestSupport<LocalSagaData>;
+  let saga: ConvoySagaTestSupport<LocalSagaData>;
   let localSaga: LocalSaga;
   let localSagaSteps: jest.Mocked<LocalSagaSteps>;
   let localSagaData: LocalSagaData;
@@ -22,7 +22,7 @@ describe('LocalSaga', () => {
       providers: [mockProvider(LocalSagaSteps), LocalSaga],
     }).compile();
 
-    saga = module.get(SagaUnitTestSupport);
+    saga = module.get(ConvoySagaTestSupport);
     localSaga = module.get(LocalSaga);
     localSagaSteps = module.get(LocalSagaSteps);
     localSagaData = new LocalSagaData();

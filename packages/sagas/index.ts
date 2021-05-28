@@ -3,7 +3,6 @@ export {
   Saga,
   CommandEndpointBuilder,
   CommandEndpoint,
-  SagaData,
 } from './orchestration/dsl';
 export {
   DestinationAndResource,
@@ -12,7 +11,7 @@ export {
   SagaManager,
   OnSagaRolledBack,
   OnSagaCompletedSuccessfully,
-  OnStarting,
+  OnSagaStarting,
   SagaDefinition,
 } from './orchestration';
 // export { LockTarget } from './common';

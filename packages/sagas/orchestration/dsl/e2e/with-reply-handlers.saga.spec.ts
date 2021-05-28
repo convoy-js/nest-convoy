@@ -2,21 +2,20 @@ import { Test } from '@nestjs/testing';
 
 import { Failure, Success } from '@nest-convoy/commands';
 import {
-  SagaUnitTestSupport,
+  ConvoySagaTestSupport,
   ConvoySagaTestingModule,
   mockProvider,
 } from '@nest-convoy/testing';
 
-import { ConditionalSagaData } from './conditional-saga.data';
 import { Do1Command, Do2Command, Undo1Command } from './commands';
-import { ConditionalSaga } from './conditional.saga';
+import { ConditionalSagaData } from './conditional-saga.data';
 import {
   WithReplyHandlers,
   WithReplyHandlersSaga,
 } from './with-reply-handlers.saga';
 
 describe('WithReplyHandlersSaga', () => {
-  let saga: SagaUnitTestSupport<ConditionalSagaData>;
+  let saga: ConvoySagaTestSupport<ConditionalSagaData>;
   let withReplyHandlers: jest.Mocked<WithReplyHandlers>;
   let withReplyHandlersSaga: WithReplyHandlersSaga;
 
@@ -61,7 +60,7 @@ describe('WithReplyHandlersSaga', () => {
       providers: [mockProvider(WithReplyHandlers), WithReplyHandlersSaga],
     }).compile();
 
-    saga = module.get(SagaUnitTestSupport);
+    saga = module.get(ConvoySagaTestSupport);
     withReplyHandlersSaga = module.get(WithReplyHandlersSaga);
     withReplyHandlers = module.get(WithReplyHandlers);
   });
@@ -74,7 +73,7 @@ describe('WithReplyHandlersSaga', () => {
       .expect()
       .command(new Do1Command())
       .to('participant1')
-      .withExtraHeaders(ConditionalSaga.DO1_COMMAND_EXTRA_HEADERS)
+      // .withExtraHeaders(ConditionalSaga.DO1_COMMAND_EXTRA_HEADERS)
       .successReply();
 
     await saga

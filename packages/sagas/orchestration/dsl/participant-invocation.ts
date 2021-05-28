@@ -1,14 +1,13 @@
-import { Message } from '@nest-convoy/messaging/common';
-import { CommandWithDestination } from '@nest-convoy/commands/consumer';
-import { Predicate } from '@nest-convoy/common';
+import type { Command, CommandProvider } from '@nest-convoy/commands/common';
 import {
-  Command,
-  CommandProvider,
   CommandReplyOutcome,
   ReplyMessageHeaders,
 } from '@nest-convoy/commands/common';
+import { CommandWithDestination } from '@nest-convoy/commands/consumer';
+import type { Predicate } from '@nest-convoy/common';
+import type { Message } from '@nest-convoy/messaging/common';
 
-import { CommandEndpoint } from './command-endpoint';
+import type { CommandEndpoint } from './command-endpoint';
 
 export abstract class BaseParticipantInvocation<Data> {
   readonly isInvocable?: Predicate<Data>;
@@ -23,7 +22,7 @@ export abstract class BaseParticipantInvocation<Data> {
 
 export class ParticipantInvocation<
   Data,
-  C extends Command
+  C extends Command,
 > extends BaseParticipantInvocation<Data> {
   constructor(
     private readonly commandBuilder: CommandProvider<
@@ -42,7 +41,7 @@ export class ParticipantInvocation<
 
 export class ParticipantEndpointInvocation<
   Data,
-  C extends Command
+  C extends Command,
 > extends BaseParticipantInvocation<Data> {
   constructor(
     private readonly commandEndpoint: CommandEndpoint<C>,

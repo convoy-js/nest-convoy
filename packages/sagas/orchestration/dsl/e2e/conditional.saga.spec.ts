@@ -1,16 +1,16 @@
 import { Test } from '@nestjs/testing';
 
 import {
-  SagaUnitTestSupport,
+  ConvoySagaTestSupport,
   ConvoySagaTestingModule,
 } from '@nest-convoy/testing';
 
-import { ConditionalSaga } from './conditional.saga';
-import { ConditionalSagaData } from './conditional-saga.data';
 import { Do1Command, Do2Command, Undo1Command } from './commands';
+import { ConditionalSagaData } from './conditional-saga.data';
+import { ConditionalSaga } from './conditional.saga';
 
 describe('ConditionalSaga', () => {
-  let saga: SagaUnitTestSupport<any>;
+  let saga: ConvoySagaTestSupport<any>;
   let conditionalSaga: ConditionalSaga;
 
   beforeEach(async () => {
@@ -19,7 +19,7 @@ describe('ConditionalSaga', () => {
       providers: [ConditionalSaga],
     }).compile();
 
-    saga = module.get(SagaUnitTestSupport);
+    saga = module.get(ConvoySagaTestSupport);
     conditionalSaga = module.get(ConditionalSaga);
   });
 
@@ -31,7 +31,7 @@ describe('ConditionalSaga', () => {
       .expect()
       .command(new Do1Command())
       .to('participant1')
-      .withExtraHeaders(ConditionalSaga.DO1_COMMAND_EXTRA_HEADERS)
+      // .withExtraHeaders(ConditionalSaga.DO1_COMMAND_EXTRA_HEADERS)
       .successReply();
 
     await saga

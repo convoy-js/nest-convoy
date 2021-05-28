@@ -10,7 +10,7 @@
     "database.dbname": "orderdb",
     "database.server.name": "dbserver1",
     "schema.include.list": "public",
-    "table.include.list": "public.outboxevent",
+    "table.include.list": "public.outbox",
     "tombstones.on.delete": "false",
     "transforms": "outbox",
     "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",

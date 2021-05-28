@@ -9,16 +9,15 @@ nest_library(
     deps = [
         "//packages/commands",
         "//packages/common",
+        "//packages/in-memory",
         "//packages/messaging",
-        "//packages/messaging/broker/in-memory",
         "//packages/sagas",
         "//packages/sagas/common",
         "//packages/sagas/orchestration",
         "//packages/testing/common",
+        "@npm//@deepkit/type",
         "@npm//@nestjs/core",
         "@npm//@nestjs/testing",
         "@npm//@types/jest",
-        "@npm//@types/uuid",
-        "@npm//uuid",
     ],
 )

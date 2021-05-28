@@ -28,7 +28,6 @@ export class SagaCommandProducer {
         headers,
         command.resource,
       );
-      console.log(message.toString());
     }
 
     return message?.id;

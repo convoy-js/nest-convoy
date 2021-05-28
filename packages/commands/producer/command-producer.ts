@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-import { Message, MessageHeaders } from '@nest-convoy/messaging/common';
-import { Command, CommandMessageHeaders } from '@nest-convoy/commands/common';
+import type { Command } from '@nest-convoy/commands/common';
+import { CommandMessageHeaders } from '@nest-convoy/commands/common';
+import type { Message } from '@nest-convoy/messaging/common';
+import { MessageHeaders } from '@nest-convoy/messaging/common';
 import {
   MessageBuilder,
   ConvoyMessageProducer,
@@ -25,7 +27,7 @@ export class ConvoyCommandProducer {
       .withHeader(CommandMessageHeaders.COMMAND_TYPE, command.constructor.name)
       .withHeader(CommandMessageHeaders.REPLY_TO, replyTo);
 
-    if (resource != null) {
+    if (resource) {
       builder.withHeader(CommandMessageHeaders.RESOURCE, resource);
     }
 

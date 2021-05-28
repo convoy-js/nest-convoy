@@ -1,9 +1,10 @@
-import type {
-  EachMessagePayload,
-  TopicPartitionOffsetAndMetadata,
-} from 'kafkajs';
+import { EachMessagePayload } from 'kafkajs';
+import type { TopicPartitionOffsetAndMetadata } from 'kafkajs';
 
-import type { KafkaMessageHandler, KafkaMessage } from './kafka-message';
+import { Transactional } from '@nest-convoy/database';
+
+import { KafkaMessage } from './kafka-message';
+import type { KafkaMessageHandler } from './kafka-message';
 import { TopicPartitionOffsetTracker } from './topic-partition-offset-tracker';
 import type { TopicPartitionOffset } from './topic-partition-offsets';
 
@@ -17,6 +18,7 @@ export class KafkaMessageProcessor {
     this.handlers = [...this.handlers, handler];
   }
 
+  @Transactional()
   async process(
     message: KafkaMessage,
     payload: EachMessagePayload,

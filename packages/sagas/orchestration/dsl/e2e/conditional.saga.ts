@@ -1,8 +1,8 @@
+import { MessageHeaders } from '@nest-convoy/messaging';
 import { NestSaga, Saga } from '@nest-convoy/sagas/orchestration/dsl';
-import { MessageHeaders } from '@nest-convoy/messaging/common';
 
-import { ConditionalSagaData } from './conditional-saga.data';
 import { do1, do2, isInvoke1, undo1 } from './commands';
+import { ConditionalSagaData } from './conditional-saga.data';
 
 @Saga(ConditionalSagaData)
 export class ConditionalSaga extends NestSaga<ConditionalSagaData> {

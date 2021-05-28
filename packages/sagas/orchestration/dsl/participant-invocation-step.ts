@@ -1,10 +1,11 @@
-import { Message } from '@nest-convoy/messaging/common';
 import { ReplyMessageHeaders } from '@nest-convoy/commands/common';
 import { RuntimeException } from '@nest-convoy/common';
+import type { Message } from '@nest-convoy/messaging/common';
 
-import { SagaStep, SagaStepReply } from './saga-step';
-import { BaseParticipantInvocation } from './participant-invocation';
-import { RemoteStepOutcome, StepOutcome } from './step-outcome';
+import type { BaseParticipantInvocation } from './participant-invocation';
+import type { SagaStep, SagaStepReply } from './saga-step';
+import type { StepOutcome } from './step-outcome';
+import { RemoteStepOutcome } from './step-outcome';
 
 export type ReplyHandlers<Data> = Map<string, SagaStepReply<Data, any>>;
 

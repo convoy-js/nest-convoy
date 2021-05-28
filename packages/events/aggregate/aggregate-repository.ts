@@ -8,7 +8,7 @@ import { map, retryWhen, take } from 'rxjs/operators';
 
 import type { Command, CommandProvider } from '@nest-convoy/commands/common';
 import type { Instance } from '@nest-convoy/common';
-import { DatabaseTransactionContext } from '@nest-convoy/database/database-transaction-context';
+import { DatabaseTransactionContext } from '@nest-convoy/database';
 import type { DomainEvent } from '@nest-convoy/events/common';
 
 import type {

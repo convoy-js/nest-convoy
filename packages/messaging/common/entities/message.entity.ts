@@ -1,6 +1,6 @@
 import { uuid } from '@deepkit/type';
 import {
-  DateType,
+  BigIntType,
   Entity,
   JsonType,
   PrimaryKey,
@@ -32,6 +32,6 @@ export class MessageEntity<P extends ObjectLiteral = ObjectLiteral> {
   @Property()
   published: boolean = false;
 
-  @Property({ type: DateType })
-  creationTime = new Date();
+  @Property({ type: BigIntType })
+  creationTime: number = Date.now();
 }

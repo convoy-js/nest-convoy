@@ -1,6 +1,17 @@
 import { Test } from '@nestjs/testing';
 
-import { mockProvider } from '@nest-convoy/testing';
+import {
+  CommandMessageHeaders,
+  correlateMessageHeaders,
+  MissingCommandHandlerException,
+} from '@nest-convoy/commands/common';
+import type { ConvoyCommandDispatcher } from '@nest-convoy/commands/consumer';
+import {
+  CommandDispatcherFactory,
+  CommandHandler,
+  CommandHandlers,
+  CommandMessage,
+} from '@nest-convoy/commands/consumer';
 import {
   Message,
   ConvoyMessageConsumer,
@@ -8,18 +19,7 @@ import {
   MissingMessageHeaderException,
   MessageHeaders,
 } from '@nest-convoy/messaging';
-import {
-  CommandMessageHeaders,
-  correlateMessageHeaders,
-  MissingCommandHandlerException,
-} from '@nest-convoy/commands/common';
-import {
-  ConvoyCommandDispatcher,
-  CommandDispatcherFactory,
-  CommandHandler,
-  CommandHandlers,
-  CommandMessage,
-} from '@nest-convoy/commands/consumer';
+import { mockProvider } from '@nest-convoy/testing';
 
 describe('CommandDispatcher', () => {
   let commandDispatcherFactory: CommandDispatcherFactory;
@@ -64,7 +64,7 @@ describe('CommandDispatcher', () => {
       );
 
       const message = new Message(
-        '{"id":"1"}',
+        { id: 1 },
         new MessageHeaders([
           [Message.ID, '1'],
           [CommandMessageHeaders.COMMAND_TYPE, TestCommand.name],
@@ -134,7 +134,7 @@ describe('CommandDispatcher', () => {
 
       beforeEach(() => {
         message = new Message(
-          '{}',
+          {},
           new MessageHeaders([
             [Message.ID, '1'],
             // [CommandMessageHeaders.COMMAND_TYPE, Test2Command.name],

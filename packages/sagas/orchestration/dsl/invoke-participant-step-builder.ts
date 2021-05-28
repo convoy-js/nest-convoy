@@ -7,7 +7,7 @@ import {
   IllegalArgumentException,
   RuntimeException,
 } from '@nest-convoy/common';
-import type { Type } from '@nest-convoy/common';
+import type { Type, Predicate } from '@nest-convoy/common';
 
 import type { SagaDefinition } from '../saga-definition';
 import { CommandEndpoint } from './command-endpoint';
@@ -29,6 +29,7 @@ import type {
   WithEndpointArgs,
   WithoutEndpointArgs,
   WithDestinationArgs,
+  Compensation,
 } from './with-builder';
 
 function isEndpoint<Data, C extends Command>(
@@ -65,7 +66,6 @@ export class InvokeParticipantStepBuilder<Data>
       | undefined;
 
     return [
-      // TODO: Not entirely sure if command destination is a requirement
       async function withDestination(
         data: Data,
       ): Promise<CommandWithDestination<C>> {
@@ -130,22 +130,22 @@ export class InvokeParticipantStepBuilder<Data>
   /**
    * With compensation
    */
-  // withCompensation<C extends Command>(
-  //   compensation: Compensation<Data, C>,
-  // ): this;
-  // withCompensation<C extends Command>(
-  //   compensation: Compensation<Data, C>,
-  //   compensationPredicate: Predicate<Data>,
-  // ): this;
-  // withCompensation<C extends Command>(
-  //   commandEndpoint: CommandEndpoint<C>,
-  //   commandProvider: Compensation<Data, C>,
-  // ): this;
-  // withCompensation<C extends Command>(
-  //   commandEndpoint: CommandEndpoint<C>,
-  //   commandProvider: Compensation<Data, C>,
-  //   compensationPredicate: Predicate<Data>,
-  // ): this;
+  withCompensation<C extends Command>(
+    compensation: Compensation<Data, C>,
+  ): this;
+  withCompensation<C extends Command>(
+    compensation: Compensation<Data, C>,
+    compensationPredicate: Predicate<Data>,
+  ): this;
+  withCompensation<C extends Command>(
+    commandEndpoint: CommandEndpoint<C>,
+    commandProvider: Compensation<Data, C>,
+  ): this;
+  withCompensation<C extends Command>(
+    commandEndpoint: CommandEndpoint<C>,
+    commandProvider: Compensation<Data, C>,
+    compensationPredicate: Predicate<Data>,
+  ): this;
   withCompensation<C extends Command>(...args: WithArgs<Data, C>): this {
     this.compensation = this.with(args);
     return this;

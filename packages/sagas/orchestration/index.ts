@@ -8,7 +8,6 @@ export * from './saga';
 export * from './saga-actions';
 export * from './saga-command-producer';
 export * from './saga-definition';
-export * from './saga-instance';
 export * from './saga-instance-factory';
 export * from './saga-instance-repository';
 export * from './saga-manager';

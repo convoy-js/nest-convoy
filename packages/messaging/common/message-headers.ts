@@ -1,4 +1,5 @@
-import { EntityProperty, Platform, Type } from '@mikro-orm/core';
+import type { EntityProperty, Platform } from '@mikro-orm/core';
+import { Type } from '@mikro-orm/core';
 
 export type MessageRecordHeaders = Record<string, string>;
 

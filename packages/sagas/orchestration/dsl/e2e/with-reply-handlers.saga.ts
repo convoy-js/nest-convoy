@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { NestSaga, Saga } from '@nest-convoy/sagas/orchestration/dsl';
 import { Failure, Success } from '@nest-convoy/commands';
+import { NestSaga, Saga } from '@nest-convoy/sagas/orchestration/dsl';
 
-import { ConditionalSagaData } from './conditional-saga.data';
 import { do1, do2, isInvoke1, undo1 } from './commands';
+import { ConditionalSagaData } from './conditional-saga.data';
 
 @Injectable()
 export class WithReplyHandlers {

@@ -1,11 +1,11 @@
-import { Type } from '@nestjs/common';
-
+import type { Type } from '@nest-convoy/common';
 import { OnEvent, OnMessage } from '@nest-convoy/core';
 
-import { NestSnapshotStrategy, SnapshotStrategy } from '../snapshot-strategy';
-import { EventWithMetadata } from '../../interfaces';
 import { Aggregates } from '../../aggregates';
 import { CommandProcessingAggregate } from '../../command-processing-aggregate';
+import type { EventWithMetadata } from '../../interfaces';
+import type { NestSnapshotStrategy } from '../snapshot-strategy';
+import { SnapshotStrategy } from '../snapshot-strategy';
 
 class AccountSnapshot {
   constructor(readonly balance: number) {}

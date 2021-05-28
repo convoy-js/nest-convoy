@@ -1,0 +1,21 @@
+{
+  "name": "orders-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "orders-db",
+    "database.port": "5434",
+    "database.user": "postgres",
+    "database.password": "postgres",
+    "database.dbname": "orders",
+    "database.server.name": "dbserver1",
+    "schema.include.list": "public",
+    "table.include.list": "public.outbox",
+    "tombstones.on.delete": "false",
+    "transforms": "outbox",
+    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+    "transforms.outbox.route.topic.replacement": "${routedByValue}.response",
+    "transforms.outbox.table.field.event.timestamp": "timestamp",
+    "transforms.outbox.table.fields.additional.placement": "type:header:eventType"
+  }
+}

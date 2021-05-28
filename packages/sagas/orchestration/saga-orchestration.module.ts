@@ -5,7 +5,7 @@ import { ExplorerService } from '@nestjs/cqrs/dist/services/explorer.service';
 import { ConvoyCommandsProducerModule } from '@nest-convoy/commands';
 import { SagaCommonModule } from '@nest-convoy/sagas/common';
 
-import { SagaInstance, SagaInstanceParticipants } from './entities';
+import { SagaInstance, SagaInstanceParticipant } from './entities';
 import { SagaCommandProducer } from './saga-command-producer';
 import { SagaExecutionState } from './saga-execution-state';
 import { SagaInstanceFactory } from './saga-instance-factory';
@@ -19,7 +19,7 @@ import { SagaManagerFactory } from './saga-manager-factory';
   imports: [
     SagaCommonModule,
     MikroOrmModule.forFeature({
-      entities: [SagaInstance, SagaInstanceParticipants, SagaExecutionState],
+      entities: [SagaInstance, SagaInstanceParticipant, SagaExecutionState],
     }),
     ConvoyCommandsProducerModule,
   ],

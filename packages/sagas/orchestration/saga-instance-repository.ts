@@ -3,9 +3,7 @@ import type { EntityData } from '@mikro-orm/core/typings';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 
-import { databaseTransactionContext } from '@nest-convoy/database';
-
-import { SagaInstance, SagaInstanceParticipants } from './entities';
+import { SagaInstance, SagaInstanceParticipant } from './entities';
 
 @Injectable()
 export class DefaultSagaInstanceRepository {
@@ -17,9 +15,18 @@ export class DefaultSagaInstanceRepository {
   }
 
   createParticipant(
-    data: EntityData<SagaInstanceParticipants>,
-  ): SagaInstanceParticipants {
-    return Object.assign(new SagaInstanceParticipants(), data);
+    data: EntityData<SagaInstanceParticipant>,
+  ): SagaInstanceParticipant {
+    return Object.assign(new SagaInstanceParticipant(), data);
+  }
+
+  assign<I extends SagaInstance, K extends keyof I>(
+    instance: I,
+    data: EntityData<I>,
+  ): void {
+    Object.entries(data).forEach(([key, value]) => {
+      instance[key as K] = value;
+    });
   }
 
   async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
@@ -27,10 +34,7 @@ export class DefaultSagaInstanceRepository {
   }
 
   async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
-    this.store.set(
-      `${sagaInstance.sagaType}-${sagaInstance.sagaId}`,
-      sagaInstance,
-    );
+    this.store.set(`${sagaInstance.type}-${sagaInstance.id}`, sagaInstance);
 
     return sagaInstance;
   }
@@ -45,8 +49,8 @@ export class SagaDatabaseInstanceRepository extends DefaultSagaInstanceRepositor
   constructor(
     @InjectRepository(SagaInstance)
     private readonly sagaInstanceRepository: EntityRepository<SagaInstance>,
-    @InjectRepository(SagaInstanceParticipants)
-    private readonly sagaInstanceParticipantsRepository: EntityRepository<SagaInstanceParticipants>,
+    @InjectRepository(SagaInstanceParticipant)
+    private readonly sagaInstanceParticipantsRepository: EntityRepository<SagaInstanceParticipant>,
   ) {
     super();
   }
@@ -84,11 +88,15 @@ export class SagaDatabaseInstanceRepository extends DefaultSagaInstanceRepositor
   //   );
   // }
 
+  assign(instance: SagaInstance, data: EntityData<SagaInstance>): void {
+    wrap(instance).assign(data);
+  }
+
   async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
     return this.sagaInstanceRepository.findOneOrFail(
       {
-        sagaType,
-        sagaId,
+        type: sagaType,
+        id: sagaId,
       },
       ['participants'],
     );
@@ -123,8 +131,8 @@ export class SagaDatabaseInstanceRepository extends DefaultSagaInstanceRepositor
   }
 
   createParticipant(
-    data: EntityData<SagaInstanceParticipants>,
-  ): SagaInstanceParticipants {
+    data: EntityData<SagaInstanceParticipant>,
+  ): SagaInstanceParticipant {
     const participant = this.sagaInstanceParticipantsRepository.create(data);
     wrap(participant).assign(data);
     return participant;

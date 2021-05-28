@@ -1,0 +1,67 @@
+version: '3'
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1
+    ports:
+      - 6831:6831/udp
+      - 16686:16686
+  zookeeper:
+    image: debezium/zookeeper:1.6
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+  kafka:
+    image: debezium/kafka:1.6
+    ports:
+      - 9092:9092
+    depends_on:
+      - zookeeper
+    environment:
+      - ZOOKEEPER_CONNECT=zookeeper:2181
+  customers-db:
+    image: debezium/postgres:13-alpine
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=customers
+  orders-db:
+    image: debezium/postgres:13-alpine
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=orders
+  connect:
+    image: debezium/connect:1.6
+    ports:
+      - 8083:8083
+    depends_on:
+      - kafka
+      - customers-db
+      - orders-db
+      - jaeger
+      - zookeeper
+    environment:
+      - BOOTSTRAP_SERVERS=kafka:9092
+      - KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - KEY_CONVERTER_SCHEMAS_ENABLE=false
+      - VALUE_CONVERTER_SCHEMAS_ENABLE=false
+      - GROUP_ID=connect
+      - OFFSET_STORAGE_TOPIC=connect-offsets
+      - OFFSET_STORAGE_REPLICATION_FACTOR=1
+      - CONFIG_STORAGE_TOPIC=connect-configs
+      - config_STORAGE_REPLICATION_FACTOR=1
+      - STATUS_STORAGE_TOPIC=connect-status
+      - STATUS_STORAGE_REPLICATION_FACTOR=1
+      - CONSUMER_INTERCEPTOR_CLASSES=io.opentracing.contrib.kafka.TracingConsumerInterceptor
+      - PRODUCER_INTERCEPTOR_CLASSES=io.opentracing.contrib.kafka.TracingConsumerInterceptor
+      - JAEGER_SERVICE_NAME=kafka-connect
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_SAMPLER_TYPE=const
+      - JAEGER_SAMPLER_PARAM=1
+      - STRIMZI_TRACING=jaeger

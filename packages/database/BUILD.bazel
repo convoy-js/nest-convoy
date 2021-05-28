@@ -10,6 +10,7 @@ nest_library(
     deps = [
         "//packages/common",
         "//packages/messaging/common",
+        "//packages/messaging/consumer",
         "//packages/messaging/producer",
         "@npm//@deepkit/type",
         "@npm//@mikro-orm/core",

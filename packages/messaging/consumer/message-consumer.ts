@@ -1,14 +1,12 @@
-import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
+import type { OnApplicationShutdown } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
-import { AsyncLikeFn } from '@nest-convoy/common';
-import {
-  ConvoyChannelMapping,
-  Message,
-  MessageHandler,
-} from '@nest-convoy/messaging/common';
+import type { AsyncLikeFn } from '@nest-convoy/common';
+import type { Message, MessageHandler } from '@nest-convoy/messaging/common';
+import { ConvoyChannelMapping } from '@nest-convoy/messaging/common';
 
-import { MessageSubscription } from './message-subscription';
 import { DuplicateMessageDetector } from './duplicate-message-detectors';
+import type { MessageSubscription } from './message-subscription';
 
 @Injectable()
 export abstract class MessageConsumer {
@@ -41,7 +39,8 @@ export abstract class MessageConsumer {
 @Injectable()
 export class ConvoyMessageConsumer
   extends MessageConsumer
-  implements OnApplicationShutdown {
+  implements OnApplicationShutdown
+{
   private readonly subs = new Map<string, AsyncLikeFn>();
   private readonly logger = new Logger(this.constructor.name, true);
 
@@ -53,12 +52,12 @@ export class ConvoyMessageConsumer
     super();
   }
 
+  // TODO: @Transactional should actually be here, or ..?
   async handleMessage(
     subscriberId: string,
     message: Message,
     handler: MessageHandler,
   ): Promise<void> {
-    // TODO: Should be able to remove this now since brokers handle subscribers and acknowledgement
     await this.duplicateMessageDetector.doWithMessage(
       subscriberId,
       message,

@@ -1,10 +1,8 @@
 import { DuplicateTriggeringEventException } from '../../exceptions';
-import { EventAndTrigger } from '../../interfaces';
-import {
-  EtpoEventContext,
-  SnapshotTriggeringEvents,
-} from '../snapshot-triggering-events';
+import type { EventAndTrigger } from '../../interfaces';
+import { EtpoEventContext } from '../etpo-event-context';
 import { LoadedSnapshot } from '../loaded-snapshot';
+import { SnapshotTriggeringEvents } from '../snapshot-triggering-events';
 
 describe('SnapshotTriggeringEvents', () => {
   const a_1_98 = new EtpoEventContext({

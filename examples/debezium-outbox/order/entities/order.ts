@@ -22,6 +22,7 @@ export class Order extends BaseEntity<Order> {
   customerId: string;
 
   @Property({ type: BigIntType })
+  @f
   created: number = Date.now();
 
   @OneToMany({
@@ -31,5 +32,6 @@ export class Order extends BaseEntity<Order> {
     orphanRemoval: true,
     eager: true,
   })
+  @f.array(OrderLine)
   lineItems = new Collection<OrderLine>(this);
 }

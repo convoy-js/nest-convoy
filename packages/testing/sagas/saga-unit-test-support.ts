@@ -1,17 +1,9 @@
+import { uuid } from '@deepkit/type';
 import { forwardRef, Inject, Injectable, Module } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { uuid } from '@deepkit/type';
 
-import { Instance, Reply } from '@nest-convoy/common';
-import { SagaManager, NestSaga } from '@nest-convoy/sagas';
-import { SagaLockManager, SagaReplyHeaders } from '@nest-convoy/sagas/common';
+import type { Command } from '@nest-convoy/commands';
 import {
-  SagaCommandProducer,
-  ConvoySagaInstance,
-  DefaultSagaInstanceRepository,
-} from '@nest-convoy/sagas/orchestration';
-import {
-  Command,
   CommandMessageHeaders,
   CommandReplyOutcome,
   ConvoyCommandProducer,
@@ -19,6 +11,9 @@ import {
   ReplyMessageHeaders,
   Success,
 } from '@nest-convoy/commands';
+import type { Instance, Reply } from '@nest-convoy/common';
+import { RuntimeException } from '@nest-convoy/common';
+import type { MessageRecordHeaders } from '@nest-convoy/messaging';
 import {
   ConvoyMessageConsumer,
   ConvoyMessageProducer,
@@ -26,6 +21,14 @@ import {
   MessageBuilder,
   MessageHeaders,
 } from '@nest-convoy/messaging';
+import type { NestSaga } from '@nest-convoy/sagas';
+import { SagaManager } from '@nest-convoy/sagas';
+import { SagaLockManager, SagaReplyHeaders } from '@nest-convoy/sagas/common';
+import {
+  SagaCommandProducer,
+  DefaultSagaInstanceRepository,
+} from '@nest-convoy/sagas/orchestration';
+import type { SagaInstance } from '@nest-convoy/sagas/orchestration/entities';
 
 import { mockProvider } from '../common';
 import { MessageWithDestination } from './message-with-destination';
@@ -36,25 +39,25 @@ export class SagaTestInstanceRepository extends DefaultSagaInstanceRepository {
     super();
   }
 
-  private get sagaUnitTestSupport(): SagaUnitTestSupport<unknown> {
-    return this.moduleRef.get(SagaUnitTestSupport);
+  private get sagaUnitTestSupport(): ConvoySagaTestSupport<unknown> {
+    return this.moduleRef.get(ConvoySagaTestSupport);
   }
 
-  async save(sagaInstance: ConvoySagaInstance): Promise<ConvoySagaInstance> {
-    sagaInstance.sagaId = uuid();
+  async save(sagaInstance: SagaInstance): Promise<SagaInstance> {
+    // sagaInstance.id = uuid();
     this.sagaUnitTestSupport.sagaInstance = sagaInstance;
     return sagaInstance;
   }
 
-  async find(sagaType: string, sagaId: string): Promise<ConvoySagaInstance> {
-    if (sagaId !== this.sagaUnitTestSupport.sagaInstance.sagaId) {
-      throw new Error('some stuff');
+  async find(sagaType: string, sagaId: string): Promise<SagaInstance> {
+    if (sagaId !== this.sagaUnitTestSupport.sagaInstance.id) {
+      throw new RuntimeException('SagaInstance with ID ${sagaId} not found');
     }
 
     return this.sagaUnitTestSupport.sagaInstance;
   }
 
-  async update(sagaInstance: ConvoySagaInstance): Promise<void> {
+  async update(sagaInstance: SagaInstance): Promise<void> {
     this.sagaUnitTestSupport.sagaInstance = sagaInstance;
   }
 }
@@ -64,7 +67,7 @@ export type SagaExpectationTest = (
 ) => void;
 
 export class SagaExpectCommandTest<Data> {
-  private expectedExtraHeaders?: Record<string, string>;
+  private expectedExtraHeaders?: MessageRecordHeaders;
   private expectedCommand: Command;
   private expect: SagaExpectationTest;
 
@@ -72,7 +75,7 @@ export class SagaExpectCommandTest<Data> {
     private readonly sentCommandIdx: number,
     private readonly expects: SagaExpectationTest[],
     private readonly sagaManager: SagaManager<Data>,
-    private readonly sagaInstance: ConvoySagaInstance<Data>,
+    private readonly sagaInstance: SagaInstance<Data>,
   ) {}
 
   private async sendReply<T extends Instance>(
@@ -81,22 +84,22 @@ export class SagaExpectCommandTest<Data> {
   ): Promise<void> {
     const message = MessageBuilder.withPayload(reply)
       .withReference(reply)
+      .withHeader(Message.ID, uuid())
       .withHeader(ReplyMessageHeaders.REPLY_OUTCOME, outcome)
       .withHeader(ReplyMessageHeaders.REPLY_TYPE, reply.constructor.name)
-      .withHeader(SagaReplyHeaders.REPLY_SAGA_TYPE, this.sagaInstance.sagaType)
-      .withHeader(SagaReplyHeaders.REPLY_SAGA_ID, this.sagaInstance.sagaId)
+      .withHeader(SagaReplyHeaders.REPLY_SAGA_TYPE, this.sagaInstance.type)
+      .withHeader(SagaReplyHeaders.REPLY_SAGA_ID, this.sagaInstance.id)
       .build();
 
-    message.setHeader(Message.ID, uuid());
     await this.sagaManager.handleMessage(message);
   }
 
   async successReply<R extends Reply>(reply?: R): Promise<void> {
-    await this.sendReply(reply ?? new Success(), CommandReplyOutcome.SUCCESS);
+    await this.sendReply(reply || new Success(), CommandReplyOutcome.SUCCESS);
   }
 
   async failureReply<R extends Reply>(reply?: R): Promise<void> {
-    await this.sendReply(reply ?? new Failure(), CommandReplyOutcome.FAILURE);
+    await this.sendReply(reply || new Failure(), CommandReplyOutcome.FAILURE);
   }
 
   command(command: Command): this {
@@ -105,11 +108,11 @@ export class SagaExpectCommandTest<Data> {
   }
 
   withExtraHeaders(
-    expectedExtraHeaders: MessageHeaders | Record<string, string>,
+    expectedExtraHeaders: MessageHeaders | MessageRecordHeaders,
   ): this {
     this.expectedExtraHeaders =
-      expectedExtraHeaders instanceof Map
-        ? Object.fromEntries(expectedExtraHeaders.entries())
+      expectedExtraHeaders instanceof MessageHeaders
+        ? expectedExtraHeaders.asRecord()
         : expectedExtraHeaders;
 
     return this;
@@ -128,7 +131,7 @@ export class SagaExpectCommandTest<Data> {
 
       if (this.expectedExtraHeaders) {
         const actualHeaders = sentCommand.message.getHeaders();
-        expect(Object.fromEntries(actualHeaders.entries())).toEqual(
+        expect(actualHeaders.asRecord()).toMatchObject(
           expect.objectContaining(this.expectedExtraHeaders),
         );
       }
@@ -143,12 +146,12 @@ export class SagaExpectCommandTest<Data> {
 }
 
 @Injectable()
-export class SagaUnitTestSupport<Data> {
+export class ConvoySagaTestSupport<Data> {
   private readonly expectations: SagaExpectationTest[][] = [];
   private sagaManager: SagaManager<Data>;
   private createException?: Error;
   public readonly sentCommands: MessageWithDestination[] = [];
-  public sagaInstance: ConvoySagaInstance;
+  public sagaInstance: SagaInstance<Data>;
 
   constructor(
     private readonly messageConsumer: ConvoyMessageConsumer,
@@ -216,11 +219,13 @@ export class SagaUnitTestSupport<Data> {
       new TestSagaLockManager(),
       this.sagaCommandProducer,
     );
+
     try {
       await this.sagaManager.create(sagaData);
     } catch (err) {
       this.createException = err;
     }
+
     return this;
   }
 
@@ -228,20 +233,20 @@ export class SagaUnitTestSupport<Data> {
     this.runExpectations();
     this.assertNoCommands();
 
-    expect(this.sagaInstance.endState).toBeTruthy();
-    expect(this.sagaInstance.compensating).toBeFalsy();
+    expect(this.sagaInstance.state.endState).toBeTruthy();
+    expect(this.sagaInstance.state.compensating).toBeFalsy();
   }
 
   expectRolledBack(): void {
     this.runExpectations();
     this.assertNoCommands();
 
-    if (!this.sagaInstance.endState) {
-      fail('Expected ' + this.sagaInstance.sagaType + ' to have end state');
+    if (!this.sagaInstance.state.endState) {
+      fail('Expected ' + this.sagaInstance.type + ' to have end state');
     }
 
-    if (!this.sagaInstance.compensating) {
-      fail('Expected ' + this.sagaInstance.sagaType + ' to be compensating');
+    if (!this.sagaInstance.state.compensating) {
+      fail('Expected ' + this.sagaInstance.type + ' to be compensating');
     }
   }
 
@@ -252,17 +257,27 @@ export class SagaUnitTestSupport<Data> {
 }
 
 @Injectable()
-export class TestMessageProducer {
+export class TestMessageProducer
+  implements Pick<ConvoyMessageProducer, 'send' | 'sendBatch'>
+{
   constructor(
-    @Inject(forwardRef(() => SagaUnitTestSupport))
-    private readonly sagaUnitTestSupport: SagaUnitTestSupport<Instance>,
+    @Inject(forwardRef(() => ConvoySagaTestSupport))
+    private readonly sagaTestSupport: ConvoySagaTestSupport<Instance>,
   ) {}
 
   async send(destination: string, message: Message): Promise<void> {
     message.setHeader(Message.ID, uuid());
-    this.sagaUnitTestSupport.sentCommands.push(
+    this.sagaTestSupport.sentCommands.push(
       new MessageWithDestination(destination, message),
     );
+  }
+
+  async sendBatch(
+    destination: string,
+    messages: readonly Message[],
+    isEvent: boolean | undefined,
+  ): Promise<void> {
+    await Promise.all(messages.map(message => this.send(destination, message)));
   }
 }
 
@@ -280,9 +295,9 @@ export class TestMessageProducer {
       provide: DefaultSagaInstanceRepository,
       useExisting: SagaTestInstanceRepository,
     },
-    SagaUnitTestSupport,
+    ConvoySagaTestSupport,
     mockProvider(ConvoyMessageConsumer),
   ],
-  exports: [SagaUnitTestSupport],
+  exports: [ConvoySagaTestSupport],
 })
 export class ConvoySagaTestingModule {}

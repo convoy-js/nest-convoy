@@ -8,6 +8,7 @@ import { ConvoyCdcModule } from '@nest-convoy/cdc';
 import { ConvoyCoreModule } from '@nest-convoy/core/core.module';
 import type { ConvoyMikroOrmOptions } from '@nest-convoy/database';
 import {
+  DatabaseDuplicateMessageDetector,
   DatabaseMessageProducer,
   ConvoyDatabaseModule,
 } from '@nest-convoy/database';
@@ -15,7 +16,6 @@ import type { MessageProducer } from '@nest-convoy/messaging';
 import {
   ConvoyMessagingConsumerModule,
   ConvoyMessagingProducerModule,
-  DatabaseDuplicateMessageDetector,
 } from '@nest-convoy/messaging';
 
 import { Kafka } from './kafka';

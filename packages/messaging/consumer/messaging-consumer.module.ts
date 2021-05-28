@@ -3,10 +3,7 @@ import { Global, Module, Type } from '@nestjs/common';
 
 import { ConvoyMessagingCommonModule } from '@nest-convoy/messaging/common';
 
-import {
-  DatabaseDuplicateMessageDetector,
-  DuplicateMessageDetector,
-} from './duplicate-message-detectors';
+import { DuplicateMessageDetector } from './duplicate-message-detectors';
 import { ConvoyMessageConsumer, MessageConsumer } from './message-consumer';
 
 @Global()

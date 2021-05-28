@@ -5,42 +5,42 @@ import {
   Embedded,
   Entity,
   JsonType,
-  ManyToOne,
   OneToMany,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
 
 import { SagaExecutionState } from '../saga-execution-state';
-import { SagaInstanceParticipants } from './saga-instance-participants.entity';
+import { SagaInstanceParticipant } from './saga-instance-participants.entity';
 
 @Entity()
 export class SagaInstance<Data = any> {
   @PrimaryKey()
-  sagaId: string = uuid();
+  id: string = uuid();
 
   @PrimaryKey()
-  sagaType: string;
+  type: string;
 
   @Embedded(() => SagaExecutionState)
   state = new SagaExecutionState();
 
   @Property()
-  sagaDataType: string;
+  dataType: string;
 
   @Property({ type: JsonType })
-  sagaData: Data;
+  data: Data;
 
   @Property({ nullable: true })
   lastRequestId?: string;
 
   @OneToMany({
-    entity: () => SagaInstanceParticipants,
-    mappedBy: participants => participants.sagaInstance,
+    entity: () => SagaInstanceParticipant,
+    mappedBy: participant => participant.sagaInstance,
     cascade: [Cascade.ALL],
+    orphanRemoval: true,
     eager: true,
   })
-  participants = new Collection<SagaInstanceParticipants>(this);
+  participants = new Collection<SagaInstanceParticipant>(this);
 
   @Property({ version: true })
   version: number;

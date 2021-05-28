@@ -3,7 +3,7 @@ import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { SagaInstance } from './saga-instance.entity';
 
 @Entity()
-export class SagaInstanceParticipants {
+export class SagaInstanceParticipant {
   @PrimaryKey()
   destination: string;
 
@@ -13,6 +13,7 @@ export class SagaInstanceParticipants {
   @ManyToOne({
     entity: () => SagaInstance,
     inversedBy: instance => instance.participants,
+    joinColumn: 'saga_id',
   })
   sagaInstance: SagaInstance;
 

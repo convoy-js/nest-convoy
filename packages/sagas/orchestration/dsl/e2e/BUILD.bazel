@@ -5,6 +5,7 @@ nest_test(
     srcs = glob(["*.ts"]),
     deps = [
         "//packages/commands",
+        "//packages/core",
         "//packages/messaging",
         "//packages/sagas/orchestration/dsl",
         "//packages/testing",
