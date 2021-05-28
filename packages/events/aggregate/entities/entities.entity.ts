@@ -1,7 +1,7 @@
-import { Entity, PrimaryKey, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { uuid } from '@deepkit/type';
+import { Entity, PrimaryKey, PrimaryKeyType, Property } from '@mikro-orm/core';
 
-@Entity({ tableName: 'entities' })
+@Entity()
 export class Entities {
   @PrimaryKey()
   id = uuid();

@@ -1,6 +1,6 @@
-import { Type, ObjectLiteral, Instance } from '@nest-convoy/common';
+import type { Type, ObjectLiteral, Instance } from '@nest-convoy/common';
 
-import { AggregateRoot } from './aggregate-root';
+import type { AggregateRoot } from './aggregate-root';
 
 export const AGGREGATE_VERSION_KEY_METADATA = Symbol(
   'AGGREGATE_VERSION_KEY_METADATA',

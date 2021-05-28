@@ -1,5 +1,5 @@
-import { Global, Module } from '@nestjs/common';
 import { DiscoveryModule } from '@golevelup/nestjs-discovery';
+import { Module } from '@nestjs/common';
 
 import { AggregateCrudModule } from '@nest-convoy/events/aggregate/crud';
 import { AggregateSchemaModule } from '@nest-convoy/events/aggregate/schema';

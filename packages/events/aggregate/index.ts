@@ -4,6 +4,7 @@ export {
   AggregateId,
   AggregateVersion,
 } from './decorators';
+export { EventAggregate } from './event-aggregate';
 export {
   AggregateRepositoryInterceptor,
   DefaultAggregateRepositoryInterceptor,

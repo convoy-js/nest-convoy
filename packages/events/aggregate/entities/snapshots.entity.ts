@@ -11,7 +11,7 @@ import {
   SnapshotTriggeringEventsType,
 } from '../snapshot';
 
-@Entity({ tableName: 'snapshots' })
+@Entity()
 export class Snapshots {
   @PrimaryKey()
   entityType: string;

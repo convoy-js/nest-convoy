@@ -1,26 +1,29 @@
-import { Inject, Injectable, OnModuleInit, Type } from '@nestjs/common';
-import { DiscoveryService } from '@golevelup/nestjs-discovery';
-import { ModuleRef } from '@nestjs/core';
 import { validatedPlainToClass } from '@deepkit/type';
+import { DiscoveryService } from '@golevelup/nestjs-discovery';
+import type { OnModuleInit, Type } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 
 import { DOMAIN_EVENT_HANDLER } from '@nest-convoy/core/tokens';
+import type {
+  SerializedEvent,
+  SubscriberOptions,
+} from '@nest-convoy/events/aggregate';
+import {
+  AGGREGATE_EVENTS,
+  AggregateEvents,
+  AggregatesAndEvents,
+} from '@nest-convoy/events/aggregate';
 import {
   EVENT_SCHEMA_MANAGER,
   EventSchemaManager,
 } from '@nest-convoy/events/aggregate/schema';
-import {
-  SerializedEvent,
-  AGGREGATE_EVENTS,
-  AggregateEvents,
-  AggregatesAndEvents,
-  SubscriberOptions,
-} from '@nest-convoy/events/aggregate';
 
-import { EVENT_SUBSCRIBER_META } from './event-subscriber';
-import { EVENT_AGGREGATE_META } from './event-aggregate';
-import { EventHandlerContext } from './event-handler-context';
-import { EventSubscriberHandler } from './event-handler';
+import { EVENT_AGGREGATE_META } from '../aggregate/event-aggregate';
 import { DispatchedEvent } from './dispatched-event';
+import type { EventSubscriberHandler } from './event-handler';
+import { EventHandlerContext } from './event-handler-context';
+import { EVENT_SUBSCRIBER_META } from './event-subscriber';
 
 @Injectable()
 export class EventDispatcherInitializer implements OnModuleInit {
@@ -85,7 +88,7 @@ export class EventDispatcherInitializer implements OnModuleInit {
             handler,
           }));
 
-        metaHandlers.forEach(({ event, handler, aggregate }) => {
+        metaHandlers.forEach(({ event, handler: handle, aggregate }) => {
           // TODO: Refactor this & create a KafkaMultiMessageConverter
           const aggregatesAndEvents = new AggregatesAndEvents([
             [aggregate.name, [aggregate, new Set([event])]],
@@ -102,7 +105,7 @@ export class EventDispatcherInitializer implements OnModuleInit {
               const ctx = new EventHandlerContext<any>(de, this.moduleRef);
 
               // TODO: Retry options etc
-              await handler(ctx);
+              await handle(ctx);
             },
           );
         });

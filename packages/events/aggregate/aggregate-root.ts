@@ -1,4 +1,4 @@
-import { AsyncLike, ObjectLiteral } from '@nest-convoy/common';
+import type { AsyncLike, ObjectLiteral } from '@nest-convoy/common';
 
 export abstract class AggregateRoot<T = ObjectLiteral> {
   id?: string | number;

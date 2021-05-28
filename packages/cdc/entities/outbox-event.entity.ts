@@ -3,8 +3,8 @@ import { Entity, JsonType, PrimaryKey, Property } from '@mikro-orm/core';
 
 import type { ObjectLiteral } from '@nest-convoy/common';
 
-@Entity({ tableName: 'outbox' })
-export class DebeziumOutbox<P extends ObjectLiteral> {
+@Entity()
+export class OutboxEvent<P extends ObjectLiteral> {
   @PrimaryKey({ type: 'uuid' })
   id: string = uuid();
 

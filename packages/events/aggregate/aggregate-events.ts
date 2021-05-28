@@ -1,6 +1,6 @@
-import { AsyncLikeFn, Type } from '@nest-convoy/common';
+import type { AsyncLikeFn, Type } from '@nest-convoy/common';
 
-import { SerializedEvent } from './serialized-event';
+import type { SerializedEvent } from './serialized-event';
 
 export class AggregatesAndEvents extends Map<
   string,

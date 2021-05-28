@@ -1,12 +1,12 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 
-import { DebeziumOutbox, OffsetStore, CdcMonitoring } from './entities';
+import { OutboxEvent, OffsetStore, CdcMonitoring } from './entities';
 
 @Module({
   imports: [
     MikroOrmModule.forFeature({
-      entities: [CdcMonitoring, OffsetStore, DebeziumOutbox],
+      entities: [CdcMonitoring, OffsetStore, OutboxEvent],
     }),
   ],
   exports: [MikroOrmModule],

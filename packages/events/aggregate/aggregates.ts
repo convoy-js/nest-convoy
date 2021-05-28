@@ -1,8 +1,10 @@
-import { Inject, Injectable, Type } from '@nestjs/common';
 import { plainToClass } from '@deepkit/type';
+import { MikroORM } from '@mikro-orm/core';
+import type { Type } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
+import type { AggregateRoot } from './aggregate-root';
 import { MissingApplyMethodException } from './exceptions';
-import { AggregateRoot } from './aggregate-root';
 import {
   MISSING_APPLY_EVENT_METHOD_STRATEGY,
   MissingApplyEventMethodStrategy,
@@ -11,6 +13,7 @@ import {
 @Injectable()
 export class Aggregates {
   constructor(
+    private readonly orm: MikroORM,
     @Inject(MISSING_APPLY_EVENT_METHOD_STRATEGY)
     private readonly missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<any>,
   ) {}
@@ -43,7 +46,8 @@ export class Aggregates {
     // missingApplyEventMethodStrategy: MissingApplyEventMethodStrategy<AR>,
   ): Promise<AR> {
     return this.applyEvents(
-      plainToClass<Type<AR>>(aggregateType, {}),
+      this.orm.em.create(aggregateType, {}),
+      // plainToClass<Type<AR>>(aggregateType, {}),
       events,
       // missingApplyEventMethodStrategy,
     );

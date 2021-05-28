@@ -1,33 +1,35 @@
-import { Inject, Type } from '@nestjs/common';
+import { plainToClass } from '@deepkit/type';
+import type { Type } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
+import { CircularDependencyException } from '@nestjs/core/errors/exceptions/circular-dependency.exception';
+import type { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
 import { firstValueFrom, from, of, throwError } from 'rxjs';
 import { map, retryWhen, take } from 'rxjs/operators';
-import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
-import { CircularDependencyException } from '@nestjs/core/errors/exceptions/circular-dependency.exception';
-import { plainToClass } from '@deepkit/type';
 
-import { Instance } from '@nest-convoy/common';
-import { Command, CommandProvider } from '@nest-convoy/commands/common';
-import { DomainEvent } from '@nest-convoy/events/common';
+import type { Command, CommandProvider } from '@nest-convoy/commands/common';
+import type { Instance } from '@nest-convoy/common';
+import { DatabaseTransactionContext } from '@nest-convoy/database/database-transaction-context';
+import type { DomainEvent } from '@nest-convoy/events/common';
 
-import { EntityIdAndVersion, EventWithMetadata } from './interfaces';
-import { CommandProcessingAggregate } from './command-processing-aggregate';
-import { AggregateRoot } from './aggregate-root';
-import { Snapshot } from './snapshot';
-import { Aggregates } from './aggregates';
+import type {
+  AggregateRepositoryInterceptor,
+  UpdateEventsAndOptions,
+} from './aggregate-repository-interceptor';
+import type { AggregateRoot } from './aggregate-root';
+import type { Aggregates } from './aggregates';
+import type { CommandProcessingAggregate } from './command-processing-aggregate';
+import type {
+  AggregateCrudSaveOptions,
+  AggregateStoreCrud,
+  AggregateCrudUpdateOptions,
+} from './crud';
 import {
   CommandProcessingFailedException,
   DuplicateTriggeringEventException,
   OptimisticLockingException,
 } from './exceptions';
-import {
-  AggregateRepositoryInterceptor,
-  UpdateEventsAndOptions,
-} from './aggregate-repository-interceptor';
-import {
-  AggregateCrudSaveOptions,
-  AggregateStoreCrud,
-  AggregateCrudUpdateOptions,
-} from './crud';
+import type { EntityIdAndVersion, EventWithMetadata } from './interfaces';
+import type { Snapshot } from './snapshot';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function getAggregateRepositoryToken<AR extends AggregateRoot>(
@@ -220,7 +222,9 @@ export class AggregateRepository<
     cmd: C,
     options?: AggregateCrudSaveOptions,
   ): Promise<EntityIdAndVersion> {
-    const aggregate = plainToClass<Type<AR>>(this.aggregateType, {});
+    const em = DatabaseTransactionContext.getEntityManager();
+    const aggregate = em!.create(this.aggregateType, {});
+    // const aggregate = plainToClass<Type<AR>>(this.aggregateType, {});
     const events = await aggregate.process(cmd);
     await this.aggregates.applyEvents(aggregate, events);
     return this.aggregateStore.save(aggregate, events, options);

@@ -1,6 +1,6 @@
-import { Type } from '@nestjs/common';
+import type { Type } from '@nestjs/common';
 
-import { AggregateRoot } from '@nest-convoy/events/aggregate';
+import type { AggregateRoot } from './aggregate-root';
 
 export const EVENT_AGGREGATE_META = Symbol('EVENT_AGGREGATE_META');
 

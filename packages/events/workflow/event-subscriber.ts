@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+
+import type { SubscriberOptions } from '@nest-convoy/events/aggregate/aggregate-events';
 import {
   SubscriberDurability,
   SubscriberInitialPosition,
-  SubscriberOptions,
 } from '@nest-convoy/events/aggregate/aggregate-events';
 
 export const EVENT_SUBSCRIBER_META = Symbol('EVENT_SUBSCRIBER_META');

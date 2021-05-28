@@ -1,11 +1,11 @@
 import { Entity } from '@mikro-orm/core';
 
-import { CommandProcessingAggregate } from '@nest-convoy/events/aggregate';
 import { OnEvent, ProcessCommand } from '@nest-convoy/core';
+import { CommandProcessingAggregate } from '@nest-convoy/events/aggregate';
 
-import { EventSubscriber } from '../event-subscriber';
-import { EventAggregate } from '../event-aggregate';
+import { EventAggregate } from '../../aggregate/event-aggregate';
 import { EventHandlerContext } from '../event-handler-context';
+import { EventSubscriber } from '../event-subscriber';
 
 @Entity()
 class Account extends CommandProcessingAggregate<any, any> {}
