@@ -64,7 +64,7 @@
     "@deepkit/core": "1.0.1-alpha.29",
     "@deepkit/type": "1.0.1-alpha.29",
     "@golevelup/nestjs-discovery": "2.3.1",
-    "@kafkajs/confluent-schema-registry": "2.0.1",
+    "@kafkajs/confluent-schema-registry": "3.0.1",
     "@nestjs/common": "7.6.17",
     "@nestjs/core": "7.6.17",
     "@nestjs/cqrs": "7.0.1",
