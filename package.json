@@ -75,7 +75,7 @@
     "kafkajs": "1.15.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.0.1",
-    "tslib": "2.2.0",
+    "tslib": "2.3.0",
     "typeorm": "0.2.32",
     "uuid": "8.3.2"
   }
