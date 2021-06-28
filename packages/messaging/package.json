@@ -19,7 +19,7 @@
   "optionalDependencies": {
     "kafkajs": "^1.15.0",
     "@kafkajs/confluent-schema-registry": "^1.0.6",
-    "avsc": "5.7.0"
+    "avsc": "5.7.1"
   },
   "keywords": [
     "nestjs",

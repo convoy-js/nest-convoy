@@ -1453,10 +1453,10 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-avsc@5.7.0:
-  version "5.7.0"
-  resolved "https://registry.yarnpkg.com/avsc/-/avsc-5.7.0.tgz#a2d85006606bc3388feda054bba09091a2d65b33"
-  integrity sha512-oP3jgI9SaZnwLwkRx7sHDPctXCUGGp+X4FsCgzHpMTNhYhGhXAFinptdGpWid2GTXAkhNp8ksAjqyqQBhoQ7BQ==
+avsc@5.7.1:
+  version "5.7.1"
+  resolved "https://registry.yarnpkg.com/avsc/-/avsc-5.7.1.tgz#66d38735f39f172cdbdfa757b4d61c345b5b620f"
+  integrity sha512-DGl7UMd1jmmRmVgEcZyf6H3VL74gkLleZguO42vpk2rTNmnFPJlTSYoO5bgcCY2oOHjNnGkSpb2/lrAZwTZ4Rg==
 
 "avsc@>= 5.4.13 < 6":
   version "5.4.21"

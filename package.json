@@ -70,7 +70,7 @@
     "@nestjs/cqrs": "7.0.1",
     "@nestjs/testing": "7.6.17",
     "@nestjs/typeorm": "7.1.5",
-    "avsc": "5.7.0",
+    "avsc": "5.7.1",
     "change-case": "4.1.2",
     "kafkajs": "1.15.0",
     "reflect-metadata": "0.1.13",
