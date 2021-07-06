@@ -51,7 +51,7 @@
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.23.2",
     "eslint-plugin-prettier": "3.4.0",
-    "husky": "6.0.0",
+    "husky": "7.0.1",
     "jest-cli": "26.6.3",
     "lint-staged": "11.0.0",
     "patch-package": "6.4.7",
