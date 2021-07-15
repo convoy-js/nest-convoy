@@ -488,10 +488,10 @@
     dot-prop "^5.1.1"
     to-fast-properties "^3.0.1"
 
-"@deepkit/type@1.0.1-alpha.29":
-  version "1.0.1-alpha.29"
-  resolved "https://registry.yarnpkg.com/@deepkit/type/-/type-1.0.1-alpha.29.tgz#ae5e0b28c92c719d101418de0c9c27ea02a0da4c"
-  integrity sha512-PxFrErHbrwZIXbQiiX63FgM3gB6kkvnQdIT6DSn7dFCM9comeeJ7ml3jnn2F+vdQHVOXy+1ulUwtkkiiNgT+Vg==
+"@deepkit/type@1.0.1-alpha.40":
+  version "1.0.1-alpha.40"
+  resolved "https://registry.yarnpkg.com/@deepkit/type/-/type-1.0.1-alpha.40.tgz#e0519a791bd4b7a139fc48b6fa17d35269acc897"
+  integrity sha512-x3rGV3JAHHwkrRRen1u54Y8HzTt3WjelEYDa5SLBN2VefFYwoiq6qdVvXSQmyBH9zXRdin0ccz7eoZK94p5Y0g==
   dependencies:
     "@types/uuid" "^8.3.0"
     "@types/validator" "^13.1.0"
